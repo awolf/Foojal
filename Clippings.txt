@@ -1,0 +1,109 @@
+retValStr = []
+		for i in retVal:
+			retValStr.append(i.__str__())
+		date = retValStr[1]
+		date = date.split(" ")
+		time = date[1]
+		date = date[0]
+		year = date.split(":")[0]
+		month = int(date.split(":")[1])
+		day = date.split(":")[2]
+		hr = int(time.split(":")[0])
+		min = time.split(":")[1]
+		am_pm = "AM"
+		if hr >= 12:
+			am_pm = "PM"
+		if hr > 12:
+			hr = hr - 12
+		hr = str(hr)
+		monthArr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+		date = monthArr[month - 1] + " " + day + ", " + year
+		time = hr + ":" + min + " " + am_
+
+
+
+		"""
+                    # #################
+                    # GPSLongitude
+                    # Indicates the longitude.
+                    # The longitude is expressed as three RATIONAL values giving the degrees, minutes, and seconds, respectively.
+                    # #################
+                    try:
+                        GPSLongitude = tags['GPS GPSLongitude'] # returns an <'instance'> object
+
+                        GPSLongitude  = GPSLongitude.values
+                        GPSLongitudeD = GPSLongitude[0]
+                        GPSLongitudeD = str(GPSLongitudeD)
+                        GPSLongitudeD = int(GPSLongitudeD)
+                        logging.info('GPSLongitudeD:\t\t' +str(GPSLongitudeD))
+
+                        GPSLongitudeM = GPSLongitude[1]
+                        GPSLongitudeM = str(GPSLongitudeM)
+                        GPSLongitudeM = int(GPSLongitudeM)
+                        logging.info('GPSLongitudeM:\t\t' +str(GPSLongitudeM))
+
+                        GPSLongitudeS = GPSLongitude[2]
+                        GPSLongitudeS = str(GPSLongitudeS)
+                        try:
+
+                            GPSLongitudeS = GPSLongitudeS.split("/") #string.split(GPSLongitudeS, "/")
+                            GPSLongitudeSDividend = GPSLongitudeS[0]
+                            GPSLongitudeSDividend = float(GPSLongitudeSDividend)
+                            GPSLongitudeSDivisor  = GPSLongitudeS[1]
+                            GPSLongitudeSDivisor  = float(GPSLongitudeSDivisor)
+                            GPSLongitudeDecimalS = GPSLongitudeSDividend / GPSLongitudeSDivisor
+                            GPSLongitudeDD = GPSLongitudeD + (GPSLongitudeM/60.0) + (GPSLongitudeDecimalS/3600.0)
+                            logging.info('GPSLongitudeDecimalS:\t' + str(GPSLongitudeDecimalS))
+                        except Exception, err:
+                            logging.error("Error fetching longitude " + str(err))
+                            GPSLongitudeDecimalS = float(GPSLongitudeS[0])
+                            GPSLongitudeDD = GPSLongitudeD + (GPSLongitudeM/60.0) + (GPSLongitudeDecimalS/3600.0)
+                        else:
+                            pass
+                    except Exception, err:
+                        logging.error("Error fetching longitude " + str(err))
+                        GPSLongitudeDD = 0.0
+
+                    # #################
+                    # GPSLatitude
+                    # Indicates the latitude.
+                    # The latitude is expressed as three RATIONAL values giving the degrees, minutes, and seconds, respectively.
+                    # #################
+                    try:
+                        GPSLatitude = tags['GPS GPSLatitude']
+
+                        GPSLatitude  = GPSLatitude.values
+                        GPSLatitudeD = GPSLatitude[0]
+                        GPSLatitudeD = str(GPSLatitudeD)
+                        GPSLatitudeD = int(GPSLatitudeD)
+                        logging.info('GPSLatitude:\t\t' + str(GPSLatitudeD))
+
+                        GPSLatitudeM = GPSLatitude[1]
+                        GPSLatitudeM = str(GPSLatitudeM)
+                        GPSLatitudeM = int(GPSLatitudeM)
+                        logging.info('GPSLatitudeM:\t\t' +str(GPSLatitudeM))
+
+                        GPSLatitudeS = GPSLatitude[2]
+                        GPSLatitudeS = str(GPSLatitudeS)
+                        try:
+                            GPSLatitudeS = string.split(GPSLatitudeS, "/")
+                            GPSLatitudeSDividend = GPSLatitudeS[0]
+                            GPSLatitudeSDividend = float(GPSLatitudeSDividend)
+                            GPSLatitudeSDivisor  = GPSLatitudeS[1]
+                            GPSLatitudeSDivisor  = float(GPSLatitudeSDivisor)
+                            GPSLatitudeDecimalS  = GPSLatitudeSDividend / GPSLatitudeSDivisor
+                            logging.info('GPSLatitudeDecimalS:\t' + str(GPSLatitudeDecimalS))
+                        except Exception, err:
+                            logging.error("Error fetching latitude " + str(err))
+                            GPSLatitudeDecimalS = float(GPSLatitudeS[0])
+                            GPSLatitudeDD = GPSLatitudeD + (GPSLatitudeM/60.0) + (GPSLatitudeDecimalS/3600.0)
+                        else:
+                            pass
+
+                        GPSLatitudeDD = GPSLatitudeD + (GPSLatitudeM/60.0) + (GPSLatitudeDecimalS/3600.0)
+                    except Exception, err:
+                        logging.error("Error fetching latitude " + str(err))
+                        GPSLatitudeDD = 0.0
+
+                    event.location = db.GeoPt(GPSLatitudeDD,GPSLongitudeDD)
+                    """

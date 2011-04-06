@@ -1,0 +1,12 @@
+*svn*
+*.pyc
+.project
+.pydevproject
+*.swp
+*.swo
+build
+dist
+*.egg-info
+.settings
+*.wpr
+.idea

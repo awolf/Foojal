@@ -1,0 +1,32 @@
+application: foojalworld
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /test.*
+  script: gaeunit.py
+  
+- url: /favicon.ico
+  static_files: public/images/favicon.ico
+  upload: public/images/favicon.ico
+      
+- url: /public
+  static_dir: public
+
+- url: /.*
+  script: main.py
+
+- url: /_ah/mail/invites.+
+  script: InvitesMailHandler.py
+  login: admin
+
+- url: /_ah/mail/.+
+  script: DefaultMailHandler.py
+  login: admin
+
+inbound_services:
+- mail
+
+builtins:
+- datastore_admin: on

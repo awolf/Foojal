@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %} Foojal Signup {% endblock %}
+
+{% block content %}
+{{ account.created }}
+{{ account.modified }}
+{{ account.expiration_date }}
+{%if account%}
+<form action='' method='post'>
+    <div><label>
+        Name:
+        <input name='name' type='text' value='{{account.nickname}}'>
+    </label></div>
+    <div><input type='submit' value='Save'></div>
+</form>
+{%else%}
+<h3>Please send in a Photo to start off your Photo Food Journal to Food@foojalWorld.appspotmail.com</h3>
+{%endif%}
+
+<hr/>
+
+{% for event in events %}
+	<div class="span-10 ">
+		<img src="/thumb?id={{ event.key.id }}" width="350px" alt="Photo"/>
+	</div>
+	   <div class="span-14 last">
+		<ul>
+			<li>Sender: {{ event.sender }}</li>
+			<li>To: {{ event.to }}</li>
+			<li>Subject: {{ event.subject }}</li>
+			<li>Body: {{ event.body }}</li>
+            <hr />
+            <li>Latitude: {{ event.latitude }}</li>
+            <li>Latitude reference: {{ event.latitudeReference }}</li>
+
+            <li>Longitude: {{ event.longitude }}</li>
+            <li>Longitude reference: {{ event.longitudeReference }}</li>
+            <li>location: {{ event.location }}</li>
+            <hr />
+            <li>Created: {{ event.created }}</li>
+			<li>Modified: {{ event.modified }}</li>
+            <hr />
+            <li>Modified: {{ event.exif_text }}</li>
+		</ul>
+	   </div>
+	<hr/>
+{% endfor %}
+
+User is admin is: {{ is_admin }}<br>
+Current user is: {{ user }}<br>
+{% endblock %}
