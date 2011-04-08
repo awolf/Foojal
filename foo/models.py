@@ -140,7 +140,6 @@ class BlackList(db.Model):
     @classmethod
     def blacklist_email(cls, email):
         blacklist = cls.all().filter('email =', email).get()
-
         if blacklist:
             blacklist.counter += 1
             blacklist.put()

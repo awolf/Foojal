@@ -1,4 +1,5 @@
 """ Processing message actions """
+from datetime import timedelta, datetime
 
 from fantasm.action import FSMAction
 import models
@@ -30,8 +31,14 @@ class InviteMemeber(FSMAction):
 
 class ExpiredMemeber(FSMAction):
     def execute(self, context, obj):
-        #TODO: lets send users that are expired a message.
-        return 'blacklist' #or pass
+        message = models.Message.get_by_id(context['key'].id())
+        account = models.Account.get_by_id(message.owner)
+
+        if account:
+            if account.is_expired:
+                if account.expiration_date < (datetime.utcnow() + timedelta(days=-30)):
+                    return 'blacklist'
+        pass
 
 class BlacklistMemeber(FSMAction):
     def execute(self, context, obj):
