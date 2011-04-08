@@ -35,7 +35,9 @@ class ExpiredMemeber(FSMAction):
 
 class BlacklistMemeber(FSMAction):
     def execute(self, context, obj):
-        #TODO: lets send users that are expired a message.
+        context.logger.info('BlacklistMemeber.execute()')
+        message = models.Message.get_by_id(context['key'].id())
+        models.BlackList.blacklist_email(message.sender)
         pass
 
 class IdentifySubjectType(FSMAction):

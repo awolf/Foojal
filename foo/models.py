@@ -47,7 +47,7 @@ def GetGeoPt(coordinate, GPSReference):
 
 class Message(db.Model):
     owner = db.Key()
-    sender = db.StringProperty()
+    sender = db.EmailProperty()
     to = db.StringProperty()
     subject = db.StringProperty()
     body = db.TextProperty()
@@ -130,6 +130,25 @@ class Account(db.Model):
 
         return db.GqlQuery(
             "SELECT * FROM Account WHERE user = :1", user).get()
+
+class BlackList(db.Model):
+    email = db.EmailProperty()
+    counter = db.IntegerProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+    modified = db.DateTimeProperty(auto_now=True)
+
+    @classmethod
+    def blacklist_email(cls, email):
+        blacklist = cls.all().filter('email =', email).get()
+
+        if blacklist:
+            blacklist.counter += 1
+            blacklist.put()
+        else:
+            blacklist = Blacklist()
+            blacklist.email = email
+            blacklist.counter = 1
+            blacklist.put()
 
 class Invitation(db.Model):
     unique_key = db.StringProperty()
