@@ -14,9 +14,10 @@ class AssignOwnership(FSMAction):
 
         account = models.Account.get_account_by_email(photo.sender)
         if account:
-            photo.owner = account.key()
-            photo.put()
-            return 'hasowner'
+            if not account.is_expired:
+                photo.owner = account.key()
+                photo.put()
+                return 'hasowner'
 
         pass
 

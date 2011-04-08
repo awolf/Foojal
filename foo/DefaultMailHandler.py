@@ -33,7 +33,7 @@ class DefaultMailHandler(InboundMailHandler):
     def receive(self, mail_message):
 
         # TODO: Need to check the capabilities API to see if data store is up and running
-
+        # TODO: Need a blacklist for email address
         self.saveMessage(mail_message)
         self.saveAttachment(mail_message)
 

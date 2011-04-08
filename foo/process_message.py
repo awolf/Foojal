@@ -31,6 +31,11 @@ class InviteMemeber(FSMAction):
 class ExpiredMemeber(FSMAction):
     def execute(self, context, obj):
         #TODO: lets send users that are expired a message.
+        return 'blacklist' #or pass
+
+class BlacklistMemeber(FSMAction):
+    def execute(self, context, obj):
+        #TODO: lets send users that are expired a message.
         pass
 
 class IdentifySubjectType(FSMAction):
