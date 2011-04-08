@@ -20,28 +20,28 @@
 
 <hr/>
 
-{% for event in events %}
+{% for message in messages %}
 	<div class="span-10 ">
 		<img src="/thumb?id={{ event.key.id }}" width="350px" alt="Photo"/>
 	</div>
 	   <div class="span-14 last">
 		<ul>
-			<li>Sender: {{ event.sender }}</li>
-			<li>To: {{ event.to }}</li>
-			<li>Subject: {{ event.subject }}</li>
-			<li>Body: {{ event.body }}</li>
+			<li>Sender: {{ message.sender }}</li>
+			<li>To: {{ message.to }}</li>
+			<li>Subject: {{ message.subject }}</li>
+			<li>Body: {{ message.body }}</li>
             <hr />
-            <li>Latitude: {{ event.latitude }}</li>
-            <li>Latitude reference: {{ event.latitudeReference }}</li>
+            <li>Latitude: {{ message.latitude }}</li>
+            <li>Latitude reference: {{ message.latitudeReference }}</li>
 
-            <li>Longitude: {{ event.longitude }}</li>
-            <li>Longitude reference: {{ event.longitudeReference }}</li>
-            <li>location: {{ event.location }}</li>
+            <li>Longitude: {{ message.longitude }}</li>
+            <li>Longitude reference: {{ message.longitudeReference }}</li>
+            <li>location: {{ message.location }}</li>
             <hr />
-            <li>Created: {{ event.created }}</li>
-			<li>Modified: {{ event.modified }}</li>
+            <li>Created: {{ message.created }}</li>
+			<li>Modified: {{ message.modified }}</li>
             <hr />
-            <li>Modified: {{ event.exif_text }}</li>
+            <li>Modified: {{ message.exif_text }}</li>
 		</ul>
 	   </div>
 	<hr/>

@@ -85,12 +85,12 @@ class AccountPage(TemplatedPage):
             self.write_template({})
             return
 
-        e = models.Event.all()
-        e.filter("account_key", account.key().id())
-        e.order("-created")
+        messages = models.Message.all()
+        messages.filter("account_key", account.key().id())
+        messages.order("-created")
 
         values = {
-            'events': e.fetch(20),
+            'messages': messages.fetch(20),
             'account': account
         }
         self.write_template(values)
@@ -107,12 +107,12 @@ class AccountPage(TemplatedPage):
         account.nickname = cgi.escape(self.request.get('name'))
         account.put()
 
-        e = models.Event.all()
-        e.filter("account_key", account.key().id())
-        e.order("-created")
+        messages = models.Message.all()
+        messages.filter("account_key", account.key().id())
+        messages.order("-created")
 
         values = {
-            'events': e.fetch(20),
+            'messages': messages.fetch(10),
             'account': account
         }
         self.write_template(values)
@@ -142,7 +142,7 @@ class Invite(TemplatedPage):
             account = models.Account.create_account_for_user()
 
         account.add_email(invitation.to_address)
-        models.Event.transfer_to_account(invitation.to_address, account.key().id())
+        models.Message.transfer_to_account(invitation.to_address, account.key().id())
         models.Invitation.remove_all_invites_by_email(invitation.to_address)
         self.redirect('/')
 
@@ -151,14 +151,14 @@ class Thumbnailer(webapp.RequestHandler):
 
     def get(self):
         if self.request.get("id"):
-            event = models.Event.get_by_id(int(self.request.get("id")))
+            message = models.Message.get_by_id(int(self.request.get("id")))
 
-            if event:
+            if message:
                 self.response.headers['Content-Type'] = 'image/jpeg'
                 # Todo: lets set the cache header to something longer than a day
-                self.response.out.write(event.thumbnail)
+                self.response.out.write(message.thumbnail)
             else:
-                logging.info("The thumbnailer got an invalid event id of :" + self.request.get("id"))
+                logging.info("The thumbnailer got an invalid message id of :" + self.request.get("id"))
                 # Either "id" wasn't provided, or there was no image with that ID
                 # in the datastore.
                 self.redirect('/public/images/noimage.gif')

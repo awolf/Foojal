@@ -45,41 +45,40 @@ def GetGeoPt(coordinate, GPSReference):
 
     return GPS_Coordinate
 
-class Event(db.Model):
-    account_key = db.IntegerProperty()
+class Message(db.Model):
+    owner = db.Key()
     sender = db.StringProperty()
     to = db.StringProperty()
     subject = db.StringProperty()
     body = db.TextProperty()
 
-    latitude = db.TextProperty()
-    latitudeReference = db.TextProperty()
-
-    longitude = db.TextProperty()
-    longitudeReference = db.TextProperty()
-
-    location = db.GeoPtProperty()
-
-    exif_text = db.TextProperty()
-
-    picture_name = db.StringProperty()
-    picture = db.BlobProperty()
-    thumbnail = db.BlobProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
 
     @classmethod
     def transfer_to_account(cls, sender, id):
-        e = Event.all()
-        e.filter("sender", sender)
-        e.filter("account_key", None)
+        messages = Message.all()
+        messages.filter("sender", sender)
+        messages.filter("account_key", None)
 
-        e.fetch(500)
+        messages.fetch(500)
 
-        for event in e:
-            event.account_key = id
-            event.put()
+        for message in messages:
+            message.account_key = id
+            message.put()
 
+class Photo(db.Model):
+    owner = db.Key()
+    sender = db.EmailProperty()
+
+    location = db.GeoPtProperty()
+    exif_data = db.BlobProperty()
+
+    picture = db.BlobProperty()
+    thumbnail = db.BlobProperty()
+
+    created = db.DateTimeProperty(auto_now_add=True)
+    modified = db.DateTimeProperty(auto_now=True)
 
 class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
@@ -175,12 +174,3 @@ bar:
 %s""" % "http://foojalworld.appspot.com/invites/" + invite.unique_key
 
         message.send()
-
-
-class Photo(db.Model):
-    account_key = db.Key()
-    picture_name = db.StringProperty()
-    picture = db.BlobProperty()
-    thumbnail = db.BlobProperty()
-    created = db.DateTimeProperty(auto_now_add=True)
-    modified = db.DateTimeProperty(auto_now=True)
