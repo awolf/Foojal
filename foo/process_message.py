@@ -25,7 +25,6 @@ class InviteMemeber(FSMAction):
         context.logger.info('InviteMemeber.execute()')
         context.logger.info("Queueing invitation to %s" % (context['sender']))
 
-        #TODO: This we can push to the task queues for throttling.
         models.Invitation.send_invitation(context['sender'])
         pass
 

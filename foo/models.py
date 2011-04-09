@@ -3,9 +3,11 @@ import uuid
 import string
 
 from datetime import timedelta, datetime
+from google.appengine.api.taskqueue.taskqueue import add
 from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import mail
+from google.appengine.api import taskqueue
 
 def GetGeoPt(coordinate, GPSReference):
     try:
@@ -159,7 +161,6 @@ class Invitation(db.Model):
     @classmethod
     def get_invitation_by_unique_key(cls, unique_key):
         assert unique_key
-
         return db.GqlQuery("SELECT * FROM Invitation WHERE unique_key = :1", unique_key).get()
 
     @classmethod
@@ -178,17 +179,4 @@ class Invitation(db.Model):
         invite.to_address = email
         invite.put()
 
-        message = mail.EmailMessage()
-        message.sender = "Invites@foojalworld.appspotmail.com"
-        message.to = invite.to_address
-        message.subject = "Your Foojal Invitation"
-        message.body = """
-You have been invited you to Foojal.com!
-
-To accept this invitation, click the following link,
-or copy and paste the URL into your browser's address
-bar:
-
-%s""" % "http://foojalworld.appspot.com/invites/" + invite.unique_key
-
-        message.send()
+        taskqueue.Queue('invite').add(taskqueue.Task(url='/invitation',params={'email' : invite.to_address, 'key': invite.unique_key}))

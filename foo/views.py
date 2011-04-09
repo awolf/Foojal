@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from datetime import timedelta, datetime
 
 from google.appengine.dist import use_library
 use_library('django', '1.2')
@@ -11,7 +12,6 @@ import logging
 # AppEngine imports
 from google.appengine.api import users
 from google.appengine.ext import webapp
-from google.appengine.ext import db
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.runtime import DeadlineExceededError
@@ -151,14 +151,44 @@ class Thumbnailer(webapp.RequestHandler):
 
     def get(self):
         if self.request.get("id"):
-            message = models.Message.get_by_id(int(self.request.get("id")))
+            photo = models.Photo.get_by_id(int(self.request.get("id")))
 
-            if message:
+            if photo:
                 self.response.headers['Content-Type'] = 'image/jpeg'
-                # Todo: lets set the cache header to something longer than a day
-                self.response.out.write(message.thumbnail)
+                current_time = datetime.utcnow()
+                last_modified = current_time - timedelta(days=1)
+                self.response['Content-Type'] = 'image/jpg'
+                self.response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+                self.response['Expires'] = current_time + timedelta(days=30)
+                self.response['Cache-Control']  = 'public, max-age=315360000'
+                self.response['Date']           = current_time
+                self.response.out.write(photo.thumbnail)
             else:
                 logging.info("The thumbnailer got an invalid message id of :" + self.request.get("id"))
                 # Either "id" wasn't provided, or there was no image with that ID
                 # in the datastore.
                 self.redirect('/public/images/noimage.gif')
+
+class PhotoHandler(webapp.RequestHandler):
+    """Serves photos """
+
+    def get(self):
+        if self.request.get("id"):
+            photo = models.Photo.get_by_id(int(self.request.get("id")))
+
+            if photo:
+                self.response.headers['Content-Type'] = 'image/jpeg'
+                current_time = datetime.utcnow()
+                last_modified = current_time - timedelta(days=1)
+                self.response['Content-Type'] = 'image/jpg'
+                self.response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+                self.response['Expires'] = current_time + timedelta(days=30)
+                self.response['Cache-Control']  = 'public, max-age=315360000'
+                self.response['Date']           = current_time
+                self.response.out.write(photo.picture)
+            else:
+                logging.info("The image handler got an invalid message id of :" + self.request.get("id"))
+                # Either "id" wasn't provided, or there was no image with that ID
+                # in the datastore.
+                self.redirect('/public/images/noimage.gif')
+                
