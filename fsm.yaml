@@ -1,0 +1,103 @@
+
+state_machines:
+
+##############################################################################
+- name: ProcessPhoto
+  namespace: foo.process_photo
+  logging: persistent
+  #localhost:8080/fantasm/graphviz/ProcessPhoto/
+
+  context_types:
+    key: google.appengine.ext.db.Key
+
+  states:
+  - name: ownerstate
+    initial: True
+    final: True
+    action: AssignOwnership
+    transitions:
+      - event: hasowner
+        to: getexifstate
+
+  - name: getexifstate
+    action: GetExifTags
+    transitions:
+      - event: success
+        to: rotatestate
+
+  - name: rotatestate
+    action: RotateImage
+    transitions:
+      - event: success
+        to: thumbnailstate
+
+  - name: thumbnailstate
+    action: ThumbnailImage
+    transitions:
+      - event: success
+        to: geocodestate
+
+  - name: geocodestate
+    action: GeocodeImage
+    final: True
+
+ ##############################################################################
+- name: ProcessMessage
+  namespace: foo.process_message
+  logging: persistent
+  #localhost:8080/fantasm/graphviz/ProcessMessage/
+
+  context_types:
+    key: google.appengine.ext.db.Key
+
+  states:
+  - name: memberstate
+    initial: True
+    action: IsMemeber
+    transitions:
+      - event: member
+        to: subjectstate
+      - event: invite
+        to: invitememberstate
+      - event: expired
+        to: expiredmemeberstate
+
+  - name: expiredmemeberstate
+    action: ExpiredMemeber
+    final: True
+    transitions:
+      - event: blacklist
+        to: blacklistmemberstate
+
+  - name: blacklistmemberstate
+    action: BlacklistMemeber
+    final: True
+
+  - name: invitememberstate
+    action: InviteMemeber
+    final: True
+
+  - name: subjectstate
+    action: IdentifySubjectType
+    final: True
+    transitions:
+      - event: tags
+        to: tagstate
+      - event: topic
+        to: topicstate
+
+  - name: tagstate
+    action: ProcessTags
+    transitions:
+      - event: complete
+        to: contentstate
+
+  - name: topicstate
+    action: ProcessTopic
+    transitions:
+      - event: complete
+        to: contentstate
+
+  - name: contentstate
+    action: ProcessContent
+    final: true
