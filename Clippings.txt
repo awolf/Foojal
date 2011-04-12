@@ -1,0 +1,29 @@
+
+
+
+
+
+
+
+
+
+def view_image(request, key):
+  data = memcache.get(key)
+  if data is not None:
+    if(request.META.get('HTTP_IF_MODIFIED_SINCE') >= data['Last-Modified']):
+      data.status_code = 304
+    return data
+  else:
+    image_content_blob = #some code to get the image from the data store
+    current_time = datetime.utcnow()
+    response = HttpResponse()
+    last_modified = current_time - timedelta(days=1)
+    response['Content-Type'] = 'image/jpg'
+    response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+    response['Expires'] = current_time + timedelta(days=30)
+    response['Cache-Control']  = 'public, max-age=315360000'
+    response['Date']           = current_time
+    response.content = image_content_blob
+
+    memcache.add(image_key, response, 86400)
+    return response

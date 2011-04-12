@@ -10,6 +10,18 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Entry
+  properties:
+  - name: account_key
+  - name: created
+    direction: desc
+
+- kind: Entry
+  properties:
+  - name: owner
+  - name: created
+    direction: desc
+
 - kind: Event
   properties:
   - name: account_key

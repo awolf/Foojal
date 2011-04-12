@@ -1,46 +1,6 @@
 
 state_machines:
 
-##############################################################################
-- name: ProcessPhoto
-  namespace: foo.process_photo
-  logging: persistent
-  #localhost:8080/fantasm/graphviz/ProcessPhoto/
-
-  context_types:
-    key: google.appengine.ext.db.Key
-
-  states:
-  - name: ownerstate
-    initial: True
-    final: True
-    action: AssignOwnership
-    transitions:
-      - event: hasowner
-        to: getexifstate
-
-  - name: getexifstate
-    action: GetExifTags
-    transitions:
-      - event: success
-        to: rotatestate
-
-  - name: rotatestate
-    action: RotateImage
-    transitions:
-      - event: success
-        to: thumbnailstate
-
-  - name: thumbnailstate
-    action: ThumbnailImage
-    transitions:
-      - event: success
-        to: geocodestate
-
-  - name: geocodestate
-    action: GeocodeImage
-    final: True
-
  ##############################################################################
 - name: ProcessMessage
   namespace: foo.process_message
@@ -49,14 +9,15 @@ state_machines:
 
   context_types:
     key: google.appengine.ext.db.Key
+    entrykey: google.appengine.ext.db.Key
 
   states:
-  - name: memberstate
+  - name: memberstatusstate
     initial: True
-    action: IsMemeber
+    action: FindMemeberStatus
     transitions:
       - event: member
-        to: subjectstate
+        to: prepareentrystate
       - event: invite
         to: invitememberstate
       - event: expired
@@ -71,20 +32,47 @@ state_machines:
 
   - name: blacklistmemberstate
     action: BlacklistMemeber
-    final: True
-
+    transitions:
+      - event: complete
+        to: cleanupstate
+        
   - name: invitememberstate
     action: InviteMemeber
-    final: True
-
-  - name: subjectstate
-    action: IdentifySubjectType
-    final: True
     transitions:
-      - event: tags
+      - event: success
+        to: prepareentrystate
+
+  - name: prepareentrystate
+    action: PrepareEntry
+    transitions:
+      - event: hasphoto
+        to: getexifstate
+      - event: nophoto
         to: tagstate
-      - event: topic
-        to: topicstate
+
+  - name: getexifstate
+    action: GetExifTags
+    transitions:
+      - event: success
+        to: photostate
+
+  - name: photostate
+    action: CreatePhoto
+    transitions:
+      - event: success
+        to: thumbnailstate
+
+  - name: thumbnailstate
+    action: CreateThumbnail
+    transitions:
+      - event: success
+        to: geocodestate
+
+  - name: geocodestate
+    action: GeocodeImage
+    transitions:
+      - event: success
+        to: tagstate
 
   - name: tagstate
     action: ProcessTags
@@ -92,12 +80,12 @@ state_machines:
       - event: complete
         to: contentstate
 
-  - name: topicstate
-    action: ProcessTopic
-    transitions:
-      - event: complete
-        to: contentstate
-
   - name: contentstate
     action: ProcessContent
-    final: true
+    transitions:
+      - event: complete
+        to: cleanupstate
+
+  - name: cleanupstate
+    action: CleanUpMessage
+    final: True

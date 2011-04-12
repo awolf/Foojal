@@ -3,9 +3,6 @@
 {% block title %} Foojal Signup {% endblock %}
 
 {% block content %}
-{{ account.created }}
-{{ account.modified }}
-{{ account.expiration_date }}
 {%if account%}
 <form action='' method='post'>
     <div><label>
@@ -20,32 +17,6 @@
 
 <hr/>
 
-{% for message in messages %}
-	<div class="span-10 ">
-		<img src="/thumb?id={{ event.key.id }}" width="350px" alt="Photo"/>
-	</div>
-	   <div class="span-14 last">
-		<ul>
-			<li>Sender: {{ message.sender }}</li>
-			<li>To: {{ message.to }}</li>
-			<li>Subject: {{ message.subject }}</li>
-			<li>Body: {{ message.body }}</li>
-            <hr />
-            <li>Latitude: {{ message.latitude }}</li>
-            <li>Latitude reference: {{ message.latitudeReference }}</li>
-
-            <li>Longitude: {{ message.longitude }}</li>
-            <li>Longitude reference: {{ message.longitudeReference }}</li>
-            <li>location: {{ message.location }}</li>
-            <hr />
-            <li>Created: {{ message.created }}</li>
-			<li>Modified: {{ message.modified }}</li>
-            <hr />
-            <li>Modified: {{ message.exif_text }}</li>
-		</ul>
-	   </div>
-	<hr/>
-{% endfor %}
 
 User is admin is: {{ is_admin }}<br>
 Current user is: {{ user }}<br>

@@ -3,10 +3,8 @@ import uuid
 import string
 
 from datetime import timedelta, datetime
-from google.appengine.api.taskqueue.taskqueue import add
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.api import mail
 from google.appengine.api import taskqueue
 
 def GetGeoPt(coordinate, GPSReference):
@@ -48,36 +46,57 @@ def GetGeoPt(coordinate, GPSReference):
     return GPS_Coordinate
 
 class Message(db.Model):
-    owner = db.Key()
+    owner = db.UserProperty()
     sender = db.EmailProperty()
     to = db.StringProperty()
     subject = db.StringProperty()
     body = db.TextProperty()
+    exif_data = db.BlobProperty()
+    picture = db.LinkProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+    modified = db.DateTimeProperty(auto_now=True)
+
+class Entry(db.Model):
+    owner = db.UserProperty()
+    sender = db.EmailProperty()
+
+    content = db.TextProperty()
+
+    location = db.GeoPtProperty()
+    exif_data = db.BlobProperty()
+
+    picture_uid = db.StringProperty()
+    thumbnail_uid = db.StringProperty()
 
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
 
     @classmethod
     def transfer_to_account(cls, sender, id):
-        messages = Message.all()
-        messages.filter("sender", sender)
-        messages.filter("account_key", None)
+        entries = Entry.all()
+        entries.filter("sender", sender)
+        entries.filter("account_key", None)
 
-        messages.fetch(500)
+        entry.fetch(500)
 
-        for message in messages:
-            message.account_key = id
-            message.put()
+        for entry in entries:
+            entry.account_key = id
+            entry.put()
 
 class Photo(db.Model):
-    owner = db.Key()
+    owner = db.UserProperty()
     sender = db.EmailProperty()
 
-    location = db.GeoPtProperty()
-    exif_data = db.BlobProperty()
+    picture = db.BlobProperty()
+
+    created = db.DateTimeProperty(auto_now_add=True)
+    modified = db.DateTimeProperty(auto_now=True)
+
+class Thumbnail(db.Model):
+    owner = db.UserProperty()
+    sender = db.EmailProperty()
 
     picture = db.BlobProperty()
-    thumbnail = db.BlobProperty()
 
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
@@ -138,6 +157,14 @@ class BlackList(db.Model):
     counter = db.IntegerProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
+
+    @classmethod
+    def get_blacklist_by_email(cls, email):
+        """Get the Account for an email address, or return None."""
+        assert email
+
+        return db.GqlQuery("SELECT * FROM BlackList WHERE email = :1", email).get()
+    
 
     @classmethod
     def blacklist_email(cls, email):

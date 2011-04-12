@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from datetime import timedelta, datetime
 
 from google.appengine.dist import use_library
 use_library('django', '1.2')
@@ -8,8 +7,10 @@ use_library('django', '1.2')
 import os
 import cgi
 import logging
+from datetime import timedelta, datetime
 
 # AppEngine imports
+from django.http import HttpResponse
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
@@ -68,8 +69,21 @@ class TemplatedPage(webapp.RequestHandler):
 class MainPage(TemplatedPage):
     """Home page for Foojal"""
 
+    @login_required
     def get(self):
+
         values = {}
+
+        account = models.Account.get_user_account()
+
+        if account is not None:
+            values["account"] = account
+
+            entries = models.Entry.all()
+            #entries.filter("owner", account.user)
+            entries.order("-created")
+            values["entries"] = entries.fetch(10)
+
         self.write_template(values)
 
 
@@ -81,19 +95,11 @@ class AccountPage(TemplatedPage):
         """ Account Display page """
         account = models.Account.get_user_account()
 
-        if account is None:
-            self.write_template({})
+        if account:
+            self.write_template({'account': account})
             return
 
-        messages = models.Message.all()
-        messages.filter("account_key", account.key().id())
-        messages.order("-created")
-
-        values = {
-            'messages': messages.fetch(20),
-            'account': account
-        }
-        self.write_template(values)
+        self.write_template({})
 
     def post(self):
         """Processes the signup creation request."""
@@ -142,7 +148,7 @@ class Invite(TemplatedPage):
             account = models.Account.create_account_for_user()
 
         account.add_email(invitation.to_address)
-        models.Message.transfer_to_account(invitation.to_address, account.key().id())
+        models.Entry.transfer_to_account(invitation.to_address, account.key().id())
         models.Invitation.remove_all_invites_by_email(invitation.to_address)
         self.redirect('/')
 
