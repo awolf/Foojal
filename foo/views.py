@@ -35,14 +35,14 @@ class TemplatedPage(webapp.RequestHandler):
         params['is_admin'] = request.user_is_admin
         params['is_dev'] = IS_DEV
         params['current_uri'] = self.request.uri
+
+
         full_path = request.uri
         if request.user is None:
             params['sign_in'] = users.create_login_url(full_path)
         else:
+            params['account'] = models.Account.get_user_account()
             params['sign_out'] = users.create_logout_url("/")
-            #account = models.Account.current_user_account
-            #if account is not None:
-            #params['xsrf_token'] = account.get_xsrf_token()
         try:
             path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates',
                                 self.__class__.__name__ + '.html')
@@ -77,10 +77,10 @@ class MainPage(TemplatedPage):
         account = models.Account.get_user_account()
 
         if account is not None:
-            values["account"] = account
+            #values["account"] = account
 
             entries = models.Entry.all()
-            #entries.filter("owner", account.user)
+            entries.filter("owner", account.user)
             entries.order("-created")
             values["entries"] = entries.fetch(10)
 
@@ -103,7 +103,6 @@ class AccountPage(TemplatedPage):
 
     def post(self):
         """Processes the signup creation request."""
-
         account = models.Account.get_user_account()
 
         if account is None:
@@ -148,32 +147,9 @@ class Invite(TemplatedPage):
             account = models.Account.create_account_for_user()
 
         account.add_email(invitation.to_address)
-        models.Entry.transfer_to_account(invitation.to_address, account.key().id())
+        models.Entry.transfer_to_account(invitation.to_address, account.user)
         models.Invitation.remove_all_invites_by_email(invitation.to_address)
         self.redirect('/')
-
-class Thumbnailer(webapp.RequestHandler):
-    """Serves thumbnail images"""
-
-    def get(self):
-        if self.request.get("id"):
-            photo = models.Photo.get_by_id(int(self.request.get("id")))
-
-            if photo:
-                self.response.headers['Content-Type'] = 'image/jpeg'
-                current_time = datetime.utcnow()
-                last_modified = current_time - timedelta(days=1)
-                self.response['Content-Type'] = 'image/jpg'
-                self.response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
-                self.response['Expires'] = current_time + timedelta(days=30)
-                self.response['Cache-Control']  = 'public, max-age=315360000'
-                self.response['Date']           = current_time
-                self.response.out.write(photo.thumbnail)
-            else:
-                logging.info("The thumbnailer got an invalid message id of :" + self.request.get("id"))
-                # Either "id" wasn't provided, or there was no image with that ID
-                # in the datastore.
-                self.redirect('/public/images/noimage.gif')
 
 class PhotoHandler(webapp.RequestHandler):
     """Serves photos """

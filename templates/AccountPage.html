@@ -3,7 +3,7 @@
 {% block title %} Foojal Signup {% endblock %}
 
 {% block content %}
-{%if account%}
+<h1>{{ account.nickname }}</h1>
 <form action='' method='post'>
     <div><label>
         Name:
@@ -11,13 +11,4 @@
     </label></div>
     <div><input type='submit' value='Save'></div>
 </form>
-{%else%}
-<h3>Please send in a Photo to start off your Photo Food Journal to Food@foojalWorld.appspotmail.com</h3>
-{%endif%}
-
-<hr/>
-
-
-User is admin is: {{ is_admin }}<br>
-Current user is: {{ user }}<br>
 {% endblock %}

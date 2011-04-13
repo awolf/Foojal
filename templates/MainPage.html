@@ -3,14 +3,14 @@
 {% block title %}Today Pictures {% endblock %}
 
 {% block content %}
-        <a href="/account"> My Account: </a><br /><br /><br />
-	User is admin is: {{ is_admin }}<br>
-	Current user is: {{ user }}<br>
+
     <hr />
     {% for entry in entries %}
         <div class="span-10 ">
             {% if entry.picture_uid %}
-                <img src="/thumb?id={{ entry.picture_uid }}" width="350px" alt="Photo"/>
+                <img src="/photo?id={{ entry.picture_uid }}" width="350px" alt="Photo"/>
+            {% else %}
+                <img src="/public/images/touch-icon-ipad.png" alt="Photo"/>
             {%endif%}
         </div>
            <div class="span-14 last">
@@ -22,8 +22,6 @@
                 <li>Modified: {{ entry.modified }}</li>
                 <li>Modified: {{ entry.exif_data.decode }}</li>
             </ul>
-            <hr />
            </div>
-        <hr/>
     {% endfor %}
 {% endblock %}

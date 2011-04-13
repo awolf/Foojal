@@ -21,18 +21,41 @@
 <body>
 		<div class="container">
 
-			<div class="span-24 last"> 
-				<img src="/public/images/Foojal.png"  alt="Foojal Photo Food Journal Logo"/>
-			</div> 
-			
-			{%if user%}
-			<a class="novisit" href="{{sign_out}}">Sign out</a>
-			{% else %}
-			<a class="novisit" href="{{sign_in}}">Sign in</a>
-			{%endif%}
-			
-			<hr class="space">
-	    {% block content %}{% endblock %}		
-		</div>
+			<div class="span-10">
+                <a  href="/">
+				    <img src="/public/images/Foojal.png"  alt="Foojal Photo Food Journal Logo"/>
+                </a>
+			</div>
+            <div class="span-14 last">
+                <ul id="navlist">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/account">{{ account.nickname }}</a></li>
+                    {%if user%}
+                        <li><a href="{{sign_out}}">Sign out</a></li>
+                    {% else %}
+                        <li><a href="{{sign_in}}">Sign out</a></li>
+                    {%endif%}
+                </ul>
+			</div>
+
+            <div class="span-24 last">
+            {%if account.user == None %}
+                <h1>Your Journal is empty</h1> <h3>Please send a food photo to Food@foojalWorld.appspotmail.com</h3>
+            {% else %}
+                {% if account.is_expired %}
+                    <h3>Your account is expired. Please signup for another year </h3>
+                {% else %}
+                    {% block content %}{% endblock %}
+                {%endif%}
+            {%endif%}
+            </div>
+
+            <div id="footer" class="span-24 last">
+                <hr />
+                User is admin is: {{ is_admin }}<br>
+                Current user is: {{ user }}<br>
+            </div>
+        </div>
+
 </body>
 </html>

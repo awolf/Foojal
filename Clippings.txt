@@ -3,6 +3,32 @@
 
 
 
+>>> string.punctuation
+>>> '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
+
+
+
+On Mon, Oct 08, 2007 at 12:32:19AM -0700, Sanjay wrote:
+I am using pytz.common_timezones to populate the timezone combo box of
+some user registration form. But as it has so many timezones (around
+400), it is a bit confusing to the users. Is there a smaller and more
+practical set? If not, some suggestions on how to handle the
+registration form effectively would help me a lot.
+Use something like:
+
+for zone in common_timezones:
+continent, region = zone.split('/')
+
+Then have two list boxes, one for the continent and the other for the region.
+
+[Australia ]
+
+[Melbourne ]
+
+('Continent' is probably not the right word.)
+
+Regards
+Andrew
 
 
 

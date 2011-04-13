@@ -16,7 +16,6 @@ logging.info('Loading %s, app version = %s',
 ROUTES = [
     ('/', MainPage),
     ('/account', AccountPage),
-    ('/thumb', Thumbnailer),
     ('/photo', PhotoHandler),
     ('/invitation', SendInvite),
     ('/invites/(.*)', Invite),

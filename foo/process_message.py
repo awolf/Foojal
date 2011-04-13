@@ -130,13 +130,13 @@ class CreateThumbnail(FSMAction):
         img = images.Image(message.picture)
         img.resize(width=48,height=48)
 
-        thumb = models.Thumbnail()
-        thumb.owner = message.owner
-        thumb.picture = db.Blob(img.execute_transforms(output_encoding=images.JPEG))
-        thumb.put()
+        photo = models.Photo()
+        photo.owner = message.owner
+        photo.picture = db.Blob(img.execute_transforms(output_encoding=images.JPEG))
+        photo.put()
 
         entry = models.Entry.get_by_id(context['entrykey'].id())
-        entry.thumbnail_uid = thumb.key().id()
+        entry.thumbnail_uid = photo.key().id()
         entry.put()
         
         return 'success'

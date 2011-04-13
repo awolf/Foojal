@@ -72,27 +72,18 @@ class Entry(db.Model):
     modified = db.DateTimeProperty(auto_now=True)
 
     @classmethod
-    def transfer_to_account(cls, sender, id):
+    def transfer_to_account(cls, sender, user):
         entries = Entry.all()
         entries.filter("sender", sender)
-        entries.filter("account_key", None)
+        entries.filter("owner", None)
 
-        entry.fetch(500)
+        entries.fetch(500)
 
         for entry in entries:
-            entry.account_key = id
+            entry.owner = user
             entry.put()
 
 class Photo(db.Model):
-    owner = db.UserProperty()
-    sender = db.EmailProperty()
-
-    picture = db.BlobProperty()
-
-    created = db.DateTimeProperty(auto_now_add=True)
-    modified = db.DateTimeProperty(auto_now=True)
-
-class Thumbnail(db.Model):
     owner = db.UserProperty()
     sender = db.EmailProperty()
 
@@ -149,8 +140,10 @@ class Account(db.Model):
         """Get the Account for a user"""
         user = users.get_current_user()
 
-        return db.GqlQuery(
+        account = db.GqlQuery(
             "SELECT * FROM Account WHERE user = :1", user).get()
+
+        return account
 
 class BlackList(db.Model):
     email = db.EmailProperty()
