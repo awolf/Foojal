@@ -16,6 +16,7 @@ from google.appengine.api import images
 import models
 import EXIF
 import fantasm
+import settings
 
 def goodDecode(encodedPayload):
     if not hasattr(encodedPayload, 'encoding'):
@@ -72,6 +73,11 @@ class DefaultMailHandler(InboundMailHandler):
             message.subject = mail_message.subject
 
         message.body = getMailBody(mail_message)
+
+        if settings.DEBUG:
+            image = open('./photo.JPG','r')
+            mail_message.attachments=[(image.name, image.read())]
+
 
         if hasPhotoAttached(mail_message):
 
