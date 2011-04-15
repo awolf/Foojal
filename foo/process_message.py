@@ -179,7 +179,10 @@ class GeocodeImage(FSMAction):
 class ProcessTags(FSMAction):
     def execute(self, context, obj):
         context.logger.info('ProcessTags.execute()')
-
+        message = models.Message.get_by_id(context['key'].id())
+        entry = models.Entry.get_by_id(context['entrykey'].id())
+        entry.tags = message.subject.split(' ')
+        entry.put()
         return 'complete'
 
 class ProcessContent(FSMAction):

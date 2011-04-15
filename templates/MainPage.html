@@ -16,6 +16,12 @@
         <div class="span-14 last">
             <ul>
                 <li>Sender: {{ entry.sender }}</li>
+                <li> 
+                    {% for tag in entry.tags %}
+                        [{{ tag }}>
+                    {% endfor %}
+                </li>
+
                 <li>Content: {{ entry.content }}</li>
                 <li>Location: {{ entry.location }}</li>
                 <li>Created: {{ entry.created }}</li>

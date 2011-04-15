@@ -57,6 +57,7 @@ class Entry(db.Model):
     owner = db.UserProperty()
     sender = db.EmailProperty()
 
+    tags = db.StringListProperty()
     content = db.TextProperty()
 
     location = db.GeoPtProperty()
