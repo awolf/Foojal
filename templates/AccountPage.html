@@ -3,12 +3,16 @@
 {% block title %} Foojal Signup {% endblock %}
 
 {% block content %}
-<h1>{{ account.nickname }}</h1>
-<form action='' method='post'>
-    <div><label>
-        Name:
-        <input name='name' type='text' value='{{account.nickname}}'>
-    </label></div>
-    <div><input type='submit' value='Save'></div>
-</form>
+    <div class="span-24 last">
+
+        <h1>{{ account.nickname }}</h1>
+
+        <form action='' method='post'>
+            <div><label>
+                Name:
+                <input name='name' type='text' value='{{account.nickname}}'>
+            </label></div>
+            <div><input type='submit' value='Save'></div>
+        </form>
+    </div>
 {% endblock %}

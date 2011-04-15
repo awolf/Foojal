@@ -22,17 +22,6 @@ indexes:
   - name: created
     direction: desc
 
-- kind: Event
-  properties:
-  - name: account_key
-  - name: created
-
-- kind: Event
-  properties:
-  - name: account_key
-  - name: created
-    direction: desc
-
 - kind: Message
   properties:
   - name: account_key

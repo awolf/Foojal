@@ -6,22 +6,22 @@
 
     <hr />
     {% for entry in entries %}
-        <div class="span-10 ">
+        <div class="span-10">
             {% if entry.picture_uid %}
                 <img src="/photo?id={{ entry.picture_uid }}" width="350px" alt="Photo"/>
             {% else %}
                 <img src="/public/images/touch-icon-ipad.png" alt="Photo"/>
             {%endif%}
         </div>
-           <div class="span-14 last">
+        <div class="span-14 last">
             <ul>
                 <li>Sender: {{ entry.sender }}</li>
                 <li>Content: {{ entry.content }}</li>
                 <li>Location: {{ entry.location }}</li>
                 <li>Created: {{ entry.created }}</li>
                 <li>Modified: {{ entry.modified }}</li>
-                <li>Modified: {{ entry.exif_data.decode }}</li>
             </ul>
-           </div>
+        </div>
+       
     {% endfor %}
 {% endblock %}

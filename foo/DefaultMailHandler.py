@@ -32,7 +32,7 @@ def hasPhotoAttached(mail_message):
         logging.info('We have an attachment %s' % attachment_name)
 
         # We will only take a jpeg
-        if attachment_name.endswith('.jpg', '.JPG', '.jpeg', '.JPEG'):
+        if attachment_name.endswith(('.jpg', '.JPG', '.jpeg', '.JPEG')):
             return True
 
     return False
@@ -81,12 +81,9 @@ class DefaultMailHandler(InboundMailHandler):
             image_data_length = len(image_data)
             logging.info("Attachment length " + str(image_data_length))
 
-            # Save the photo if it will fit into a db.blob property
-            if image_data_length < 1000000:
-                message.picture = db.Blob(img)
-            else:
-                img.resize(width=600,height=600)
-                message.picture = db.Blob(img.execute_transforms(output_encoding=images.JPEG))
+
+            img.resize(width=600,height=600)
+            message.picture = db.Blob(img.execute_transforms(output_encoding=images.JPEG))
 
             # Get the exif data from the photo
             tags = EXIF.process_file(StringIO(str(image_data)))

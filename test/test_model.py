@@ -1,4 +1,4 @@
-import models
+import foo.models
 import os
 import sys
 import unittest

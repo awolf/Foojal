@@ -1,5 +1,4 @@
 """ Processing message actions """
-from datetime import timedelta, datetime
 
 from google.appengine.api import images
 from google.appengine.ext import db
@@ -44,7 +43,7 @@ class ExpiredMemeber(FSMAction):
 
         if account:
             if account.is_expired:
-                if account.expiration_date < (datetime.utcnow() + timedelta(days=-30)):
+                if account.should_blacklist:
                     return 'blacklist'
         pass
 
@@ -76,17 +75,31 @@ class PrepareEntry(FSMAction):
 
 class GetExifTags(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('RotateImage.execute()')
+        context.logger.info('GetExifTags.execute()')
         message = models.Message.get_by_id(context['key'].id())
 
         if message.exif_data:
-            tags = pickle.loads(message.exif_data)
-            context['orientation'] = str(tags["Image Orientation"])
-            context['longitude'] = str(tags['GPS GPSLongitude'])
-            context['longitudeReference'] = str(tags['GPS GPSLongitudeRef'])
-            context['latitude'] = str(tags['GPS GPSLatitude'])
-            context['latitudeReference'] = str(tags['GPS GPSLatitudeRef'])
+            try:
+                tags = pickle.loads(message.exif_data)
+                context['orientation'] = str(tags["Image Orientation"])
+                #context.logger.info(str(tags["Image Orientation"]))
 
+                context['longitude'] = tags['GPS GPSLongitude']
+                #context.logger.info(str(tags['GPS GPSLongitude']))
+
+                context['longitudeReference'] = str(tags['GPS GPSLongitudeRef'])
+                #context.logger.info(str(tags['GPS GPSLongitudeRef']))
+
+                context['latitude'] = tags['GPS GPSLatitude']
+                #context.logger.info(str(tags['GPS GPSLatitude']))
+
+                context['latitudeReference'] = str(tags['GPS GPSLatitudeRef'])
+                #context.logger.info(str(tags['GPS GPSLatitudeRef']))
+            except Exception, err:
+                context.logger.info("Error fetching GPS Tags " + str(err))
+            else:
+                pass
+            
         return 'success'
 
 class CreatePhoto(FSMAction):
@@ -94,31 +107,33 @@ class CreatePhoto(FSMAction):
         context.logger.info('CreatePhoto.execute()')
 
         message = models.Message.get_by_id(context['key'].id())
-        orientation = context['orientation']
 
-        img = images.Image(message.picture)
-        img.resize(width=600,height=600)
+        if context.has_key('orientation'):
+            orientation = context['orientation']
 
-        if orientation == "Rotated 90 CW":
-            img.rotate(90)
-            context.logger.info("image rotated 90%")
-        elif orientation == "Rotated 180":
-            img.rotate(180)
-            context.logger.info("image rotated 180%")
-        elif orientation == "Rotated 90 CCW":
-            img.rotate(270)
-            context.logger.info("image rotated 260%")
+            img = images.Image(message.picture)
+            img.resize(width=600,height=600)
 
-        img.im_feeling_lucky()
-        photo = models.Photo()
-        photo.owner = message.owner
-        photo.picture = db.Blob(img.execute_transforms(output_encoding=images.JPEG))
-        photo.put()
+            if orientation == "Rotated 90 CW":
+                img.rotate(90)
+                context.logger.info('image rotated 90')
+            elif orientation == "Rotated 180":
+                img.rotate(180)
+                context.logger.info('image rotated 180')
+            elif orientation == "Rotated 90 CCW":
+                img.rotate(270)
+                context.logger.info('image rotated 260')
 
-        entry = models.Entry.get_by_id(context['entrykey'].id())
-        entry.picture_uid = photo.key().id()
-        entry.put()
-        
+            img.im_feeling_lucky()
+            photo = models.Photo()
+            photo.owner = message.owner
+            photo.picture = db.Blob(img.execute_transforms(output_encoding=images.JPEG))
+            photo.put()
+
+            entry = models.Entry.get_by_id(context['entrykey'].id())
+            entry.picture_uid = str(photo.key().id())
+            entry.put()
+
         return 'success'
 
 class CreateThumbnail(FSMAction):
@@ -136,7 +151,7 @@ class CreateThumbnail(FSMAction):
         photo.put()
 
         entry = models.Entry.get_by_id(context['entrykey'].id())
-        entry.thumbnail_uid = photo.key().id()
+        entry.thumbnail_uid = str(photo.key().id())
         entry.put()
         
         return 'success'
@@ -145,17 +160,19 @@ class GeocodeImage(FSMAction):
     def execute(self, context, obj):
         context.logger.info('GeocodeImage.execute()')
 
-        if context['longitude'] is None or context['longitudeReference'] is None:
-            return
-        longitudeCoordinate = models.GetGeoPt(context['longitude'],context['longitudeReference'])
+        if context.has_key('longitude') and context.has_key('latitude'):
 
-        if context['latitude'] is None or context['latitudeReference'] is None:
-            return
-        latitudeCoordinate = models.GetGeoPt(context['latitude'],context['latitudeReference'])
+            longitude = context['longitude'].decode()
+            longitude = str(longitude)[1:-1].split(',')
+            longitudeCoordinate = models.GetGeoPt(longitude,str(context['longitudeReference']))
 
-        entry = models.Entry.get_by_id(context['entrykey'].id())
-        entry.location = db.GeoPt(latitudeCoordinate, longitudeCoordinate)
-        entry.put()
+            latitude = context['latitude'].decode()
+            latitude = str(latitude)[1:-1].split(',')
+            latitudeCoordinate = models.GetGeoPt(latitude,str(context['latitudeReference']))
+
+            entry = models.Entry.get_by_id(context['entrykey'].id())
+            entry.location = db.GeoPt(latitudeCoordinate, longitudeCoordinate)
+            entry.put()
 
         return 'success'
 

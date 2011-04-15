@@ -9,16 +9,13 @@ from google.appengine.api import taskqueue
 
 def GetGeoPt(coordinate, GPSReference):
     try:
-        coordinate  = coordinate.values
         GPSHour = coordinate[0]
-        GPSHour = str(GPSHour)
         GPSHour = int(GPSHour)
-        logging.info('GPSHour: ' + str(GPSHour))
+        #logging.info('GPSHour: ' + str(GPSHour))
 
         GPSSeconds = coordinate[2]
-        GPSSeconds = str(GPSSeconds)
-        GPSSeconds = int(GPSSeconds)
-        logging.info('GPSSeconds: ' +str(GPSSeconds))
+        GPSSeconds = float(GPSSeconds)
+        #logging.info('GPSSeconds: ' +str(GPSSeconds))
 
         GPSMinute = coordinate[1]
         GPSMinute = str(GPSMinute)
@@ -29,7 +26,7 @@ def GetGeoPt(coordinate, GPSReference):
             GPSMinuteDivisor  = GPSMinute[1]
             GPSMinuteDivisor  = float(GPSMinuteDivisor)
             GPSMinute  = GPSMinuteDividend / GPSMinuteDivisor
-            logging.info('GPS Minute: ' + str(GPSMinute))
+            #logging.info('GPS Minute: ' + str(GPSMinute))
         except Exception, err:
             logging.error("Error fetching GPS coordinate " + str(err))
         else:
@@ -37,7 +34,7 @@ def GetGeoPt(coordinate, GPSReference):
 
         GPS_Coordinate = GPSHour + (GPSMinute/60.0) + (GPSSeconds/3600.0)
     except Exception, err:
-        logging.error("Error fetching latitude " + str(err))
+        logging.error("Error fetching GPS coordinate " + str(err))
         GPS_Coordinate = 0.0
 
     if  GPSReference == "W" or GPSReference == "S":
@@ -52,7 +49,7 @@ class Message(db.Model):
     subject = db.StringProperty()
     body = db.TextProperty()
     exif_data = db.BlobProperty()
-    picture = db.LinkProperty()
+    picture = db.BlobProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
 
@@ -92,6 +89,18 @@ class Photo(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
 
+    @classmethod
+    def transfer_to_account(cls, sender, user):
+        photos = Photo.all()
+        photos.filter("sender", sender)
+        photos.filter("owner", None)
+
+        photos.fetch(500)
+
+        for photo in photos:
+            photo.owner = user
+            photo.put()
+
 class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
     nickname = db.StringProperty()
@@ -112,6 +121,11 @@ class Account(db.Model):
     def is_verified(self):
         """Whether the current account has been verified."""
         return self.user is not None
+
+    @property
+    def should_blacklist(self):
+        """Whether the current account should be blacklisted."""
+        return self.expiration_date < (datetime.utcnow() + timedelta(days=-30))
 
     def add_email(self, email):
         if email not in self.address_list:

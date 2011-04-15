@@ -148,6 +148,7 @@ class Invite(TemplatedPage):
 
         account.add_email(invitation.to_address)
         models.Entry.transfer_to_account(invitation.to_address, account.user)
+        models.Photo.transfer_to_account(invitation.to_address, account.user)
         models.Invitation.remove_all_invites_by_email(invitation.to_address)
         self.redirect('/')
 
@@ -160,13 +161,12 @@ class PhotoHandler(webapp.RequestHandler):
 
             if photo:
                 self.response.headers['Content-Type'] = 'image/jpeg'
-                current_time = datetime.utcnow()
-                last_modified = current_time - timedelta(days=1)
-                self.response['Content-Type'] = 'image/jpg'
-                self.response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
-                self.response['Expires'] = current_time + timedelta(days=30)
-                self.response['Cache-Control']  = 'public, max-age=315360000'
-                self.response['Date']           = current_time
+#                current_time = datetime.utcnow()
+#                last_modified = current_time - timedelta(days=1)
+#                self.response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+#                self.response['Expires'] = current_time + timedelta(days=30)
+#                self.response['Cache-Control']  = 'public, max-age=315360000'
+#                self.response['Date']           = current_time
                 self.response.out.write(photo.picture)
             else:
                 logging.info("The image handler got an invalid message id of :" + self.request.get("id"))
