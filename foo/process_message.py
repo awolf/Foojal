@@ -191,7 +191,8 @@ class ProcessContent(FSMAction):
 
         message = models.Message.get_by_id(context['key'].id())
         entry = models.Entry.get_by_id(context['entrykey'].id())
-        entry.content = message.body
+        content = message.body.replace('Sent from my IPhone', "")
+        entry.content = content
         entry.put()
 
         return 'complete'
