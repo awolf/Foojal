@@ -131,7 +131,7 @@ class CreatePhoto(FSMAction):
             photo.put()
 
             entry = models.Entry.get_by_id(context['entrykey'].id())
-            entry.picture_uid = str(photo.key().id())
+            entry.picture_uid = str(photo.key())
             entry.put()
 
         return 'success'
@@ -151,7 +151,7 @@ class CreateThumbnail(FSMAction):
         photo.put()
 
         entry = models.Entry.get_by_id(context['entrykey'].id())
-        entry.thumbnail_uid = str(photo.key().id())
+        entry.thumbnail_uid = str(photo.key())
         entry.put()
         
         return 'success'

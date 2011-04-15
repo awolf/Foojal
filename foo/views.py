@@ -157,16 +157,16 @@ class PhotoHandler(webapp.RequestHandler):
 
     def get(self):
         if self.request.get("id"):
-            photo = models.Photo.get_by_id(int(self.request.get("id")))
+            photo = models.Photo.get(self.request.get("id"))
 
             if photo:
                 self.response.headers['Content-Type'] = 'image/jpeg'
 #                current_time = datetime.utcnow()
 #                last_modified = current_time - timedelta(days=1)
-#                self.response['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
-#                self.response['Expires'] = current_time + timedelta(days=30)
-#                self.response['Cache-Control']  = 'public, max-age=315360000'
-#                self.response['Date']           = current_time
+#                self.response.headers['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+#                self.response.headers['Expires'] = current_time + timedelta(days=30)
+#                self.response.headers['Cache-Control']  = 'public, max-age=315360000'
+#                self.response.headers['Date']           = current_time
                 self.response.out.write(photo.picture)
             else:
                 logging.info("The image handler got an invalid message id of :" + self.request.get("id"))
