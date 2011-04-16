@@ -13,7 +13,7 @@ from datetime import timedelta, datetime
 from django.http import HttpResponse
 from google.appengine.api import users
 from google.appengine.ext import webapp
-from google.appengine.ext.webapp import template
+from google.appengine.ext.webapp import template, Response
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.runtime import DeadlineExceededError
 from google.appengine.runtime import apiproxy_errors
@@ -157,20 +157,24 @@ class PhotoHandler(webapp.RequestHandler):
 
     def get(self):
         if self.request.get("id"):
-            photo = models.Photo.get(self.request.get("id"))
+            key = self.request.get("id")
 
-            if photo:
-                self.response.headers['Content-Type'] = 'image/jpeg'
-#                current_time = datetime.utcnow()
-#                last_modified = current_time - timedelta(days=1)
-#                self.response.headers['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
-#                self.response.headers['Expires'] = current_time + timedelta(days=30)
-#                self.response.headers['Cache-Control']  = 'public, max-age=315360000'
-#                self.response.headers['Date']           = current_time
-                self.response.out.write(photo.picture)
+            if 'If-Modified-Since' in self.request.headers:
+                self.response.set_status(304)
             else:
-                logging.info("The image handler got an invalid message id of :" + self.request.get("id"))
-                # Either "id" wasn't provided, or there was no image with that ID
-                # in the datastore.
-                self.redirect('/public/images/noimage.gif')
-                
+                photo = models.Photo.get(key)
+
+                if photo:
+                    self.response.headers['Content-Type'] = 'image/jpeg'
+                    current_time = datetime.utcnow()
+                    last_modified = current_time - timedelta(days=1)
+                    self.response.headers['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+                    self.response.headers['Expires'] = current_time + timedelta(days=30)
+                    self.response.headers['Cache-Control']  = 'public, max-age=315360000'
+                    self.response.headers['Date'] = current_time
+                    self.response.out.write(photo.picture)
+        else:
+            logging.info("The image handler got an invalid message id of :" + self.request.get("id"))
+            # Either "id" wasn't provided, or there was no image with that ID
+            # in the datastore.
+            self.redirect('/public/images/noimage.gif')

@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+from __future__ import with_statement
+from google.appengine.api import files
+
 from google.appengine.dist import use_library
 use_library('django', '1.2')
 
@@ -10,6 +12,7 @@ from StringIO import StringIO
 # AppEngine imports
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
 from google.appengine.ext import db
+from google.appengine.api import blobstore
 from google.appengine.api import images
 
 # Local imports
@@ -87,6 +90,27 @@ class DefaultMailHandler(InboundMailHandler):
             img = images.Image(image_data)
             image_data_length = len(image_data)
             logging.info("Attachment length " + str(image_data_length))
+
+#            try:
+#                # Create the file
+#                file_name = files.blobstore.create(mime_type='image/jpeg')
+#
+#                # Open the file and write to it
+#                with files.open(file_name, 'a') as f:
+#                  f.write(image_data)
+#
+#                # Finalize the file. Do this before attempting to read it.
+#                files.finalize(file_name)
+#
+#                # Get the file's blob key
+#                blob_key = files.blobstore.get_blob_key(file_name)
+#                logging.info("New Image blobkey is :" + str(blob_key))
+#                
+#                uri = images.get_serving_url(blob_key=str(blob_key) , size=48)
+#                logging.info("New Image serving uri is :" + str(uri))
+#
+#            except Exception, err:
+#                logging.info("Error saving blob " + str(err))
 
 
             img.resize(width=600,height=600)
