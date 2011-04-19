@@ -1,0 +1,5 @@
+
+
+- description: Fantasm Scrubber
+  url: /fantasm/fsm/FantasmScrubber/?age=14&method=POST
+  schedule: every day 01:00
