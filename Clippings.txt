@@ -1,66 +1,10 @@
 
 
 
-
-
-
-
-
-def GetGeoPt(coordinate, GPSReference):
-    try:
-        logging.info(str(coordinate))
-        #coordinate  = coordinate.values
-        GPSHour = coordinate[0]
-        GPSHour = str(GPSHour)
-        GPSHour = int(GPSHour)
-        logging.info('GPSHour: ' + str(GPSHour))
-
-        GPSSeconds = coordinate[2]
-        GPSSeconds = str(GPSSeconds)
-        GPSSeconds = int(GPSSeconds)
-        logging.info('GPSSeconds: ' +str(GPSSeconds))
-
-        GPSMinute = coordinate[1]
-        GPSMinute = str(GPSMinute)
-        try:
-            GPSMinute = string.split(GPSMinute, "/")
-            GPSMinuteDividend = GPSMinute[0]
-            GPSMinuteDividend = float(GPSMinuteDividend)
-            GPSMinuteDivisor  = GPSMinute[1]
-            GPSMinuteDivisor  = float(GPSMinuteDivisor)
-            GPSMinute  = GPSMinuteDividend / GPSMinuteDivisor
-            logging.info('GPS Minute: ' + str(GPSMinute))
-        except Exception, err:
-            logging.error("Error fetching GPS coordinate " + str(err))
-        else:
-            pass
-
-        GPS_Coordinate = GPSHour + (GPSMinute/60.0) + (GPSSeconds/3600.0)
-    except Exception, err:
-        logging.error("Error fetching " + str(err))
-        GPS_Coordinate = 0.0
-
-    if  GPSReference == "W" or GPSReference == "S":
-        GPS_Coordinate = GPS_Coordinate * -1.0
-
-    return GPS_Coordinate
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# App configuration script
+appcfg.py -e awolf@foojal.com --passin --no_cookies update . -v
+-v - verbose output: Used to check is skipped files was working correctly
+ 
 
 
 >>> string.punctuation
