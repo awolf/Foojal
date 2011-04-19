@@ -51,4 +51,5 @@ skip_files:
 - ^(.*/)?Clippings.txt
 - ^(.*/)?Photo.JPG
 - ^(.*/)?.*/test/.*
+- ^(.*/)?gaeunit.py
 
