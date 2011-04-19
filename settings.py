@@ -30,10 +30,15 @@ SESSION_LENGTH = 5 #session length in days
 # NOTICE_DICT = { 'email': NOTICE_EMAIL, 'item_used' : NOTICE_ITEM_USED, 'purchase': NOTICE_PURCHASE_ADDED }
 
 #Google Checkout
+
+# Test Accounts
+# SandboxMerchant@foojal.com  bluecog.
+# SandboxBuyer@foojal.com bluecog.
+
 #MERCHANT_ID = ''
 #MERCHANT_KEY = ''
-MERCHANT_KEY = '' #sandbox
-MERCHANT_ID = '' #sandbox
+MERCHANT_KEY = '4WgWqbfXUfXdqfAcIsDqWg' #sandbox
+MERCHANT_ID = '620790402144452' #sandbox
 GOOGLE_ANALYTICS_ACCOUNT = ''
 
 #GOOGLE_URL = 'https://checkout.google.com/api/checkout/v2/merchantCheckout/Merchant/' + MERCHANT_ID

@@ -6,6 +6,7 @@ use_library('django', '1.2')
 from google.appengine.ext.webapp.util import run_wsgi_app
 from foo.mail_handler import *
 from foo.views import *
+#from foo.google_checkout import *
 
 # Log a message each time this module get loaded.
 logging.info('Loading %s, app version = %s',
@@ -16,7 +17,7 @@ ROUTES = [
     ('/account', AccountPage),
     ('/photo', PhotoHandler),
     ('/invitation', SendInvite),
-    ('/google_checkout/.*', googlecheckout.GoogleListener),
+#    ('/google_checkout/.*', google_checkout.GoogleListener),
     ('/invites/(.*)', Invite),
     ('/_ah/mail/invites.+', InvitesMailHandler),
     ('/_ah/mail/.+', DefaultMailHandler),

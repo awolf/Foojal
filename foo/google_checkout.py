@@ -7,7 +7,7 @@ from xml.dom import minidom
 
 import models
 import settings
-import emails
+#import emails
 
 def amount_notification(notification_dict):
     "Charge the purchase and give the user access to the files."
