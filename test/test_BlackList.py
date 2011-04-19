@@ -32,9 +32,6 @@ class TestBlackListWithData(unittest.TestCase):
     def testInsertBlackListEntity(self):
         self.assertEqual(1, len(foo.models.BlackList.all().fetch(2)))
 
-    def testBlackListingEmailAddress(self):
-        self.assertEqual(1, len(foo.models.BlackList.all().fetch(2)))
-
     def testFindingBlackListByEmailAddress(self):
         blacklist = foo.models.BlackList.get_blacklist_by_email(EMAIL)
         self.assertTrue(blacklist)
