@@ -161,14 +161,15 @@ class Account(db.Model):
         return account
 
 class BlackList(db.Model):
-    email = db.EmailProperty()
-    counter = db.IntegerProperty()
+    email = db.EmailProperty(required=True)
+    counter = db.IntegerProperty(default=1)
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
 
     @classmethod
     def get_blacklist_by_email(cls, email):
-        """Get the Account for an email address, or return None."""
+        """ Get the Account for an email address, or return None.
+        """
         assert email
 
         return db.GqlQuery("SELECT * FROM BlackList WHERE email = :1", email).get()
@@ -176,14 +177,15 @@ class BlackList(db.Model):
 
     @classmethod
     def blacklist_email(cls, email):
-        blacklist = cls.all().filter('email =', email).get()
+        assert email
+        
+        blacklist = BlackList.all().filter('email =', email).get()
         if blacklist:
             blacklist.counter += 1
             blacklist.put()
         else:
-            blacklist = Blacklist()
+            blacklist = BlackList(email=email)
             blacklist.email = email
-            blacklist.counter = 1
             blacklist.put()
 
 class Invitation(db.Model):
