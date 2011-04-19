@@ -156,25 +156,29 @@ class PhotoHandler(webapp.RequestHandler):
     """Serves photos """
 
     def get(self):
-        if self.request.get("id"):
-            key = self.request.get("id")
+        try:
+            if self.request.get("id"):
+                key = self.request.get("id")
 
-            if 'If-Modified-Since' in self.request.headers:
-                self.response.set_status(304)
+                if 'If-Modified-Since' in self.request.headers:
+                    self.response.set_status(304)
+                else:
+                    photo = models.Photo.get(key)
+
+                    if photo:
+                        self.response.headers['Content-Type'] = 'image/jpeg'
+                        current_time = datetime.utcnow()
+                        last_modified = current_time - timedelta(days=1)
+                        self.response.headers['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+                        self.response.headers['Expires'] = current_time + timedelta(days=30)
+                        self.response.headers['Cache-Control']  = 'public, max-age=315360000'
+                        self.response.headers['Date'] = current_time
+                        self.response.out.write(photo.picture)
             else:
-                photo = models.Photo.get(key)
-
-                if photo:
-                    self.response.headers['Content-Type'] = 'image/jpeg'
-                    current_time = datetime.utcnow()
-                    last_modified = current_time - timedelta(days=1)
-                    self.response.headers['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
-                    self.response.headers['Expires'] = current_time + timedelta(days=30)
-                    self.response.headers['Cache-Control']  = 'public, max-age=315360000'
-                    self.response.headers['Date'] = current_time
-                    self.response.out.write(photo.picture)
-        else:
-            logging.info("The image handler got an invalid message id of :" + self.request.get("id"))
-            # Either "id" wasn't provided, or there was no image with that ID
-            # in the datastore.
+                logging.info("The image handler got an invalid message id of :" + self.request.get("id"))
+                # Either "id" wasn't provided, or there was no image with that ID
+                # in the datastore.
+                self.redirect('/public/images/noimage.gif')
+        except:
+            logging.error("Error fetching image " + str(err))
             self.redirect('/public/images/noimage.gif')
