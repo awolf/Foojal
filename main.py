@@ -16,15 +16,19 @@ ROUTES = [
     ('/account', AccountPage),
     ('/photo', PhotoHandler),
     ('/invitation', SendInvite),
+    ('/google_checkout/.*', googlecheckout.GoogleListener),
     ('/invites/(.*)', Invite),
     ('/_ah/mail/invites.+', InvitesMailHandler),
     ('/_ah/mail/.+', DefaultMailHandler),
     ]
 
-application = webapp.WSGIApplication(ROUTES, debug=True)
+application = webapp.WSGIApplication(ROUTES, debug=settings.ENABLE_DEBUG)
 
 def main():
   run_wsgi_app(application)
 
 if __name__ == "__main__":
   main()
+
+# todo Memcache - Added blacklist email list to memcache and update it every 1hr with cron job
+# todo Email - Move all outbound emails to an email.py

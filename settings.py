@@ -1,7 +1,7 @@
 import os
 
 DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
-
+ENABLE_DEBUG = True
 SITE_DOWN_MESSAGE = "The website is currently undergoing maintenance  and will be back online shortly."
 SITE_EMAIL = 'support@foojal.com'
 SITE_NAME = "Foojal"
