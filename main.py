@@ -4,7 +4,7 @@ from google.appengine.dist import use_library
 use_library('django', '1.2')
 
 from google.appengine.ext.webapp.util import run_wsgi_app
-from foo.mailhandler import *
+from foo.mail_handler import *
 from foo.views import *
 
 # Log a message each time this module get loaded.

@@ -30,11 +30,11 @@ handlers:
   script: main.py
 
 - url: /_ah/mail/invites.+
-  script: mailhandler.py
+  script: mail_handler.py
   login: admin
 
 - url: /_ah/mail/.+
-  script: mailhandler.py
+  script: mail_handler.py
   login: admin
 
 skip_files:
