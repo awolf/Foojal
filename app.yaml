@@ -30,11 +30,25 @@ handlers:
   script: main.py
 
 - url: /_ah/mail/invites.+
-  script: InvitesMailHandler.py
+  script: mailhandler.py
   login: admin
 
 - url: /_ah/mail/.+
-  script: DefaultMailHandler.py
+  script: mailhandler.py
   login: admin
 
+skip_files:
+- ^(.*/)?app\.yaml
+- ^(.*/)?app\.yml
+- ^(.*/)?index\.yaml
+- ^(.*/)?index\.yml
+- ^(.*/)?#.*#
+- ^(.*/)?.*~
+- ^(.*/)?.*\.py[co]
+- ^(.*/)?.*/RCS/.*
+- ^(.*/)?\..*
+- ^(.*/)?.*\.git$
+- ^(.*/)?Clippings.txt
+- ^(.*/)?Photo.JPG
+- ^(.*/)?.*/test/.*
 

@@ -20,6 +20,7 @@ from google.appengine.runtime import apiproxy_errors
 
 # Local imports
 import models
+import settings
 
 IS_DEV = os.environ['SERVER_SOFTWARE'].startswith('Dev')  # Development server
 
@@ -178,7 +179,21 @@ class PhotoHandler(webapp.RequestHandler):
                 logging.info("The image handler got an invalid message id of :" + self.request.get("id"))
                 # Either "id" wasn't provided, or there was no image with that ID
                 # in the datastore.
-                self.redirect('/public/images/noimage.gif')
+                self.redirect(settings.NO_IMAGE_URL)
         except:
             logging.error("Error fetching image " + str(err))
-            self.redirect('/public/images/noimage.gif')
+            self.redirect(settings.NO_IMAGE_URL)
+
+
+class SendInvite(webapp.RequestHandler):
+    """ Send out invitation to user """
+
+    def post(self):
+        address = self.request.get('email')
+        key = self.request.get('key')
+        message = mail.EmailMessage()
+        message.sender = settings.INVITATION_EMAIL
+        message.to = address
+        message.subject = settings.INVITATION_SUBJECT
+        message.body = settings.INVITATION_EMAIL_CONTENT % settings.INVITATION_URL + key
+        message.send()
