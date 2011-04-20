@@ -36,3 +36,4 @@ if __name__ == "__main__":
 # todo Admin - Add admin pages to the admin section see: http://code.google.com/appengine/docs/python/config/appconfig.html#Administration_Console_Custom_Pages
 # todo Error - Add a custom error message to the application see: http://code.google.com/appengine/docs/python/config/appconfig.html#Custom_Error_Responses
 # todo Admin - Add appstats to the admin see: http://code.google.com/appengine/docs/python/tools/appstats.html
+# todo Admin - Need the ability to look at images and view the exif data from the photo.

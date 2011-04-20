@@ -1,22 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %} Foojal Signup {% endblock %}
+{% block title %} Your Account {% endblock %}
 
 {% block content %}
     <div class="span-24 last">
         <h1>Your Account </h1>
         <fieldset>
             <form action='' method='post'>
-                <label>
-                    Name:
-                    <input name='name' type='text' class="title" value='{{account.nickname}}'>
+                <label>Name:
+                    <input name='name' type='text' class="title" value='{{account.nickname}}'/>
                 </label>
-                <input type='submit' value='Update'>
-            </form>
-            <label>
-                Expiration Date: {{ account.expiration_date|date:"M d Y" }}
-            </label>
-
+                <br>
+                <label>
+                    Expiration Date: {{ account.expiration_date|date:"M d Y" }}
+                </label>
+                <br />
+                <button type="submit" class="button positive">
+                    <img src="/public/stylesheets/blueprint/plugins/buttons/icons/tick.png" alt=""/> Save
+                </button>
+          </form>
         </fieldset>
     </div>
 {% endblock %}
