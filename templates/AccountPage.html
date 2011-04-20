@@ -4,15 +4,19 @@
 
 {% block content %}
     <div class="span-24 last">
+        <h1>Your Account </h1>
+        <fieldset>
+            <form action='' method='post'>
+                <label>
+                    Name:
+                    <input name='name' type='text' class="title" value='{{account.nickname}}'>
+                </label>
+                <input type='submit' value='Update'>
+            </form>
+            <label>
+                Expiration Date: {{ account.expiration_date|date:"M d Y" }}
+            </label>
 
-        <h1>{{ account.nickname }}</h1>
-
-        <form action='' method='post'>
-            <div><label>
-                Name:
-                <input name='name' type='text' value='{{account.nickname}}'>
-            </label></div>
-            <div><input type='submit' value='Save'></div>
-        </form>
+        </fieldset>
     </div>
 {% endblock %}

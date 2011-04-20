@@ -113,12 +113,8 @@ class AccountPage(TemplatedPage):
         account.nickname = cgi.escape(self.request.get('name'))
         account.put()
 
-        messages = models.Message.all()
-        messages.filter("account_key", account.key().id())
-        messages.order("-created")
-
         values = {
-            'messages': messages.fetch(10),
+            'success' : 'Information Saved!', 
             'account': account
         }
         self.write_template(values)

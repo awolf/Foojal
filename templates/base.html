@@ -20,24 +20,49 @@
 </head>
 <body>
 		<div class="container">
+            <div id="heder">
+                <div class="span-10">
+                    <a  href="/">
+                        <img src="/public/images/Foojal.png"  alt="Foojal Photo Food Journal Logo"/>
+                    </a>
+                </div>
+                <div class="span-14 last">
+                    <ul id="navlist">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/account">{{ account.nickname }}</a></li>
+                        {%if user%}
+                            <li><a href="{{sign_out}}">Sign out</a></li>
+                        {% else %}
+                            <li><a href="{{sign_in}}">Sign out</a></li>
+                        {%endif%}
+                    </ul>
+                </div>
+                <div id="notice" class="span-24 last">
+                    {% if error %}
+                    <div class="error">
+                        {{ error }}
+                    </div>
+                    {% endif %}
 
-			<div class="span-10">
-                <a  href="/">
-				    <img src="/public/images/Foojal.png"  alt="Foojal Photo Food Journal Logo"/>
-                </a>
-			</div>
-            <div class="span-14 last">
-                <ul id="navlist">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/account">{{ account.nickname }}</a></li>
-                    {%if user%}
-                        <li><a href="{{sign_out}}">Sign out</a></li>
-                    {% else %}
-                        <li><a href="{{sign_in}}">Sign out</a></li>
-                    {%endif%}
-                </ul>
-			</div>
+                    {% if notice %}
+                    <div class="notice">
+                        {{ notice }}
+                    </div>
+                    {% endif %}
 
+                    {% if info %}
+                    <div class="info">
+                        {{ info }}
+                    </div>
+                    {% endif %}
+
+                    {% if success %}
+                    <div class="success">
+                        {{ success }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
 
             {%if account.user == None %}
                 <div class="span-24 last">
