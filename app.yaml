@@ -26,6 +26,10 @@ handlers:
 - url: /public
   static_dir: public
 
+- url: /google_checkout/.*
+  script: main.py
+  secure: always
+
 - url: /.*
   script: main.py
 

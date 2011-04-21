@@ -21,6 +21,7 @@ from google.appengine.runtime import apiproxy_errors
 # Local imports
 import models
 import settings
+import google_checkout
 
 IS_DEV = os.environ['SERVER_SOFTWARE'].startswith('Dev')  # Development server
 
@@ -117,6 +118,34 @@ class AccountPage(TemplatedPage):
             'success' : 'Information Saved!', 
             'account': account
         }
+        self.write_template(values)
+
+
+
+class PurchasePage(TemplatedPage):
+    """ Sign ups and registration """
+
+    @login_required
+    def get(self):
+        """ Purchase Display page """
+        self.write_template({})
+
+    def post(self):
+        """ Start the purchase process"""
+        cart = models.get_year_cart()
+        
+        url = google_checkout.post_shopping_cart(cart)
+
+        if url:
+            cart.url = url
+            cart.put()
+            self.redirect(url)
+            return
+        else:
+            values = {
+            'error' : 'The shopping cart is down'}
+            invoice.status = 'Error' # we could use some more context
+
         self.write_template(values)
 
 class Invite(TemplatedPage):

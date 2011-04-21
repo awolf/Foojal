@@ -1,11 +1,41 @@
 import logging
 import uuid
 import string
+import settings
 
 from datetime import timedelta, datetime
 from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import taskqueue
+
+def save_communication(text):
+   CartCommunications(text = text).put()
+
+def generate_purchase_key():
+    "for generating a unique key for new Purchase"
+    key = str(uuid.uuid4())
+    key = key.replace("-","")
+    key = '%s-%s' % (get_new_id(), key[0:12])
+    get_new_id()
+    return key
+
+def get_new_id():
+    'get the last id for Purchase Model'
+    query = Purchase.all()
+    query.order('-purchase_id')
+    last_item = query.get()
+    #if no earlier cart or purchase then we make the id equal 1
+    try: id = last_item.purchase_id + 1
+    except: id = settings.PURCHASE_ID_START
+    return id
+
+def get_year_cart():
+    """Create an invoice for one year."""
+
+    cart = Cart(price = 24.00, number_of_days=365, title="One Year Subscription.")
+    cart.description = "Subscription to Foojal your photo food journal"
+    cart.put()
+    return cart
 
 def GetGeoPt(coordinate, GPSReference):
     try:
@@ -217,3 +247,49 @@ class Invitation(db.Model):
         invite.put()
 
         taskqueue.Queue('invite').add(taskqueue.Task(url='/invitation',params={'email' : invite.to_address, 'key': invite.unique_key}))
+
+
+class Cart(db.Model):
+    user = db.UserProperty(auto_current_user_add=True)
+
+    url = db.LinkProperty()
+
+    status = db.StringProperty(default='New')
+
+    title = db.StringProperty()
+    description = db.StringProperty()
+    price = db.FloatProperty(required=True)
+    number_of_days = db.IntegerProperty(required=True)
+
+    request = db.TextProperty()
+    response = db.TextProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+    modified = db.DateTimeProperty(auto_now=True)
+
+
+class Purchase(db.Model):
+    user = db.UserProperty()
+    
+    google_order_number = db.IntegerProperty()
+    purchase_email = db.EmailProperty()
+    purchase_id = db.IntegerProperty()
+    total_charge_amount = db.FloatProperty()
+
+    charge_date = db.DateTimeProperty()
+    errors = db.TextProperty()
+
+    item = db.StringProperty()
+    quantity = db.IntegerProperty()
+
+    number_of_days = db.IntegerProperty()
+
+    created = db.DateTimeProperty(auto_now_add=True)
+    modified = db.DateTimeProperty(auto_now=True)
+
+
+class CartCommunications(db.Model):
+
+    text = db.TextProperty()
+
+    created = db.DateTimeProperty(auto_now_add=True)
+    modified = db.DateTimeProperty(auto_now=True)

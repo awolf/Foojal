@@ -1,11 +1,16 @@
 import os
 
-DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
+try:
+    DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
+except:
+    DEBUG = True
+    
 ENABLE_DEBUG = True
 SITE_DOWN_MESSAGE = "The website is currently undergoing maintenance  and will be back online shortly."
 SITE_EMAIL = 'support@foojal.com'
 SITE_NAME = "Foojal"
-SITE_URL = 'http://www.Foojal.com'
+SITE_URL = 'http://FoojalWorld.appspot.com'
+PURCHASE_ID_START = 999 #purchase id start number
 
 MEMCACHE_LENGTH = 3600 #default memcache length in seconds
 MEMCACHE_SESSION_LENGTH = 3600 #number of seconds to store memcache data
@@ -62,29 +67,27 @@ bar:
 %s"""
 
 #Google checkout text after successful transaction
-#DOWNLOAD_INSTRUCTIONS = 'Your access key to the website has been emailed to you. Please check your email and return to ' + SITE_URL + '/user/home to access your purchase.'
+DOWNLOAD_INSTRUCTIONS = 'Your subscription to Foojal.com has been setup. Please check ' + SITE_URL + '/account to access your purchase.'
 
-#NEW_ORDER_NOTIFICATION = [
-#                          'session-key-name',
-#                          'google-order-number',
-#                          'merchant-item-id',
-#                          'quantity',
-#                          ]
-#
-#RISK_INFORMATION_NOTIFICATION = [
-#                                 'google-order-number',
-#                                 ]
-#ORDER_STATE_CHANGE_NOTIFICATION = [
-#                                   'google-order-number',
-#                                   ]
-#AMOUNT_NOTIFICATION = [
-#                       'google-order-number',
-#                       'total-charge-amount',
-#                       ]
+NEW_ORDER_NOTIFICATION = [
+                          'cart-key',
+                          'google-order-number',
+                          'merchant-item-id',
+                          'quantity',
+                          ]
 
-#EMAIL_CLOSING ="""
-#
-#
-#------------------------------------------------------
-#This email address was given to us by you or by one of our customers. If you
-#feel that you have received this email in error, please send an email to %s.""" % (SITE_EMAIL)
+RISK_INFORMATION_NOTIFICATION = [
+                                 'google-order-number',
+                                 ]
+ORDER_STATE_CHANGE_NOTIFICATION = [
+                                   'google-order-number',
+                                   ]
+AMOUNT_NOTIFICATION = [
+                       'google-order-number',
+                       'total-charge-amount',
+                       ]
+AMOUNT_CHARGED_NOTIFICATION = [
+                        'cart-key',
+                        'google-order-number',
+                        'total-charge-amount',
+                        ]
