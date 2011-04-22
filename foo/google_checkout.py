@@ -1,4 +1,5 @@
 import base64
+from datetime import timedelta, datetime
 
 from google.appengine.ext import webapp
 from google.appengine.api import urlfetch
@@ -13,62 +14,82 @@ import logging
 def get_list_from_value(notification_value):
     "Checks to see if value in notification dict is a list or unicode. Returns list of value(s) as integers."
     if type(notification_value) == list:
-        return [ int(x) for x in notification_value ]
+        return [int(x) for x in notification_value]
     else: return [int(notification_value)]
+
 
 def amount_notification(notification_dict):
     "Charge the purchase and give the user access to the files."
-    purchase = models.Purchase.all().filter("google_order_number =", int(notification_dict['google-order-number'])).get()
-    errors = [purchase.errors]
-    if purchase:#add charge amount and expiration date, charge date
+
+    # Get the purchase object built from the new order notification
+    purchase = models.Purchase.all().filter("google_order_number =",
+                                            int(notification_dict['google-order-number'])).get()
+
+    cart = models.Cart.get(notification_dict['cart-key'])
+
+    if purchase:
+        if purchase.processed: # this is a duplicate notification
+            return True
+
         purchase.total_charge_amount = float(notification_dict['total-charge-amount'])
+        purchase.charge_date = datetime.utcnow()
+        if cart:
+            purchase.number_of_days = cart.number_of_days
+        purchase.put()
     else: #orphan amount notification - just in case
-        errors.append('no previous notification for this order')
         purchase_key = models.generate_purchase_key()
         purchase_id = int(purchase_key.split('-')[0])
+
         purchase = models.Purchase(
-                                    key_name = purchase_key,
-                                    errors = errors,
-                                    purchase_id = purchase_id,
-                                    google_order_number = int(notification_dict['google-order-number']),
-                                    total_charge_amount = float(notification_dict['total-charge-amount'])
-                                    )
+            key_name=purchase_key,
+            errors='no previous notification for this order',
+            purchase_id=purchase_id,
+            google_order_number=int(notification_dict['google-order-number']),
+            total_charge_amount=float(notification_dict['total-charge-amount']),
+            charge_date=datetime.utcnow()
+        )
+        purchase.put()
+        return True
+
+    account = models.Account.all().filter("user", cart.user).get()
+    if account:
+        account.expiration_date = account.expiration_date + timedelta(days=+cart.number_of_days)
+        account.put()
+        purchase.processed = True
         purchase.put()
 
-    # todo: lets extend the users subscription for the length purchased.
-
-    # Cleanup the cart
-    cart = models.Cart.get(notification_dict['cart-key']).delete()
     if cart:
         cart.delete()
 
     return True
+
 
 def new_order_notification(notification_dict):
     google_order_number = int(notification_dict['google-order-number'])
     purchase = models.Purchase.all().filter("google_order_number =", google_order_number).get()
     cart = models.Cart.get(notification_dict['cart-key'])
     email = notification_dict['email']
-    if cart is not None: #session dict will be empty, so we need this test
+    if cart is not None:
         cart.status = 'Order Received'
         cart.put()
     if not purchase:
         purchase_key = models.generate_purchase_key()
         purchase_id = int(purchase_key.split('-')[0]) #get the id from the beginning of the key
         purchase = models.Purchase(
-                                   key_name = purchase_key,
-                                   purchase_email = email,
-                                   purchase_id = purchase_id,
-                                   user = cart.user,
-                                   google_order_number = google_order_number,
-                                   )
+            key_name=purchase_key,
+            purchase_email=email,
+            purchase_id=purchase_id,
+            user=cart.user,
+            google_order_number=google_order_number,
+            )
     if cart is None: #cart wasn't found - unlikely
         purchase.errors = 'cart not found'
-   
+
     purchase.item = str(notification_dict['merchant-item-id'])
     purchase.quantity = int(notification_dict['quantity'])
     purchase.put()
     return True
+
 
 def parse_google_response(notification):
     "All google notifications are parsed and categorized by type."
@@ -77,13 +98,13 @@ def parse_google_response(notification):
     logging.info('NotificationType :=' + notification_type)
     #use this dictionary to determine which items will be taken from the notification
     notification_type_dict = {
-                       'new-order-notification' : settings.NEW_ORDER_NOTIFICATION,
-                       'risk-information-notification' : settings.RISK_INFORMATION_NOTIFICATION,
-                       'order-state-change-notification' : settings.ORDER_STATE_CHANGE_NOTIFICATION,
-                       'charge-amount-notification' : settings.AMOUNT_NOTIFICATION,
-                       'refund-amount-notification' : settings.AMOUNT_NOTIFICATION,
-                       'authorization-amount-notification' : settings.AMOUNT_NOTIFICATION
-                       }
+        'new-order-notification': settings.NEW_ORDER_NOTIFICATION,
+        'risk-information-notification': settings.RISK_INFORMATION_NOTIFICATION,
+        'order-state-change-notification': settings.ORDER_STATE_CHANGE_NOTIFICATION,
+        'charge-amount-notification': settings.AMOUNT_CHARGED_NOTIFICATION,
+        'refund-amount-notification': settings.AMOUNT_NOTIFICATION,
+        'authorization-amount-notification': settings.AMOUNT_NOTIFICATION
+    }
     notification_dict = {'type': notification_type} #notification dict
     #get the serial number
     serial_node = dom.childNodes[0].attributes["serial-number"]
@@ -96,7 +117,7 @@ def parse_google_response(notification):
         except:
             email = dom.getElementsByTagName('email')[0].firstChild.data
         notification_dict['email'] = str(email)
-    #pass the xml data to the dictionary
+        #pass the xml data to the dictionary
     for dict_name in notification_type_dict[notification_type]:
         try:
             node = dom.getElementsByTagName(dict_name)
@@ -106,12 +127,13 @@ def parse_google_response(notification):
     dom.unlink()
     return notification_dict
 
+
 def post_shopping_cart(cart):
     doc = minidom.Document() #minidom object creation
 
     #checkout-shopping-cart
     checkout_shopping_cart = doc.createElement("checkout-shopping-cart")
-    checkout_shopping_cart.setAttribute("xmlns","http://checkout.google.com/schema/2")
+    checkout_shopping_cart.setAttribute("xmlns", "http://checkout.google.com/schema/2")
     doc.appendChild(checkout_shopping_cart)
 
     #shopping-cart
@@ -207,7 +229,10 @@ def post_shopping_cart(cart):
     while i > 0:
         i -= 1
         try:
-            result = urlfetch.fetch(settings.GOOGLE_URL, headers={'Content-Type': 'application/xml; charset=UTF-8', 'Accept': 'application/xml; charset=UTF-8','Authorization' : auth_string}, payload=new_order, method=urlfetch.POST)
+            result = urlfetch.fetch(settings.GOOGLE_URL, headers={'Content-Type': 'application/xml; charset=UTF-8',
+                                                                  'Accept': 'application/xml; charset=UTF-8',
+                                                                  'Authorization': auth_string}, payload=new_order,
+                                    method=urlfetch.POST)
             i = 0
         except DownloadError:
             if i == 0: return False
@@ -228,12 +253,13 @@ def post_shopping_cart(cart):
     else:
         return False
 
+
 class GoogleListener(webapp.RequestHandler):
     def handshake(self, serial_number):
         "Acknowledge receipt of notification."
         doc = minidom.Document() #minidom object creation
         notification_acknowledgment = doc.createElement("notification-acknowledgment")
-        notification_acknowledgment.setAttribute("xmlns","http://checkout.google.com/schema/2")
+        notification_acknowledgment.setAttribute("xmlns", "http://checkout.google.com/schema/2")
         notification_acknowledgment.setAttribute("serial-number", serial_number)
         doc.appendChild(notification_acknowledgment)
 

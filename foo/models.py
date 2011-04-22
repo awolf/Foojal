@@ -9,15 +9,17 @@ from google.appengine.api import users
 from google.appengine.api import taskqueue
 
 def save_communication(text):
-   CartCommunications(text = text).put()
+    CartCommunications(text=text).put()
+
 
 def generate_purchase_key():
     "for generating a unique key for new Purchase"
     key = str(uuid.uuid4())
-    key = key.replace("-","")
+    key = key.replace("-", "")
     key = '%s-%s' % (get_new_id(), key[0:12])
     get_new_id()
     return key
+
 
 def get_new_id():
     'get the last id for Purchase Model'
@@ -29,13 +31,15 @@ def get_new_id():
     except: id = settings.PURCHASE_ID_START
     return id
 
+
 def get_year_cart():
     """Create an invoice for one year."""
 
-    cart = Cart(price = 24.00, number_of_days=365, title="One Year Subscription.")
+    cart = Cart(price=24.00, number_of_days=365, title="One Year Subscription.")
     cart.description = "Subscription to Foojal your photo food journal"
     cart.put()
     return cart
+
 
 def GetGeoPt(coordinate, GPSReference):
     try:
@@ -53,16 +57,16 @@ def GetGeoPt(coordinate, GPSReference):
             GPSMinute = string.split(GPSMinute, "/")
             GPSMinuteDividend = GPSMinute[0]
             GPSMinuteDividend = float(GPSMinuteDividend)
-            GPSMinuteDivisor  = GPSMinute[1]
-            GPSMinuteDivisor  = float(GPSMinuteDivisor)
-            GPSMinute  = GPSMinuteDividend / GPSMinuteDivisor
+            GPSMinuteDivisor = GPSMinute[1]
+            GPSMinuteDivisor = float(GPSMinuteDivisor)
+            GPSMinute = GPSMinuteDividend / GPSMinuteDivisor
             #logging.info('GPS Minute: ' + str(GPSMinute))
         except Exception, err:
             logging.error("Error fetching GPS coordinate " + str(err))
         else:
             pass
 
-        GPS_Coordinate = GPSHour + (GPSMinute/60.0) + (GPSSeconds/3600.0)
+        GPS_Coordinate = GPSHour + (GPSMinute / 60.0) + (GPSSeconds / 3600.0)
     except Exception, err:
         logging.error("Error fetching GPS coordinate " + str(err))
         GPS_Coordinate = 0.0
@@ -71,6 +75,7 @@ def GetGeoPt(coordinate, GPSReference):
         GPS_Coordinate = GPS_Coordinate * -1.0
 
     return GPS_Coordinate
+
 
 class Message(db.Model):
     owner = db.UserProperty()
@@ -82,6 +87,7 @@ class Message(db.Model):
     picture = db.BlobProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
+
 
 class Entry(db.Model):
     owner = db.UserProperty()
@@ -111,12 +117,10 @@ class Entry(db.Model):
             entry.owner = user
             entry.put()
 
+
 class Photo(db.Model):
     owner = db.UserProperty()
-    sender = db.EmailProperty()
-
     picture = db.BlobProperty()
-
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
 
@@ -131,6 +135,7 @@ class Photo(db.Model):
         for photo in photos:
             photo.owner = user
             photo.put()
+
 
 class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
@@ -147,7 +152,7 @@ class Account(db.Model):
     @property
     def is_expired(self):
         return self.expiration_date < datetime.utcnow()
-    
+
     @property
     def is_verified(self):
         """Whether the current account has been verified."""
@@ -190,6 +195,7 @@ class Account(db.Model):
 
         return account
 
+
 class BlackList(db.Model):
     email = db.EmailProperty(required=True)
     counter = db.IntegerProperty(default=1)
@@ -203,12 +209,12 @@ class BlackList(db.Model):
         assert email
 
         return db.GqlQuery("SELECT * FROM BlackList WHERE email = :1", email).get()
-    
+
 
     @classmethod
     def blacklist_email(cls, email):
         assert email
-        
+
         blacklist = BlackList.all().filter('email =', email).get()
         if blacklist:
             blacklist.counter += 1
@@ -217,6 +223,7 @@ class BlackList(db.Model):
             blacklist = BlackList(email=email)
             blacklist.email = email
             blacklist.put()
+
 
 class Invitation(db.Model):
     unique_key = db.StringProperty()
@@ -239,14 +246,15 @@ class Invitation(db.Model):
     def send_invitation(cls, email):
         """ Send an invitation to the email address"""
         assert email
-        
+
         # Create and send email invitation
         invite = Invitation()
         invite.unique_key = str(uuid.uuid1())
         invite.to_address = email
         invite.put()
 
-        taskqueue.Queue('invite').add(taskqueue.Task(url='/invitation',params={'email' : invite.to_address, 'key': invite.unique_key}))
+        taskqueue.Queue('invite').add(
+            taskqueue.Task(url='/invitation', params={'email': invite.to_address, 'key': invite.unique_key}))
 
 
 class Cart(db.Model):
@@ -269,26 +277,24 @@ class Cart(db.Model):
 
 class Purchase(db.Model):
     user = db.UserProperty()
-    
+
     google_order_number = db.IntegerProperty()
     purchase_email = db.EmailProperty()
     purchase_id = db.IntegerProperty()
+
     total_charge_amount = db.FloatProperty()
-
     charge_date = db.DateTimeProperty()
-    errors = db.TextProperty()
-
     item = db.StringProperty()
     quantity = db.IntegerProperty()
-
     number_of_days = db.IntegerProperty()
 
+    errors = db.TextProperty()
+    processed = db.BooleanProperty(default=False)
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
 
 
 class CartCommunications(db.Model):
-
     text = db.TextProperty()
 
     created = db.DateTimeProperty(auto_now_add=True)

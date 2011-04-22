@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from google.appengine.dist import use_library
+
 use_library('django', '1.2')
 
 # Python imports
@@ -13,7 +14,7 @@ from datetime import timedelta, datetime
 from django.http import HttpResponse
 from google.appengine.api import users
 from google.appengine.ext import webapp
-from google.appengine.ext.webapp import template, Response
+from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.runtime import DeadlineExceededError
 from google.appengine.runtime import apiproxy_errors
@@ -37,7 +38,6 @@ class TemplatedPage(webapp.RequestHandler):
         params['is_admin'] = request.user_is_admin
         params['is_dev'] = IS_DEV
         params['current_uri'] = self.request.uri
-
 
         full_path = request.uri
         if request.user is None:
@@ -73,7 +73,6 @@ class MainPage(TemplatedPage):
 
     @login_required
     def get(self):
-
         values = {}
 
         account = models.Account.get_user_account()
@@ -115,11 +114,10 @@ class AccountPage(TemplatedPage):
         account.put()
 
         values = {
-            'success' : 'Information Saved!', 
+            'success': 'Information Saved!',
             'account': account
         }
         self.write_template(values)
-
 
 
 class PurchasePage(TemplatedPage):
@@ -133,7 +131,7 @@ class PurchasePage(TemplatedPage):
     def post(self):
         """ Start the purchase process"""
         cart = models.get_year_cart()
-        
+
         url = google_checkout.post_shopping_cart(cart)
 
         if url:
@@ -143,10 +141,11 @@ class PurchasePage(TemplatedPage):
             return
         else:
             values = {
-            'error' : 'The shopping cart is down'}
-            invoice.status = 'Error' # we could use some more context
+                'error': 'The shopping cart is down'}
+            cart.status = 'Error' # we could use some more context
 
         self.write_template(values)
+
 
 class Invite(TemplatedPage):
     """ Completes the sign up process """
@@ -178,6 +177,7 @@ class Invite(TemplatedPage):
         models.Invitation.remove_all_invites_by_email(invitation.to_address)
         self.redirect('/')
 
+
 class PhotoHandler(webapp.RequestHandler):
     """Serves photos """
 
@@ -197,7 +197,7 @@ class PhotoHandler(webapp.RequestHandler):
                         last_modified = current_time - timedelta(days=1)
                         self.response.headers['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
                         self.response.headers['Expires'] = current_time + timedelta(days=30)
-                        self.response.headers['Cache-Control']  = 'public, max-age=315360000'
+                        self.response.headers['Cache-Control'] = 'public, max-age=315360000'
                         self.response.headers['Date'] = current_time
                         self.response.out.write(photo.picture)
             else:

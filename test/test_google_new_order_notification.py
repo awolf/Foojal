@@ -1,5 +1,6 @@
 
 import unittest
+from google.appengine.api.users import User
 import foo.google_checkout
 from google.appengine.ext import testbed
 from foo.models import *
@@ -30,6 +31,7 @@ class Test_Google_New_Order_Notification(unittest.TestCase):
     def testProcessingNewOrderNotification(self):
         notification_dict = foo.google_checkout.parse_google_response(self.notification)
         cart = Cart(price = 24.00, number_of_days=365)
+        cart.user = User(email='test@example.com')
         cart.put()
         notification_dict['cart-key'] =cart.key()
         

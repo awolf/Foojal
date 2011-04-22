@@ -1,48 +1,79 @@
 import unittest
+from google.appengine.api.users import User
 import foo.google_checkout
 from google.appengine.ext import testbed
 from foo.models import *
 
 class Test_Google_Amount_Charged_Notification(unittest.TestCase):
-
     def setUp(self):
         self.testbed = testbed.Testbed()
         self.testbed.activate()
         self.testbed.init_datastore_v3_stub()
         self.AddNotification()
 
+        self.notification_dict = foo.google_checkout.parse_google_response(self.notification)
+
+        cart = Cart(
+            price=24.00,
+            number_of_days=365,
+            user=User(email='test@example.com')
+        )
+        cart.put()
+
+        self.notification_dict['cart-key'] = cart.key()
+
+        Account(
+            user=User(email='test@example.com'),
+            expiration_date=datetime.utcnow(),
+            address_list=['test@example.com']
+        ).put()
+
+        purchase_key = generate_purchase_key()
+        Purchase(
+            key_name=generate_purchase_key(),
+            #purchase_email = notification_dict['email'],
+            purchase_id=int(purchase_key.split('-')[0]),
+            #item = str(notification_dict['merchant-item-id']),
+            quantity=1,
+            user=cart.user,
+            google_order_number=int(self.notification_dict['google-order-number']),
+            ).put()
+
     def tearDown(self):
         self.testbed.deactivate()
 
-    def testProcessingAmountCharged(self):
-        notification_dict = foo.google_checkout.parse_google_response(self.notification)
-        
-        cart = Cart(price = 24.00, number_of_days=365)
-        cart.put()
-        notification_dict['cart-key'] = cart.key()
+    def testShouldUpdatePurchase(self):
+        foo.google_checkout.amount_notification(self.notification_dict)
 
-        purchase_key = generate_purchase_key()
-        purchase_id = int(purchase_key.split('-')[0])
-        purchase = Purchase(
-                           key_name = purchase_key,
-                           purchase_email = notification_dict['email'],
-                           purchase_id = purchase_id,
-                           user = cart.user,
-                           google_order_number = int(notification_dict['google-order-number']),
-                           )
-        purchase.item = str(notification_dict['merchant-item-id'])
-        purchase.quantity = int(notification_dict['quantity'])
-        purchase.put()
-
-        purchase = Purchase.all().filter("google_order_number =", int(notification_dict['google-order-number'])).get()
-        cart = Cart.get(notification_dict['cart-key'])
+        purchase = Purchase.all().filter("google_order_number =",
+                                         int(self.notification_dict['google-order-number'])).get()
         self.assertTrue(purchase)
-        self.assertTrue(purchase.google_order_number == int(notification_dict['google-order-number']))
+        self.assertTrue(purchase.charge_date.date() == datetime.utcnow().date())
 
-        foo.google_checkout.amount_notification(notification_dict)
+    def testShouldUpdateAccount(self):
+        foo.google_checkout.amount_notification(self.notification_dict)
+        purchase = Purchase.all().filter("google_order_number =",
+                                         int(self.notification_dict['google-order-number'])).get()
 
-        self.assertTrue(cart.status == 'Order Received')
+        account = Account.get_account_by_email(str(purchase.user))
+        self.assertTrue(account.expiration_date > datetime.utcnow())
+        self.assertTrue(account.expiration_date.date() == (datetime.utcnow() + timedelta(days=+365)).date())
 
+    def testShouldDeleteCart(self):
+        foo.google_checkout.amount_notification(self.notification_dict)
+
+        cart = Cart.get(self.notification_dict['cart-key'])
+        self.assertFalse(cart)
+
+    def testShouldNotDoubleCreditUserExpirationDate(self):
+        foo.google_checkout.amount_notification(self.notification_dict)
+        foo.google_checkout.amount_notification(self.notification_dict)
+
+        purchase = Purchase.all().filter("google_order_number =",
+                                         int(self.notification_dict['google-order-number'])).get()
+
+        account = Account.get_account_by_email(str(purchase.user))
+        self.assertTrue(account.expiration_date.date() == (datetime.utcnow() + timedelta(days=+365)).date())
 
     def AddNotification(self):
         self.notification = """<?xml version="1.0" encoding="UTF-8"?>
