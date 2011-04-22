@@ -25,6 +25,7 @@ class FindMemeberStatus(FSMAction):
         else:
             return 'invite'
 
+
 class InviteMemeber(FSMAction):
     def execute(self, context, obj):
         context.logger.info('InviteMemeber.execute()')
@@ -32,6 +33,7 @@ class InviteMemeber(FSMAction):
 
         models.Invitation.send_invitation(context['sender'])
         return 'success'
+
 
 class ExpiredMemeber(FSMAction):
     def execute(self, context, obj):
@@ -46,6 +48,7 @@ class ExpiredMemeber(FSMAction):
                 if account.should_blacklist:
                     return 'blacklist'
         pass
+
 
 class BlacklistMemeber(FSMAction):
     def execute(self, context, obj):
@@ -73,6 +76,7 @@ class PrepareEntry(FSMAction):
         else:
             return 'nophoto'
 
+
 class GetExifTags(FSMAction):
     def execute(self, context, obj):
         context.logger.info('GetExifTags.execute()')
@@ -99,8 +103,9 @@ class GetExifTags(FSMAction):
                 context.logger.info("Error fetching GPS Tags " + str(err))
             else:
                 pass
-            
+
         return 'success'
+
 
 class CreatePhoto(FSMAction):
     def execute(self, context, obj):
@@ -112,7 +117,7 @@ class CreatePhoto(FSMAction):
             orientation = context['orientation']
 
             img = images.Image(message.picture)
-            img.resize(width=600,height=600)
+            img.resize(width=600, height=600)
 
             if orientation == "Rotated 90 CW":
                 img.rotate(90)
@@ -136,6 +141,7 @@ class CreatePhoto(FSMAction):
 
         return 'success'
 
+
 class CreateThumbnail(FSMAction):
     def execute(self, context, obj):
         context.logger.info('CreateThumbnail.execute()')
@@ -143,7 +149,7 @@ class CreateThumbnail(FSMAction):
         message = models.Message.get_by_id(context['key'].id())
 
         img = images.Image(message.picture)
-        img.resize(width=48,height=48)
+        img.resize(width=48, height=48)
 
         photo = models.Photo()
         photo.owner = message.owner
@@ -153,28 +159,29 @@ class CreateThumbnail(FSMAction):
         entry = models.Entry.get_by_id(context['entrykey'].id())
         entry.thumbnail_uid = str(photo.key())
         entry.put()
-        
+
         return 'success'
+
 
 class GeocodeImage(FSMAction):
     def execute(self, context, obj):
         context.logger.info('GeocodeImage.execute()')
 
         if context.has_key('longitude') and context.has_key('latitude'):
-
             longitude = context['longitude'].decode()
             longitude = str(longitude)[1:-1].split(',')
-            longitudeCoordinate = models.GetGeoPt(longitude,str(context['longitudeReference']))
+            longitudeCoordinate = models.GetGeoPt(longitude, str(context['longitudeReference']))
 
             latitude = context['latitude'].decode()
             latitude = str(latitude)[1:-1].split(',')
-            latitudeCoordinate = models.GetGeoPt(latitude,str(context['latitudeReference']))
+            latitudeCoordinate = models.GetGeoPt(latitude, str(context['latitudeReference']))
 
             entry = models.Entry.get_by_id(context['entrykey'].id())
             entry.location = db.GeoPt(latitudeCoordinate, longitudeCoordinate)
             entry.put()
 
         return 'success'
+
 
 class ProcessTags(FSMAction):
     def execute(self, context, obj):
@@ -184,6 +191,7 @@ class ProcessTags(FSMAction):
         entry.tags = message.subject.split(' ')
         entry.put()
         return 'complete'
+
 
 class ProcessContent(FSMAction):
     def execute(self, context, obj):
@@ -196,6 +204,7 @@ class ProcessContent(FSMAction):
         entry.put()
 
         return 'complete'
+
 
 class CleanUpMessage(FSMAction):
     def execute(self, context, obj):

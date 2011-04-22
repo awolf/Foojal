@@ -1,4 +1,3 @@
-
 import unittest
 from google.appengine.api.users import User
 import foo.google_checkout
@@ -6,7 +5,6 @@ from google.appengine.ext import testbed
 from foo.models import *
 
 class Test_Google_New_Order_Notification(unittest.TestCase):
-
     def setUp(self):
         self.testbed = testbed.Testbed()
         self.testbed.activate()
@@ -25,16 +23,16 @@ class Test_Google_New_Order_Notification(unittest.TestCase):
         self.assertTrue(notification_dict['type'] == 'new-order-notification')
         self.assertTrue(notification_dict['cart-key'] == 'agtmb29qYWx3b3JsZHIKCxIEQ2FydBhXDA')
         self.assertTrue(notification_dict['google-order-number'] == '529653432629116')
-        self.assertTrue(notification_dict['merchant-item-id'] == '87' )
+        self.assertTrue(notification_dict['merchant-item-id'] == '87')
         self.assertTrue(notification_dict['quantity'] == '1')
 
     def testProcessingNewOrderNotification(self):
         notification_dict = foo.google_checkout.parse_google_response(self.notification)
-        cart = Cart(price = 24.00, number_of_days=365)
+        cart = Cart(price=24.00, number_of_days=365)
         cart.user = User(email='test@example.com')
         cart.put()
-        notification_dict['cart-key'] =cart.key()
-        
+        notification_dict['cart-key'] = cart.key()
+
         notification_processed = foo.google_checkout.new_order_notification(notification_dict)
 
         self.assertTrue(notification_processed)
@@ -44,7 +42,7 @@ class Test_Google_New_Order_Notification(unittest.TestCase):
         self.assertTrue(purchase.google_order_number == int(notification_dict['google-order-number']))
 
         self.assertTrue(cart.status == 'Order Received')
-        
+
 
     def AddNotification(self):
         self.notification = """<?xml version="1.0" encoding="UTF-8"?>

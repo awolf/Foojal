@@ -1,7 +1,7 @@
 from __future__ import with_statement
-from google.appengine.api import files
 
 from google.appengine.dist import use_library
+
 use_library('django', '1.2')
 
 # Python imports
@@ -12,7 +12,6 @@ from StringIO import StringIO
 # AppEngine imports
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
 from google.appengine.ext import db
-from google.appengine.api import blobstore
 from google.appengine.api import images
 
 # Local imports
@@ -30,8 +29,9 @@ def goodDecode(encodedPayload):
         payload = payload.decode(encoding)
     return payload
 
+
 def hasPhotoAttached(mail_message):
-    if hasattr(mail_message,'attachments'):
+    if hasattr(mail_message, 'attachments'):
         attachment_name = mail_message.attachments[0][0]
         logging.info('We have an attachment %s' % attachment_name)
 
@@ -40,6 +40,7 @@ def hasPhotoAttached(mail_message):
             return True
 
     return False
+
 
 def getMailBody(mail_message):
     # Get the body text out of the email
@@ -78,42 +79,41 @@ class DefaultMailHandler(InboundMailHandler):
         message.body = getMailBody(mail_message)
 
         # if we are developing lets attach a local file.
-#        if settings.DEBUG:
-#            image = open('./photo.JPG','r')
-#            mail_message.attachments=[(image.name, image.read())]
+        #        if settings.DEBUG:
+        #            image = open('./photo.JPG','r')
+        #            mail_message.attachments=[(image.name, image.read())]
 
 
         if hasPhotoAttached(mail_message):
-
             # Get the image data from the first attachment
             image_data = goodDecode(mail_message.attachments[0][1])
             img = images.Image(image_data)
             image_data_length = len(image_data)
             logging.info("Attachment length " + str(image_data_length))
 
-#            try:
-#                # Create the file
-#                file_name = files.blobstore.create(mime_type='image/jpeg')
-#
-#                # Open the file and write to it
-#                with files.open(file_name, 'a') as f:
-#                  f.write(image_data)
-#
-#                # Finalize the file. Do this before attempting to read it.
-#                files.finalize(file_name)
-#
-#                # Get the file's blob key
-#                blob_key = files.blobstore.get_blob_key(file_name)
-#                logging.info("New Image blobkey is :" + str(blob_key))
-#                
-#                uri = images.get_serving_url(blob_key=str(blob_key) , size=48)
-#                logging.info("New Image serving uri is :" + str(uri))
-#
-#            except Exception, err:
-#                logging.info("Error saving blob " + str(err))
+            #            try:
+            #                # Create the file
+            #                file_name = files.blobstore.create(mime_type='image/jpeg')
+            #
+            #                # Open the file and write to it
+            #                with files.open(file_name, 'a') as f:
+            #                  f.write(image_data)
+            #
+            #                # Finalize the file. Do this before attempting to read it.
+            #                files.finalize(file_name)
+            #
+            #                # Get the file's blob key
+            #                blob_key = files.blobstore.get_blob_key(file_name)
+            #                logging.info("New Image blobkey is :" + str(blob_key))
+            #
+            #                uri = images.get_serving_url(blob_key=str(blob_key) , size=48)
+            #                logging.info("New Image serving uri is :" + str(uri))
+            #
+            #            except Exception, err:
+            #                logging.info("Error saving blob " + str(err))
 
 
-            img.resize(width=600,height=600)
+            img.resize(width=600, height=600)
             message.picture = db.Blob(img.execute_transforms(output_encoding=images.JPEG))
 
             # Get the exif data from the photo
@@ -123,6 +123,7 @@ class DefaultMailHandler(InboundMailHandler):
         message.put()
 
         fantasm.fsm.startStateMachine('ProcessMessage', [{'key': message.key()}])
+
 
 class InvitesMailHandler(InboundMailHandler):
     """Handle incoming mail for invite mail account. """

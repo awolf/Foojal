@@ -7,7 +7,6 @@ from google.appengine.ext import testbed
 EMAIL = 'adam@adamjwolf.com'
 
 class TestBlackList(unittest.TestCase):
-
     def test_New_BlackList_has_default_counter_of_1(self):
         """ The default counter for a new blacklist should be 1"""
         blacklist = foo.models.BlackList(email=EMAIL)
@@ -16,16 +15,16 @@ class TestBlackList(unittest.TestCase):
 
     def test_BlackList_Requires_Email_Address(self):
         """ The email address is required for a blacklist model """
-        self.failUnlessRaises(BadValueError,foo.models.BlackList)
+        self.failUnlessRaises(BadValueError, foo.models.BlackList)
+
 
 class TestBlackListWithData(unittest.TestCase):
-
     def setUp(self):
         self.testbed = testbed.Testbed()
         self.testbed.activate()
         self.testbed.init_datastore_v3_stub()
         foo.models.BlackList.blacklist_email(EMAIL)
-  
+
     def tearDown(self):
         self.testbed.deactivate()
 

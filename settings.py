@@ -4,7 +4,7 @@ try:
     DEBUG = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 except:
     DEBUG = True
-    
+
 ENABLE_DEBUG = True
 SITE_DOWN_MESSAGE = "The website is currently undergoing maintenance  and will be back online shortly."
 SITE_EMAIL = 'support@foojal.com'
@@ -70,24 +70,24 @@ bar:
 DOWNLOAD_INSTRUCTIONS = 'Your subscription to Foojal.com has been setup. Please check ' + SITE_URL + '/account to access your purchase.'
 
 NEW_ORDER_NOTIFICATION = [
-                          'cart-key',
-                          'google-order-number',
-                          'merchant-item-id',
-                          'quantity',
-                          ]
+        'cart-key',
+        'google-order-number',
+        'merchant-item-id',
+        'quantity',
+        ]
 
 RISK_INFORMATION_NOTIFICATION = [
-                                 'google-order-number',
-                                 ]
+        'google-order-number',
+        ]
 ORDER_STATE_CHANGE_NOTIFICATION = [
-                                   'google-order-number',
-                                   ]
+        'google-order-number',
+        ]
 AMOUNT_NOTIFICATION = [
-                       'google-order-number',
-                       'total-charge-amount',
-                       ]
+        'google-order-number',
+        'total-charge-amount',
+        ]
 AMOUNT_CHARGED_NOTIFICATION = [
-                        'cart-key',
-                        'google-order-number',
-                        'total-charge-amount',
-                        ]
+        'cart-key',
+        'google-order-number',
+        'total-charge-amount',
+        ]

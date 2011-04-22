@@ -90,7 +90,7 @@ def make_string(seq):
         # Screen out non-printing characters
         if 32 <= c and c < 256:
             str += chr(c)
-    # If no printing chars
+        # If no printing chars
     if not str:
         return seq
     return str
@@ -106,18 +106,18 @@ def make_string_uc(seq):
 
 # field type descriptions as (length, abbreviation, full name) tuples
 FIELD_TYPES = (
-    (0, 'X', 'Proprietary'), # no such type
-    (1, 'B', 'Byte'),
-    (1, 'A', 'ASCII'),
-    (2, 'S', 'Short'),
-    (4, 'L', 'Long'),
-    (8, 'R', 'Ratio'),
-    (1, 'SB', 'Signed Byte'),
-    (1, 'U', 'Undefined'),
-    (2, 'SS', 'Signed Short'),
-    (4, 'SL', 'Signed Long'),
-    (8, 'SR', 'Signed Ratio'),
-    )
+(0, 'X', 'Proprietary'), # no such type
+(1, 'B', 'Byte'),
+(1, 'A', 'ASCII'),
+(2, 'S', 'Short'),
+(4, 'L', 'Long'),
+(8, 'R', 'Ratio'),
+(1, 'SB', 'Signed Byte'),
+(1, 'U', 'Undefined'),
+(2, 'SS', 'Signed Short'),
+(4, 'SL', 'Signed Long'),
+(8, 'SR', 'Signed Ratio'),
+)
 
 # dictionary of main EXIF tag names
 # first element of tuple is tag name, optional second element is
@@ -201,9 +201,9 @@ EXIF_TAGS = {
              {1: 'Centered',
               2: 'Co-sited'}),
     0x0214: ('ReferenceBlackWhite', ),
-    
+
     0x4746: ('Rating', ),
-    
+
     0x828D: ('CFARepeatPatternDim', ),
     0x828E: ('CFAPattern', ),
     0x828F: ('BatteryLevel', ),
@@ -292,7 +292,7 @@ EXIF_TAGS = {
     0x9290: ('SubSecTime', ),
     0x9291: ('SubSecTimeOriginal', ),
     0x9292: ('SubSecTimeDigitized', ),
-    
+
     # used by Windows Explorer
     0x9C9B: ('XPTitle', ),
     0x9C9C: ('XPComment', ),
@@ -308,21 +308,21 @@ EXIF_TAGS = {
     0xA002: ('ExifImageWidth', ),
     0xA003: ('ExifImageLength', ),
     0xA005: ('InteroperabilityOffset', ),
-    0xA20B: ('FlashEnergy', ),               # 0x920B in TIFF/EP
-    0xA20C: ('SpatialFrequencyResponse', ),  # 0x920C
-    0xA20E: ('FocalPlaneXResolution', ),     # 0x920E
-    0xA20F: ('FocalPlaneYResolution', ),     # 0x920F
-    0xA210: ('FocalPlaneResolutionUnit', ),  # 0x9210
-    0xA214: ('SubjectLocation', ),           # 0x9214
-    0xA215: ('ExposureIndex', ),             # 0x9215
-    0xA217: ('SensingMethod',                # 0x9217
+    0xA20B: ('FlashEnergy', ), # 0x920B in TIFF/EP
+    0xA20C: ('SpatialFrequencyResponse', ), # 0x920C
+    0xA20E: ('FocalPlaneXResolution', ), # 0x920E
+    0xA20F: ('FocalPlaneYResolution', ), # 0x920F
+    0xA210: ('FocalPlaneResolutionUnit', ), # 0x9210
+    0xA214: ('SubjectLocation', ), # 0x9214
+    0xA215: ('ExposureIndex', ), # 0x9215
+    0xA217: ('SensingMethod', # 0x9217
              {1: 'Not defined',
               2: 'One-chip color area',
               3: 'Two-chip color area',
               4: 'Three-chip color area',
               5: 'Color sequential area',
               7: 'Trilinear',
-              8: 'Color sequential linear'}),             
+              8: 'Color sequential linear'}),
     0xA300: ('FileSource',
              {1: 'Film Scanner',
               2: 'Reflection Print Scanner',
@@ -369,7 +369,7 @@ EXIF_TAGS = {
     0xA40C: ('SubjectDistanceRange', ),
     0xA500: ('Gamma', ),
     0xC4A5: ('PrintIM', ),
-    0xEA1C:	('Padding', ),
+    0xEA1C: ('Padding', ),
     }
 
 # interoperability tags
@@ -416,7 +416,7 @@ GPS_TAGS = {
 # Ignore these tags when quick processing
 # 0x927C is MakerNote Tags
 # 0x9286 is user comment
-IGNORE_TAGS=(0x9286, 0x927C)
+IGNORE_TAGS = (0x9286, 0x927C)
 
 # http://tomtia.plala.jp/DigitalCamera/MakerNote/index.asp
 def nikon_ev_bias(seq):
@@ -427,7 +427,7 @@ def nikon_ev_bias(seq):
     # Check for an error condition that could cause a crash.
     # This only happens if something has gone really wrong in
     # reading the Nikon MakerNote.
-    if len( seq ) < 4 : return ""
+    if len(seq) < 4: return ""
     #
     if seq == [252, 1, 6, 0]:
         return "-2/3 EV"
@@ -443,7 +443,7 @@ def nikon_ev_bias(seq):
         return "+1/2 EV"
     if seq == [4, 1, 6, 0]:
         return "+2/3 EV"
-    # Handle combinations not in the table.
+        # Handle combinations not in the table.
     a = seq[0]
     # Causes headaches for the +/- logic, so special case it.
     if a == 0:
@@ -453,7 +453,7 @@ def nikon_ev_bias(seq):
         ret_str = "-"
     else:
         ret_str = "+"
-    b = seq[2]	# Assume third value means the step size
+    b = seq[2]    # Assume third value means the step size
     whole = a / b
     a = a % b
     if whole != 0:
@@ -466,8 +466,8 @@ def nikon_ev_bias(seq):
     return ret_str
 
 # Nikon E99x MakerNote Tags
-MAKERNOTE_NIKON_NEWER_TAGS={
-    0x0001: ('MakernoteVersion', make_string),	# Sometimes binary
+MAKERNOTE_NIKON_NEWER_TAGS = {
+    0x0001: ('MakernoteVersion', make_string), # Sometimes binary
     0x0002: ('ISOSetting', make_string),
     0x0003: ('ColorMode', ),
     0x0004: ('Quality', ),
@@ -491,7 +491,7 @@ MAKERNOTE_NIKON_NEWER_TAGS={
     0x0019: ('AEBracketCompensationApplied', ),
     0x001A: ('ImageProcessing', ),
     0x001B: ('CropHiSpeed', ),
-    0x001D: ('SerialNumber', ),	# Conflict with 0x00A0 ?
+    0x001D: ('SerialNumber', ), # Conflict with 0x00A0 ?
     0x001E: ('ColorSpace', ),
     0x001F: ('VRInfo', ),
     0x0020: ('ImageAuthentication', ),
@@ -530,11 +530,11 @@ MAKERNOTE_NIKON_NEWER_TAGS={
               0x42: 'Timer, white balance bracketing'}),
     0x008A: ('AutoBracketRelease', ),
     0x008B: ('LensFStops', ),
-    0x008C: ('NEFCurve1', ),	# ExifTool calls this 'ContrastCurve'
+    0x008C: ('NEFCurve1', ), # ExifTool calls this 'ContrastCurve'
     0x008D: ('ColorMode', ),
     0x008F: ('SceneMode', ),
     0x0090: ('LightingType', ),
-    0x0091: ('ShotInfo', ),	# First 4 bytes are a version number in ASCII
+    0x0091: ('ShotInfo', ), # First 4 bytes are a version number in ASCII
     0x0092: ('HueAdjustment', ),
     # ExifTool calls this 'NEFCompression', should be 1-4
     0x0093: ('Compression', ),
@@ -546,9 +546,9 @@ MAKERNOTE_NIKON_NEWER_TAGS={
               1: '1',
               2: '2'}),
     0x0095: ('NoiseReduction', ),
-    0x0096: ('NEFCurve2', ),	# ExifTool calls this 'LinearizationTable'
-    0x0097: ('ColorBalance', ),	# First 4 bytes are a version number in ASCII
-    0x0098: ('LensData', ),	# First 4 bytes are a version number in ASCII
+    0x0096: ('NEFCurve2', ), # ExifTool calls this 'LinearizationTable'
+    0x0097: ('ColorBalance', ), # First 4 bytes are a version number in ASCII
+    0x0098: ('LensData', ), # First 4 bytes are a version number in ASCII
     0x0099: ('RawImageCenter', ),
     0x009A: ('SensorPixelSize', ),
     0x009C: ('Scene Assist', ),
@@ -567,7 +567,7 @@ MAKERNOTE_NIKON_NEWER_TAGS={
     0x00AA: ('Saturation', ),
     0x00AB: ('DigitalVariProgram', ),
     0x00AC: ('ImageStabilization', ),
-    0x00AD: ('Responsive AF', ),	# 'AFResponse'
+    0x00AD: ('Responsive AF', ), # 'AFResponse'
     0x00B0: ('MultiExposure', ),
     0x00B1: ('HighISONoiseReduction', ),
     0x00B7: ('AFInfo', ),
@@ -604,12 +604,12 @@ MAKERNOTE_NIKON_NEWER_TAGS={
               34712: 'JPEG 2000',
               34713: 'Nikon NEF Compressed',
               65000: 'Kodak DCR Compressed',
-              65535: 'Pentax PEF Compressed',}),
+              65535: 'Pentax PEF Compressed', }),
     0x0201: ('PreviewImageStart', ),
     0x0202: ('PreviewImageLength', ),
     0x0213: ('PreviewYCbCrPositioning',
              {1: 'Centered',
-              2: 'Co-sited'}), 
+              2: 'Co-sited'}),
     0x0010: ('DataDump', ),
     }
 
@@ -647,12 +647,12 @@ MAKERNOTE_NIKON_OLDER_TAGS = {
 
 # decode Olympus SpecialMode tag in MakerNote
 def olympus_special_mode(v):
-    a={
+    a = {
         0: 'Normal',
         1: 'Unknown',
         2: 'Fast',
         3: 'Panorama'}
-    b={
+    b = {
         0: 'Non-panoramic',
         1: 'Left to right',
         2: 'Right to left',
@@ -662,7 +662,7 @@ def olympus_special_mode(v):
         return v
     return '%s - sequence %d - %s' % (a[v[0]], v[1], b[v[2]])
 
-MAKERNOTE_OLYMPUS_TAGS={
+MAKERNOTE_OLYMPUS_TAGS = {
     # ah HAH! those sneeeeeaky bastids! this is how they get past the fact
     # that a JPEG thumbnail is not allowed in an uncompressed TIFF file
     0x0100: ('JPEGThumbnail', ),
@@ -673,11 +673,11 @@ MAKERNOTE_OLYMPUS_TAGS={
               3: 'SHQ'}),
     0x0202: ('Macro',
              {0: 'Normal',
-             1: 'Macro',
-             2: 'SuperMacro'}),
+              1: 'Macro',
+              2: 'SuperMacro'}),
     0x0203: ('BWMode',
              {0: 'Off',
-             1: 'On'}),
+              1: 'On'}),
     0x0204: ('DigitalZoom', ),
     0x0205: ('FocalPlaneDiagonal', ),
     0x0206: ('LensDistortionParams', ),
@@ -693,32 +693,32 @@ MAKERNOTE_OLYMPUS_TAGS={
     0x1003: ('BrightnessValue', ),
     0x1004: ('FlashMode', ),
     0x1004: ('FlashMode',
-       {2: 'On',
-        3: 'Off'}),
+             {2: 'On',
+              3: 'Off'}),
     0x1005: ('FlashDevice',
-       {0: 'None',
-        1: 'Internal',
-        4: 'External',
-        5: 'Internal + External'}),
+             {0: 'None',
+              1: 'Internal',
+              4: 'External',
+              5: 'Internal + External'}),
     0x1006: ('ExposureCompensation', ),
     0x1007: ('SensorTemperature', ),
     0x1008: ('LensTemperature', ),
     0x100b: ('FocusMode',
-       {0: 'Auto',
-        1: 'Manual'}),
+             {0: 'Auto',
+              1: 'Manual'}),
     0x1017: ('RedBalance', ),
     0x1018: ('BlueBalance', ),
     0x101a: ('SerialNumber', ),
     0x1023: ('FlashExposureComp', ),
     0x1026: ('ExternalFlashBounce',
-       {0: 'No',
-        1: 'Yes'}),
+             {0: 'No',
+              1: 'Yes'}),
     0x1027: ('ExternalFlashZoom', ),
     0x1028: ('ExternalFlashMode', ),
     0x1029: ('Contrast 	int16u',
-       {0: 'High',
-        1: 'Normal',
-        2: 'Low'}),
+             {0: 'High',
+              1: 'Normal',
+              2: 'Low'}),
     0x102a: ('SharpnessFactor', ),
     0x102b: ('ColorControl', ),
     0x102c: ('ValidBits', ),
@@ -727,16 +727,16 @@ MAKERNOTE_OLYMPUS_TAGS={
     0x102f: ('OlympusImageHeight', ),
     0x1034: ('CompressionRatio', ),
     0x1035: ('PreviewImageValid',
-       {0: 'No',
-        1: 'Yes'}),
+             {0: 'No',
+              1: 'Yes'}),
     0x1036: ('PreviewImageStart', ),
     0x1037: ('PreviewImageLength', ),
     0x1039: ('CCDScanMode',
-       {0: 'Interlaced',
-        1: 'Progressive'}),
+             {0: 'Interlaced',
+              1: 'Progressive'}),
     0x103a: ('NoiseReduction',
-       {0: 'Off',
-        1: 'On'}),
+             {0: 'Off',
+              1: 'On'}),
     0x103b: ('InfinityLensStep', ),
     0x103c: ('NearLensStep', ),
 
@@ -751,7 +751,7 @@ MAKERNOTE_OLYMPUS_TAGS={
     }
 
 # 0x2020 CameraSettings
-MAKERNOTE_OLYMPUS_TAG_0x2020={
+MAKERNOTE_OLYMPUS_TAG_0x2020 = {
     0x0100: ('PreviewImageValid',
              {0: 'No',
               1: 'Yes'}),
@@ -792,22 +792,22 @@ MAKERNOTE_OLYMPUS_TAG_0x2020={
     0x0401: ('FlashExposureCompensation', ),
     0x0500: ('WhiteBalance2',
              {0: 'Auto',
-             16: '7500K (Fine Weather with Shade)',
-             17: '6000K (Cloudy)',
-             18: '5300K (Fine Weather)',
-             20: '3000K (Tungsten light)',
-             21: '3600K (Tungsten light-like)',
-             33: '6600K (Daylight fluorescent)',
-             34: '4500K (Neutral white fluorescent)',
-             35: '4000K (Cool white fluorescent)',
-             48: '3600K (Tungsten light-like)',
-             256: 'Custom WB 1',
-             257: 'Custom WB 2',
-             258: 'Custom WB 3',
-             259: 'Custom WB 4',
-             512: 'Custom WB 5400K',
-             513: 'Custom WB 2900K',
-             514: 'Custom WB 8000K', }),
+              16: '7500K (Fine Weather with Shade)',
+              17: '6000K (Cloudy)',
+              18: '5300K (Fine Weather)',
+              20: '3000K (Tungsten light)',
+              21: '3600K (Tungsten light-like)',
+              33: '6600K (Daylight fluorescent)',
+              34: '4500K (Neutral white fluorescent)',
+              35: '4000K (Cool white fluorescent)',
+              48: '3600K (Tungsten light-like)',
+              256: 'Custom WB 1',
+              257: 'Custom WB 2',
+              258: 'Custom WB 3',
+              259: 'Custom WB 4',
+              512: 'Custom WB 5400K',
+              513: 'Custom WB 2900K',
+              514: 'Custom WB 8000K', }),
     0x0501: ('WhiteBalanceTemperature', ),
     0x0502: ('WhiteBalanceBracket', ),
     0x0503: ('CustomSaturation', ), # (3 numbers: 1. CS Value, 2. Min, 3. Max)
@@ -829,26 +829,26 @@ MAKERNOTE_OLYMPUS_TAG_0x2020={
               7: 'Sport',
               8: 'Portrait',
               9: 'Landscape+Portrait',
-             10: 'Landscape',
-             11: 'Night scene',
-             13: 'Panorama',
-             16: 'Landscape+Portrait',
-             17: 'Night+Portrait',
-             19: 'Fireworks',
-             20: 'Sunset',
-             22: 'Macro',
-             25: 'Documents',
-             26: 'Museum',
-             28: 'Beach&Snow',
-             30: 'Candle',
-             35: 'Underwater Wide1',
-             36: 'Underwater Macro',
-             39: 'High Key',
-             40: 'Digital Image Stabilization',
-             44: 'Underwater Wide2',
-             45: 'Low Key',
-             46: 'Children',
-             48: 'Nature Macro'}),
+              10: 'Landscape',
+              11: 'Night scene',
+              13: 'Panorama',
+              16: 'Landscape+Portrait',
+              17: 'Night+Portrait',
+              19: 'Fireworks',
+              20: 'Sunset',
+              22: 'Macro',
+              25: 'Documents',
+              26: 'Museum',
+              28: 'Beach&Snow',
+              30: 'Candle',
+              35: 'Underwater Wide1',
+              36: 'Underwater Macro',
+              39: 'High Key',
+              40: 'Digital Image Stabilization',
+              44: 'Underwater Wide2',
+              45: 'Low Key',
+              46: 'Children',
+              48: 'Nature Macro'}),
     0x050a: ('NoiseReduction',
              {0: 'Off',
               1: 'Noise Reduction',
@@ -901,8 +901,7 @@ MAKERNOTE_OLYMPUS_TAG_0x2020={
     0x0901: ('ManometerReading', ),
     }
 
-
-MAKERNOTE_CASIO_TAGS={
+MAKERNOTE_CASIO_TAGS = {
     0x0001: ('RecordingMode',
              {1: 'Single Shutter',
               2: 'Panorama',
@@ -956,7 +955,7 @@ MAKERNOTE_CASIO_TAGS={
               250: '+2.0'}),
     }
 
-MAKERNOTE_FUJIFILM_TAGS={
+MAKERNOTE_FUJIFILM_TAGS = {
     0x0000: ('NoteVersion', make_string),
     0x1000: ('Quality', ),
     0x1001: ('Sharpness',
@@ -1193,6 +1192,7 @@ def gcd(a, b):
     else:
         return gcd(b, a % b)
 
+
 class Ratio:
     def __init__(self, num, den):
         self.num = num
@@ -1252,17 +1252,17 @@ class EXIF_header:
     # start of the EXIF information.  For some cameras that use relative tags,
     # this offset may be relative to some other starting point.
     def s2n(self, offset, length, signed=0):
-        self.file.seek(self.offset+offset)
-        slice=self.file.read(length)
+        self.file.seek(self.offset + offset)
+        slice = self.file.read(length)
         if self.endian == 'I':
-            val=s2n_intel(slice)
+            val = s2n_intel(slice)
         else:
-            val=s2n_motorola(slice)
-        # Sign extension ?
+            val = s2n_motorola(slice)
+            # Sign extension ?
         if signed:
-            msb=1L << (8*length-1)
+            msb = 1L << (8 * length - 1)
             if val & msb:
-                val=val-(msb << 1)
+                val = val - (msb << 1)
         return val
 
     # convert offset to string
@@ -1282,21 +1282,21 @@ class EXIF_header:
 
     # return pointer to next IFD
     def next_IFD(self, ifd):
-        entries=self.s2n(ifd, 2)
-        return self.s2n(ifd+2+12*entries, 4)
+        entries = self.s2n(ifd, 2)
+        return self.s2n(ifd + 2 + 12 * entries, 4)
 
     # return list of IFDs in header
     def list_IFDs(self):
-        i=self.first_IFD()
-        a=[]
+        i = self.first_IFD()
+        a = []
         while i:
             a.append(i)
-            i=self.next_IFD(i)
+            i = self.next_IFD(i)
         return a
 
     # return list of entries in this IFD
     def dump_IFD(self, ifd, ifd_name, dict=EXIF_TAGS, relative=0, stop_tag='UNDEF'):
-        entries=self.s2n(ifd, 2)
+        entries = self.s2n(ifd, 2)
         for i in range(entries):
             # entry is index of start of this IFD in the file
             entry = ifd + 2 + 12 * i
@@ -1312,7 +1312,7 @@ class EXIF_header:
             # ignore certain tags for faster processing
             if not (not detailed and tag in IGNORE_TAGS):
                 field_type = self.s2n(entry + 2, 2)
-                
+
                 # unknown field type
                 if not 0 < field_type < len(FIELD_TYPES):
                     if not self.strict:
@@ -1348,7 +1348,7 @@ class EXIF_header:
                     # special case: null-terminated ASCII string
                     # XXX investigate
                     # sometimes gets too big to fit in int value
-                    if count != 0 and count < (2**31):
+                    if count != 0 and count < (2 ** 31):
                         self.file.seek(self.offset + offset)
                         values = self.file.read(count)
                         #print values
@@ -1359,7 +1359,7 @@ class EXIF_header:
                 else:
                     values = []
                     signed = (field_type in [6, 8, 9, 10])
-                    
+
                     # XXX investigate
                     # some entries get too big to handle could be malformed
                     # file or problem with self.s2n
@@ -1375,21 +1375,21 @@ class EXIF_header:
                             offset = offset + typelen
                     # The test above causes problems with tags that are 
                     # supposed to have long values!  Fix up one important case.
-                    elif tag_name == 'MakerNote' :
+                    elif tag_name == 'MakerNote':
                         for dummy in range(count):
                             value = self.s2n(offset, typelen, signed)
                             values.append(value)
                             offset = offset + typelen
-                    #else :
-                    #    print "Warning: dropping large tag:", tag, tag_name
-                
+                            #else :
+                            #    print "Warning: dropping large tag:", tag, tag_name
+
                 # now 'values' is either a string or an array
                 if count == 1 and field_type != 2:
-                    printable=str(values[0])
-                elif count > 50 and len(values) > 20 :
-                    printable=str( values[0:20] )[0:-1] + ", ... ]"
+                    printable = str(values[0])
+                elif count > 50 and len(values) > 20:
+                    printable = str(values[0:20])[0:-1] + ", ... ]"
                 else:
-                    printable=str(values)
+                    printable = str(values)
 
                 # compute printable version of values
                 if tag_entry:
@@ -1405,9 +1405,9 @@ class EXIF_header:
                                 printable += tag_entry[1].get(i, repr(i))
 
                 self.tags[ifd_name + ' ' + tag_name] = IFD_Tag(printable, tag,
-                                                          field_type,
-                                                          values, field_offset,
-                                                          count * typelen)
+                                                               field_type,
+                                                               values, field_offset,
+                                                               count * typelen)
                 if self.debug:
                     print ' debug:   %s: %s' % (tag_name,
                                                 repr(self.tags[ifd_name + ' ' + tag_name]))
@@ -1425,35 +1425,35 @@ class EXIF_header:
             tiff = 'MM\x00*\x00\x00\x00\x08'
         else:
             tiff = 'II*\x00\x08\x00\x00\x00'
-        # ... plus thumbnail IFD data plus a null "next IFD" pointer
-        self.file.seek(self.offset+thumb_ifd)
-        tiff += self.file.read(entries*12+2)+'\x00\x00\x00\x00'
+            # ... plus thumbnail IFD data plus a null "next IFD" pointer
+        self.file.seek(self.offset + thumb_ifd)
+        tiff += self.file.read(entries * 12 + 2) + '\x00\x00\x00\x00'
 
         # fix up large value offset pointers into data area
         for i in range(entries):
             entry = thumb_ifd + 2 + 12 * i
             tag = self.s2n(entry, 2)
-            field_type = self.s2n(entry+2, 2)
+            field_type = self.s2n(entry + 2, 2)
             typelen = FIELD_TYPES[field_type][0]
-            count = self.s2n(entry+4, 4)
-            oldoff = self.s2n(entry+8, 4)
+            count = self.s2n(entry + 4, 4)
+            oldoff = self.s2n(entry + 8, 4)
             # start of the 4-byte pointer area in entry
             ptr = i * 12 + 18
             # remember strip offsets location
             if tag == 0x0111:
                 strip_off = ptr
                 strip_len = count * typelen
-            # is it in the data area?
+                # is it in the data area?
             if count * typelen > 4:
                 # update offset pointer (nasty "strings are immutable" crap)
                 # should be able to say "tiff[ptr:ptr+4]=newoff"
                 newoff = len(tiff)
-                tiff = tiff[:ptr] + self.n2s(newoff, 4) + tiff[ptr+4:]
+                tiff = tiff[:ptr] + self.n2s(newoff, 4) + tiff[ptr + 4:]
                 # remember strip offsets location
                 if tag == 0x0111:
                     strip_off = newoff
                     strip_len = 4
-                # get original data and store it
+                    # get original data and store it
                 self.file.seek(self.offset + oldoff)
                 tiff += self.file.read(count * typelen)
 
@@ -1492,7 +1492,7 @@ class EXIF_header:
     # or from the header at the start of the makernote.)
     def decode_maker_note(self):
         note = self.tags['EXIF MakerNote']
-        
+
         # Some apps use MakerNote tags but do not use a format for which we
         # have a description, so just do a raw dump for these.
         #if self.tags.has_key('Image Make'):
@@ -1511,15 +1511,15 @@ class EXIF_header:
             if note.values[0:7] == [78, 105, 107, 111, 110, 0, 1]:
                 if self.debug:
                     print "Looks like a type 1 Nikon MakerNote."
-                self.dump_IFD(note.field_offset+8, 'MakerNote',
+                self.dump_IFD(note.field_offset + 8, 'MakerNote',
                               dict=MAKERNOTE_NIKON_OLDER_TAGS)
             elif note.values[0:7] == [78, 105, 107, 111, 110, 0, 2]:
                 if self.debug:
                     print "Looks like a labeled type 2 Nikon MakerNote"
                 if note.values[12:14] != [0, 42] and note.values[12:14] != [42L, 0L]:
                     raise ValueError("Missing marker tag '42' in MakerNote.")
-                # skip the Makernote label and the TIFF header
-                self.dump_IFD(note.field_offset+10+8, 'MakerNote',
+                    # skip the Makernote label and the TIFF header
+                self.dump_IFD(note.field_offset + 10 + 8, 'MakerNote',
                               dict=MAKERNOTE_NIKON_NEWER_TAGS, relative=1)
             else:
                 # E99x or D1
@@ -1531,7 +1531,7 @@ class EXIF_header:
 
         # Olympus
         if make.startswith('OLYMPUS'):
-            self.dump_IFD(note.field_offset+8, 'MakerNote',
+            self.dump_IFD(note.field_offset + 8, 'MakerNote',
                           dict=MAKERNOTE_OLYMPUS_TAGS)
             # XXX TODO
             #for i in (('MakerNote Tag 0x2020', MAKERNOTE_OLYMPUS_TAG_0x2020),):
@@ -1579,18 +1579,18 @@ class EXIF_header:
     # see http://www.burren.cx/david/canon.html by David Burren
     def canon_decode_tag(self, value, dict):
         for i in range(1, len(value)):
-            x=dict.get(i, ('Unknown', ))
+            x = dict.get(i, ('Unknown', ))
             if self.debug:
                 print i, x
-            name=x[0]
+            name = x[0]
             if len(x) > 1:
-                val=x[1].get(value[i], 'Unknown')
+                val = x[1].get(value[i], 'Unknown')
             else:
-                val=value[i]
-            # it's not a real IFD Tag but we fake one to make everybody
+                val = value[i]
+                # it's not a real IFD Tag but we fake one to make everybody
             # happy. this will have a "proprietary" type
-            self.tags['MakerNote '+name]=IFD_Tag(str(val), None, 0, None,
-                                                 None, None)
+            self.tags['MakerNote ' + name] = IFD_Tag(str(val), None, 0, None,
+                                                     None, None)
 
 # process an image file (expects an open file object)
 # this is the function that has to deal with all the arbitrary nasty bits
@@ -1614,10 +1614,10 @@ def process_file(f, stop_tag='UNDEF', details=True, strict=False, debug=False):
     elif data[0:2] == '\xFF\xD8':
         # it's a JPEG file
         while data[2] == '\xFF' and data[6:10] in ('JFIF', 'JFXX', 'OLYM', 'Phot'):
-            length = ord(data[4])*256+ord(data[5])
-            f.read(length-8)
+            length = ord(data[4]) * 256 + ord(data[5])
+            f.read(length - 8)
             # fake an EXIF beginning of file
-            data = '\xFF\x00'+f.read(10)
+            data = '\xFF\x00' + f.read(10)
             fake_exif = 1
         if data[2] == '\xFF' and data[6:10] == 'Exif':
             # detected EXIF header
@@ -1648,7 +1648,7 @@ def process_file(f, stop_tag='UNDEF', details=True, strict=False, debug=False):
             print ' IFD %d (%s) at offset %d:' % (ctr, IFD_name, i)
         hdr.dump_IFD(i, IFD_name, stop_tag=stop_tag)
         # EXIF IFD
-        exif_off = hdr.tags.get(IFD_name+' ExifOffset')
+        exif_off = hdr.tags.get(IFD_name + ' ExifOffset')
         if exif_off:
             if debug:
                 print ' EXIF SubIFD at offset %d:' % exif_off.values[0]
@@ -1657,12 +1657,12 @@ def process_file(f, stop_tag='UNDEF', details=True, strict=False, debug=False):
             intr_off = hdr.tags.get('EXIF SubIFD InteroperabilityOffset')
             if intr_off:
                 if debug:
-                    print ' EXIF Interoperability SubSubIFD at offset %d:' \
-                          % intr_off.values[0]
+                    print ' EXIF Interoperability SubSubIFD at offset %d:'\
+                    % intr_off.values[0]
                 hdr.dump_IFD(intr_off.values[0], 'EXIF Interoperability',
                              dict=INTR_TAGS, stop_tag=stop_tag)
-        # GPS IFD
-        gps_off = hdr.tags.get(IFD_name+' GPSInfo')
+            # GPS IFD
+        gps_off = hdr.tags.get(IFD_name + ' GPSInfo')
         if gps_off:
             if debug:
                 print ' GPS SubIFD at offset %d:' % gps_off.values[0]
@@ -1677,7 +1677,7 @@ def process_file(f, stop_tag='UNDEF', details=True, strict=False, debug=False):
     # JPEG thumbnail (thankfully the JPEG data is stored as a unit)
     thumb_off = hdr.tags.get('Thumbnail JPEGInterchangeFormat')
     if thumb_off:
-        f.seek(offset+thumb_off.values[0])
+        f.seek(offset + thumb_off.values[0])
         size = hdr.tags['Thumbnail JPEGInterchangeFormatLength'].values[0]
         hdr.tags['JPEGThumbnail'] = f.read(size)
 
@@ -1690,10 +1690,10 @@ def process_file(f, stop_tag='UNDEF', details=True, strict=False, debug=False):
     # Sometimes in a TIFF file, a JPEG thumbnail is hidden in the MakerNote
     # since it's not allowed in a uncompressed TIFF IFD
     if 'JPEGThumbnail' not in hdr.tags:
-        thumb_off=hdr.tags.get('MakerNote JPEGThumbnail')
+        thumb_off = hdr.tags.get('MakerNote JPEGThumbnail')
         if thumb_off:
-            f.seek(offset+thumb_off.values[0])
-            hdr.tags['JPEGThumbnail']=file.read(thumb_off.field_length)
+            f.seek(offset + thumb_off.values[0])
+            hdr.tags['JPEGThumbnail'] = file.read(thumb_off.field_length)
 
     return hdr.tags
 
@@ -1740,9 +1740,9 @@ if __name__ == '__main__':
     # output info for each file
     for filename in args:
         try:
-            file=open(filename, 'rb')
+            file = open(filename, 'rb')
         except:
-            print "'%s' is unreadable\n"%filename
+            print "'%s' is unreadable\n" % filename
             continue
         print filename + ':'
         # get the tags
@@ -1751,13 +1751,13 @@ if __name__ == '__main__':
             print 'No EXIF information found'
             continue
 
-        x=data.keys()
+        x = data.keys()
         x.sort()
         for i in x:
             if i in ('JPEGThumbnail', 'TIFFThumbnail'):
                 continue
             try:
-                print '   %s (%s): %s' % \
+                print '   %s (%s): %s' %\
                       (i, FIELD_TYPES[data[i].field_type][2], data[i].printable)
             except:
                 print 'error', i, '"', data[i], '"'

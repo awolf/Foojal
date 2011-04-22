@@ -3,7 +3,6 @@ import foo.google_checkout
 from google.appengine.ext import testbed
 
 class Test_Google_New_Order_Notification(unittest.TestCase):
-
     def setUp(self):
         self.testbed = testbed.Testbed()
         self.testbed.activate()
