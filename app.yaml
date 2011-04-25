@@ -53,5 +53,6 @@ skip_files:
 - ^(.*/)?\..*
 - ^(.*/)?Clippings.txt
 - ^(.*/)?Photo.JPG
+- ^(.*/)?bigPhoto.JPG
 - ^(.*/)?.*/test/.*
 
