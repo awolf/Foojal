@@ -1,91 +1,85 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
-		<title>Foojal | {% block title %}{% endblock %} - The Photo Food Journal</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Foojal | {% block title %}{% endblock %} - The Photo Food Journal</title>
+    <link type="text/css" rel="stylesheet" href="/public/stylesheets/screen.css" type="text/css"
+          media="screen, projection">
 
-		<!-- Framework CSS --> 
-		<link rel="stylesheet" href="/public/stylesheets/blueprint/screen.css" type="text/css" media="screen, projection"> 
-		<link rel="stylesheet" href="/public/stylesheets/blueprint/print.css" type="text/css" media="print"> 
-		<!--[if lt IE 8]><link rel="stylesheet" href="/public/stylesheets/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]--> 
-
-		<!-- Import fancy-type plugin for the sample page. --> 
-		<link rel="stylesheet" href="/public/stylesheets/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
-        <link rel="stylesheet" href="/public/stylesheets/blueprint/plugins/buttons/screen.css" type="text/css" media="screen, projection">
-		<link type="text/css" rel="stylesheet" href="/public/stylesheets/main.css" />
-
-        <link rel="apple-touch-icon" href="/public/images/touch-icon-iphone.png" />
-        <link rel="apple-touch-icon" sizes="72x72" href="/public/images/touch-icon-ipad.png" />
-        <link rel="apple-touch-icon" sizes="114x114" href="/public/images/touch-icon-iphone4.png" />
-        <link rel="apple-touch-startup-image" href="/public/images/apple-touch-startup-image.png">
+    <link rel="apple-touch-icon" href="/public/images/touch-icon-iphone.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="/public/images/touch-icon-ipad.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="/public/images/touch-icon-iphone4.png"/>
+    <link rel="apple-touch-startup-image" href="/public/images/apple-touch-startup-image.png">
 </head>
 <body>
-		<div class="container">
-            <div id="heder">
-                <div class="span-10">
-                    <a  href="/">
-                        <img src="/public/images/Foojal.png"  alt="Foojal Photo Food Journal Logo"/>
-                    </a>
-                </div>
-                <div class="span-14 last">
-                    <ul id="navlist">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/account">{{ account.nickname }}</a></li>
-                        {%if user%}
-                            <li><a href="{{sign_out}}">Sign out</a></li>
-                        {% else %}
-                            <li><a href="{{sign_in}}">Sign out</a></li>
-                        {%endif%}
-                    </ul>
-                </div>
-                <div id="notice" class="span-24 last">
-                    {% if error %}
-                    <div class="error">
-                        {{ error }}
-                    </div>
-                    {% endif %}
+<div id="wrap" class="group">
 
-                    {% if notice %}
-                    <div class="notice">
-                        {{ notice }}
-                    </div>
-                    {% endif %}
 
-                    {% if info %}
-                    <div class="info">
-                        {{ info }}
-                    </div>
-                    {% endif %}
-
-                    {% if success %}
-                    <div class="success">
-                        {{ success }}
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            {%if account.user == None %}
-                <div class="span-24 last">
-                    <h1>Your Journal is empty</h1> <h3>Please send a food photo to Food@foojalWorld.appspotmail.com</h3>
-                </div>
-            {% else %}
-                {% if account.is_expired %}
-                    <div class="span-24 last">
-                        <h3>Your account is expired. Please signup for another year </h3>
-                    </div>
-                {% else %}
-                    {% block content %}{% endblock %}
-                {%endif%}
-            {%endif%}
+    <div id="header" class="group">
+        <img src="/public/images/Foojal.png" alt="Foojal Photo Food Journal Logo"/>
         
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/account"> <img src="/public/images/icons/person.png" width="15px"> {{ account.nickname }}</a>
+            </li>
+            {%if user%}
+            <li><a href="{{sign_out}}">Sign out</a></li>
+            {% else %}
+            <li><a href="{{sign_in}}">Sign out</a></li>
+            {%endif%}
+        </ul>
+    </div>
 
-            <div id="footer" class="span-24 last">
-                <hr />
-                User is admin is: {{ is_admin }}<br>
-                Current user is: {{ user }}<br>
-            </div>
+
+    <div class="main">
+        {%if account.user == None %}
+
+        <h1>Your Journal is empty</h1>
+
+        <h3>Please send a food photo to Food@foojalWorld.appspotmail.com</h3>
+
+        {% else %}
+        {% if account.is_expired %}
+
+        <h3>Your account is expired. Please signup for another year </h3>
+
+        {% else %}
+        {% if error %}
+        <div class="error">
+            {{ error }}
         </div>
+        {% endif %}
 
+        {% if notice %}
+        <div class="notice">
+            {{ notice }}
+        </div>
+        {% endif %}
+
+        {% if info %}
+        <div class="info">
+            {{ info }}
+        </div>
+        {% endif %}
+
+        {% if success %}
+        <div class="success">
+            {{ success }}
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+        {%endif%}
+        {%endif%}
+
+    </div>
+
+    <div id="footer">
+        Copyright &copy; 2009. Blue Cognition LLC <a href="http://bluecognition.com.com/">www.BlueCognition.com</a>.<br>
+        User is admin is: {{ is_admin }}<br>
+        Current user is: {{ user }}
+    </div>
+    <!-- /footer -->
+</div>
+<!-- /wrap -->
 </body>
 </html>

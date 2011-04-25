@@ -60,13 +60,13 @@ state_machines:
     action: CreatePhoto
     transitions:
       - event: success
-        to: thumbnailstate
-
-  - name: thumbnailstate
-    action: CreateThumbnail
-    transitions:
-      - event: success
         to: geocodestate
+
+#  - name: thumbnailstate
+#    action: CreateThumbnail
+#    transitions:
+#      - event: success
+#        to: geocodestate
 
   - name: geocodestate
     action: GeocodeImage

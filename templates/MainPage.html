@@ -4,31 +4,30 @@
 
 {% block content %}
 
-    <hr />
-    {% for entry in entries %}
-        <div class="span-24 last">
-            <div class="span-10">
-                {% if entry.picture_uid %}
-                    <img src="/photo?id={{ entry.picture_uid }}" width="350px" alt="Photo"/>
-                {% else %}
-                    <img src="/public/images/noimage.gif" width="350px" alt="Photo"/>
-                {%endif%}
-            </div>
-            <div class="span-14 last">
-                <ul>
-                    <li>Sender: {{ entry.sender }}</li>
-                    <li>
-                        {% for tag in entry.tags %}
+<hr/>
+<div class="span-24 last">
+    <ol class="entries">
+        {% for entry in entries %}
+        <li>
+            <div class="entry">
+                <a href="/">
+                    {% if entry.picture_url %}
+                    <img src="{{ entry.picture_url }}=s600" alt="Photo"/>
+                    {% else %}
+                    <img src="/public/images/photo.jpg" alt="Photo"/>
+                    {%endif%}
+                    <span>
+                        <strong>
+                            {% for tag in entry.tags %}
                             [{{ tag }}>
-                        {% endfor %}
-                    </li>
-
-                    <li>Content: {{ entry.content }}</li>
-                    <li>Location: {{ entry.location }}</li>
-                    <li>Created: {{ entry.created }}</li>
-                    <li>Modified: {{ entry.modified }}</li>
-                </ul>
+                            {% endfor %}</strong>
+                        <em>{{ entry.content }}</em>
+                    </span>
+                </a>
             </div>
-        </div>
-    {% endfor %}
+        </li>
+        {% endfor %}
+    </ol>
+</div>
 {% endblock %}
+

@@ -1,4 +1,5 @@
 from __future__ import with_statement
+from google.appengine.api import files
 
 from google.appengine.dist import use_library
 
@@ -6,19 +7,15 @@ use_library('django', '1.2')
 
 # Python imports
 import logging
-import pickle
-from StringIO import StringIO
 
 # AppEngine imports
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
-from google.appengine.ext import db
 from google.appengine.api import images
 
 # Local imports
 import models
-import EXIF
-import fantasm
 import settings
+import fantasm
 
 def goodDecode(encodedPayload):
     if not hasattr(encodedPayload, 'encoding'):
@@ -78,47 +75,44 @@ class DefaultMailHandler(InboundMailHandler):
 
         message.body = getMailBody(mail_message)
 
-        # if we are developing lets attach a local file.
-        #        if settings.DEBUG:
-        #            image = open('./photo.JPG','r')
-        #            mail_message.attachments=[(image.name, image.read())]
-
+        #        if we are developing lets attach a local file.
+        if settings.DEBUG:
+            image = open('bigphoto.JPG', 'r')
+            mail_message.attachments = [(image.name, image.read())]
 
         if hasPhotoAttached(mail_message):
             # Get the image data from the first attachment
             image_data = goodDecode(mail_message.attachments[0][1])
-            img = images.Image(image_data)
             image_data_length = len(image_data)
             logging.info("Attachment length " + str(image_data_length))
 
-            #            try:
-            #                # Create the file
-            #                file_name = files.blobstore.create(mime_type='image/jpeg')
-            #
-            #                # Open the file and write to it
-            #                with files.open(file_name, 'a') as f:
-            #                  f.write(image_data)
-            #
-            #                # Finalize the file. Do this before attempting to read it.
-            #                files.finalize(file_name)
-            #
-            #                # Get the file's blob key
-            #                blob_key = files.blobstore.get_blob_key(file_name)
-            #                logging.info("New Image blobkey is :" + str(blob_key))
-            #
-            #                uri = images.get_serving_url(blob_key=str(blob_key) , size=48)
-            #                logging.info("New Image serving uri is :" + str(uri))
-            #
-            #            except Exception, err:
-            #                logging.info("Error saving blob " + str(err))
+            #lets get the dimensions of the image while we have a chance
+            img = images.Image(image_data)
+            message.picture_height = img.height
+            message.picture_width = img.width
 
+            try:
+                # Create the file
+                file_name = files.blobstore.create(mime_type='image/jpeg')
 
-            img.resize(width=600, height=600)
-            message.picture = db.Blob(img.execute_transforms(output_encoding=images.JPEG))
+                with files.open(file_name, 'a') as f:
+                    for i in xrange(0, len(image_data), 1000000):
+                        f.write(image_data[i:i + 1000000])
 
-            # Get the exif data from the photo
-            tags = EXIF.process_file(StringIO(str(image_data)))
-            message.exif_data = pickle.dumps(tags)
+                # Finalize the file. Do this before attempting to read it.
+                files.finalize(file_name)
+
+                # Get the file's blob key
+                blob_key = files.blobstore.get_blob_key(file_name)
+                logging.info("New Image blob key is :" + str(blob_key))
+
+                message.picture_key = str(blob_key)
+
+                message.picture_url = images.get_serving_url(blob_key=str(blob_key))
+                logging.info("New Image serving uri is :" + str(message.picture_url))
+
+            except Exception, err:
+                logging.info("Error saving blob " + str(err))
 
         message.put()
 

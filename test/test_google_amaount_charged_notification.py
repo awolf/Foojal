@@ -7,14 +7,14 @@ from foo.models import *
 class Test_Google_Amount_Charged_Notification(unittest.TestCase):
     def setUp(self):
         self.testbed = testbed.Testbed()
-        self.testbed.activate()
+        self.testbed.activate() 
         self.testbed.init_datastore_v3_stub()
         self.AddNotification()
 
         self.notification_dict = foo.google_checkout.parse_google_response(self.notification)
 
         cart = Cart(
-            price=24.00,
+            price=24.00, 
             number_of_days=365,
             user=User(email='test@example.com')
         )

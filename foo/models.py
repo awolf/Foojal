@@ -83,8 +83,12 @@ class Message(db.Model):
     to = db.StringProperty()
     subject = db.StringProperty()
     body = db.TextProperty()
-    exif_data = db.BlobProperty()
-    picture = db.BlobProperty()
+
+    picture_url = db.StringProperty()
+    picture_key = db.StringProperty()
+    picture_width = db.IntegerProperty()
+    picture_height = db.IntegerProperty()
+
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
 
@@ -99,8 +103,8 @@ class Entry(db.Model):
     location = db.GeoPtProperty()
     exif_data = db.BlobProperty()
 
-    picture_uid = db.StringProperty()
-    thumbnail_uid = db.StringProperty()
+    picture_url = db.StringProperty()
+    picture_key = db.StringProperty()
 
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
@@ -116,25 +120,6 @@ class Entry(db.Model):
         for entry in entries:
             entry.owner = user
             entry.put()
-
-
-class Photo(db.Model):
-    owner = db.UserProperty()
-    picture = db.BlobProperty()
-    created = db.DateTimeProperty(auto_now_add=True)
-    modified = db.DateTimeProperty(auto_now=True)
-
-    @classmethod
-    def transfer_to_account(cls, sender, user):
-        photos = Photo.all()
-        photos.filter("sender", sender)
-        photos.filter("owner", None)
-
-        photos.fetch(500)
-
-        for photo in photos:
-            photo.owner = user
-            photo.put()
 
 
 class Account(db.Model):

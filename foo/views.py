@@ -8,7 +8,6 @@ use_library('django', '1.2')
 import os
 import cgi
 import logging
-from datetime import timedelta, datetime
 
 # AppEngine imports
 from django.http import HttpResponse
@@ -18,6 +17,7 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.runtime import DeadlineExceededError
 from google.appengine.runtime import apiproxy_errors
+from google.appengine.api.mail import EmailMessage
 
 # Local imports
 import models
@@ -173,41 +173,8 @@ class Invite(TemplatedPage):
 
         account.add_email(invitation.to_address)
         models.Entry.transfer_to_account(invitation.to_address, account.user)
-        models.Photo.transfer_to_account(invitation.to_address, account.user)
         models.Invitation.remove_all_invites_by_email(invitation.to_address)
         self.redirect('/')
-
-
-class PhotoHandler(webapp.RequestHandler):
-    """Serves photos """
-
-    def get(self):
-        try:
-            if self.request.get("id"):
-                key = self.request.get("id")
-
-                if 'If-Modified-Since' in self.request.headers:
-                    self.response.set_status(304)
-                else:
-                    photo = models.Photo.get(key)
-
-                    if photo:
-                        self.response.headers['Content-Type'] = 'image/jpeg'
-                        current_time = datetime.utcnow()
-                        last_modified = current_time - timedelta(days=1)
-                        self.response.headers['Last-Modified'] = last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
-                        self.response.headers['Expires'] = current_time + timedelta(days=30)
-                        self.response.headers['Cache-Control'] = 'public, max-age=315360000'
-                        self.response.headers['Date'] = current_time
-                        self.response.out.write(photo.picture)
-            else:
-                logging.info("The image handler got an invalid message id of :" + self.request.get("id"))
-                # Either "id" wasn't provided, or there was no image with that ID
-                # in the datastore.
-                self.redirect(settings.NO_IMAGE_URL)
-        except:
-            logging.error("Error fetching image " + str(err))
-            self.redirect(settings.NO_IMAGE_URL)
 
 
 class SendInvite(webapp.RequestHandler):
@@ -216,7 +183,7 @@ class SendInvite(webapp.RequestHandler):
     def post(self):
         address = self.request.get('email')
         key = self.request.get('key')
-        message = mail.EmailMessage()
+        message = EmailMessage()
         message.sender = settings.INVITATION_EMAIL
         message.to = address
         message.subject = settings.INVITATION_SUBJECT

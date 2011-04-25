@@ -1,9 +1,16 @@
+from __future__ import with_statement
+
+from google.appengine.api import files
+
 """ Processing message actions """
 
 from google.appengine.api import images
+from google.appengine.ext import blobstore
 from google.appengine.ext import db
 from fantasm.action import FSMAction
+from StringIO import StringIO
 
+import EXIF
 import models
 import pickle
 
@@ -66,12 +73,12 @@ class PrepareEntry(FSMAction):
         entry = models.Entry()
         entry.owner = message.owner
         entry.sender = message.sender
-        entry.exif_data = message.exif_data
+        entry.picture_url = message.picture_url
         entry.put()
 
         context['entrykey'] = entry.key()
 
-        if message.picture:
+        if message.picture_key:
             return 'hasphoto'
         else:
             return 'nophoto'
@@ -82,27 +89,34 @@ class GetExifTags(FSMAction):
         context.logger.info('GetExifTags.execute()')
         message = models.Message.get_by_id(context['key'].id())
 
-        if message.exif_data:
+        blob_reader = blobstore.BlobReader(message.picture_key, buffer_size=5000)
+        tags = EXIF.process_file(StringIO(str(blob_reader.read())))
+
+        if tags:
             try:
-                tags = pickle.loads(message.exif_data)
+                entry = models.Entry.get_by_id(context['entrykey'].id())
+                entry.exif_data = pickle.dumps(tags)
+                entry.put()
+
                 context['orientation'] = str(tags["Image Orientation"])
-                #context.logger.info(str(tags["Image Orientation"]))
+                context.logger.info(str(tags["Image Orientation"]))
 
                 context['longitude'] = tags['GPS GPSLongitude']
-                #context.logger.info(str(tags['GPS GPSLongitude']))
+                context.logger.info(str(tags['GPS GPSLongitude']))
 
                 context['longitudeReference'] = str(tags['GPS GPSLongitudeRef'])
-                #context.logger.info(str(tags['GPS GPSLongitudeRef']))
+                context.logger.info(str(tags['GPS GPSLongitudeRef']))
 
                 context['latitude'] = tags['GPS GPSLatitude']
-                #context.logger.info(str(tags['GPS GPSLatitude']))
+                context.logger.info(str(tags['GPS GPSLatitude']))
 
                 context['latitudeReference'] = str(tags['GPS GPSLatitudeRef'])
-                #context.logger.info(str(tags['GPS GPSLatitudeRef']))
+                context.logger.info(str(tags['GPS GPSLatitudeRef']))
             except Exception, err:
                 context.logger.info("Error fetching GPS Tags " + str(err))
-            else:
-                pass
+
+        else:
+            pass
 
         return 'success'
 
@@ -113,51 +127,45 @@ class CreatePhoto(FSMAction):
 
         message = models.Message.get_by_id(context['key'].id())
 
+        img = images.Image(blob_key=message.picture_key)
+
         if context.has_key('orientation'):
             orientation = context['orientation']
-
-            img = images.Image(message.picture)
-            img.resize(width=600, height=600)
+            degrees = 0
 
             if orientation == "Rotated 90 CW":
-                img.rotate(90)
-                context.logger.info('image rotated 90')
+                degrees = 90
             elif orientation == "Rotated 180":
-                img.rotate(180)
-                context.logger.info('image rotated 180')
+                degrees = 180
             elif orientation == "Rotated 90 CCW":
-                img.rotate(270)
-                context.logger.info('image rotated 260')
+                degrees = 270
 
-            img.im_feeling_lucky()
-            photo = models.Photo()
-            photo.owner = message.owner
-            photo.picture = db.Blob(img.execute_transforms(output_encoding=images.JPEG))
-            photo.put()
+            if degrees:
+                context.logger.info("image rotated %s degrees" % degrees)
+                img.rotate(degrees)
 
-            entry = models.Entry.get_by_id(context['entrykey'].id())
-            entry.picture_uid = str(photo.key())
-            entry.put()
+        if message.picture_width > 1600 or message.picture_height > 1600:
+            if message.picture_width > message.picture_height:
+                img.resize(width=1600)
+            else:
+                img.resize(height=1600)
 
-        return 'success'
+        img.im_feeling_lucky()
 
+        rotated_image = img.execute_transforms(output_encoding=images.JPEG)
+        blobstore.delete(message.picture_key)
 
-class CreateThumbnail(FSMAction):
-    def execute(self, context, obj):
-        context.logger.info('CreateThumbnail.execute()')
+        file_name = files.blobstore.create(mime_type='image/jpeg')
 
-        message = models.Message.get_by_id(context['key'].id())
+        with files.open(file_name, 'a') as f:
+            f.write(rotated_image)
 
-        img = images.Image(message.picture)
-        img.resize(width=48, height=48)
-
-        photo = models.Photo()
-        photo.owner = message.owner
-        photo.picture = db.Blob(img.execute_transforms(output_encoding=images.JPEG))
-        photo.put()
+        files.finalize(file_name)
+        blob_key = files.blobstore.get_blob_key(file_name)
 
         entry = models.Entry.get_by_id(context['entrykey'].id())
-        entry.thumbnail_uid = str(photo.key())
+        entry.picture_url = images.get_serving_url(blob_key=str(blob_key))
+        entry.picture_key = str(blob_key)
         entry.put()
 
         return 'success'
@@ -188,8 +196,9 @@ class ProcessTags(FSMAction):
         context.logger.info('ProcessTags.execute()')
         message = models.Message.get_by_id(context['key'].id())
         entry = models.Entry.get_by_id(context['entrykey'].id())
-        entry.tags = message.subject.split(' ')
-        entry.put()
+        if message.subject:
+            entry.tags = message.subject.split(' ')
+            entry.put()
         return 'complete'
 
 
@@ -199,8 +208,9 @@ class ProcessContent(FSMAction):
 
         message = models.Message.get_by_id(context['key'].id())
         entry = models.Entry.get_by_id(context['entrykey'].id())
-        content = message.body.replace("Sent from my iPhone", "")
-        entry.content = content
+        if message.body:
+            content = message.body.replace("Sent from my iPhone", "")
+            entry.content = content
         entry.put()
 
         return 'complete'
