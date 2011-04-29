@@ -1,0 +1,143 @@
+/* Journal Entries
+--------------------------------------------- */
+
+entry-date {
+    padding: 115px 0;
+
+}
+
+.entry-box-wrapper {
+    margin: auto;
+    text-align: center;
+    width: 100%;
+    padding-bottom: 25px;
+
+}
+
+.entry-box {
+    position: relative;
+    display: inline-block;
+    width: 400px;
+
+    border: 1px solid #bfd4d9;
+    margin: 25px 10px 0 10px;
+    vertical-align: top;
+    padding: 10px 15px;
+    float: left;
+
+    background-color: #fff;
+
+}
+
+.entry-box p {
+    text-align: left;
+    padding: 40px 0;
+    font-size: 1.4em;
+}
+
+.entry-box a {
+    text-decoration: none;
+}
+
+.entry-box span {
+    display: block;
+    position: absolute;
+    width: 100%;
+    right: 0;
+    top: 0;
+}
+
+.entry-box .thumbtack {
+    width: 25px;
+    margin-top: -10px;
+    margin-left: 85px
+}
+
+.entry-box span em {
+    display: block;
+    float: right;
+    padding: 15px 25px 0 0;
+    color: #00ff00;
+    font-size: 1.2em;
+    text-shadow: 0.1em 0.1em 0.2em black;
+    font-weight: bold;
+}
+
+.entry-box img {
+    width: 100%;
+}
+
+.entry-footer {
+    display: inline-block;
+    width: 100%;
+    padding: 10px 0 0 0;
+}
+
+.journal-icons {
+    float: right;
+}
+
+.journal-icons img {
+    float: right;
+    width: 24px;
+    display: inline;
+    padding: 0 5px 0 5px;
+}
+
+.journal-tags {
+    float: left;
+}
+
+.journal-tags li {
+    background: url(/public/images/tagleft.png) no-repeat left top;
+}
+
+.journal-tags li a:link,
+.journal-tags li a:visited {
+    background: url(/public/images/tagright.png) no-repeat right top;
+}
+
+.journal-tags li {
+    float: left;
+    margin: 0 8px 10px 0;
+    padding: 0 0 0 20px;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.journal-tags li a:link,
+.journal-tags li a:visited {
+    display: block;
+    margin: 0 -2px 0 0;
+    padding: 4px 10px 4px 0;
+    color: #333;
+    text-decoration: none;
+}
+
+.journal-tags li:hover {
+    opacity: 1.0 !important;
+}
+
+.rotate-right {
+    -webkit-transform: rotate(.3deg);
+    -moz-transform: rotate(.3deg);
+    box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.3);
+}
+
+.rotate-none {
+    -webkit-transform: rotate(.0deg);
+    -moz-transform: rotate(.0deg);
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+}
+
+.rotate-left {
+    -webkit-transform: rotate(-.3deg);
+    -moz-transform: rotate(-.3deg);
+    box-shadow: -2px 3px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: -2px 3px 3px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: -2px 3px 3px rgba(0, 0, 0, 0.3);
+}

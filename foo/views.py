@@ -84,6 +84,8 @@ class MainPage(TemplatedPage):
             entries.filter("owner", account.user)
             entries.order("-created")
             values["entries"] = entries.fetch(10)
+            values["display"] = ['rotate-right','rotate-none','rotate-left']
+            values["pincolor"] = ["black","blue","green","grey","purple","red","yellow"]
 
         self.write_template(values)
 

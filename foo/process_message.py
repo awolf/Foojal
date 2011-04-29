@@ -13,6 +13,7 @@ from StringIO import StringIO
 import EXIF
 import models
 import pickle
+import settings
 
 class FindMemeberStatus(FSMAction):
     def execute(self, context, obj):
@@ -125,6 +126,8 @@ class CreatePhoto(FSMAction):
     def execute(self, context, obj):
         context.logger.info('CreatePhoto.execute()')
 
+        if settings.DEBUG: return 'success'
+
         message = models.Message.get_by_id(context['key'].id())
 
         img = images.Image(blob_key=message.picture_key)
@@ -152,7 +155,9 @@ class CreatePhoto(FSMAction):
 
         img.im_feeling_lucky()
 
+
         rotated_image = img.execute_transforms(output_encoding=images.JPEG)
+
         blobstore.delete(message.picture_key)
 
         file_name = files.blobstore.create(mime_type='image/jpeg')

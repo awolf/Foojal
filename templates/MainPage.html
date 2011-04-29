@@ -4,30 +4,55 @@
 
 {% block content %}
 
-<hr/>
-<div class="span-24 last">
-    <ol class="entries">
-        {% for entry in entries %}
-        <li>
-            <div class="entry">
-                <a href="/">
-                    {% if entry.picture_url %}
-                    <img src="{{ entry.picture_url }}=s600" alt="Photo"/>
-                    {% else %}
-                    <img src="/public/images/photo.jpg" alt="Photo"/>
-                    {%endif%}
-                    <span>
-                        <strong>
-                            {% for tag in entry.tags %}
-                            [{{ tag }}>
-                            {% endfor %}</strong>
-                        <em>{{ entry.content }}</em>
-                    </span>
-                </a>
+
+{% regroup entries by created|date:"l F d  Y" as day_list %}
+{% for d in day_list %}
+
+<h2 class="entry-date">{{ d.grouper }}</h2>
+<div class="entry-box-wrapper col-full">
+    {% for entry in d.list %}
+
+    <div class="entry-box {{ display|random }}">
+
+        <a href="/">
+
+            {% if entry.picture_url %}
+            <img  src="{{ entry.picture_url }}=s400" alt="Photo"/>
+            {% else %}
+                <p>{{ entry.content }}</p>
+            {%endif%}
+            <span>
+                <img class="thumbtack" src="/public/images/{{pincolor|random}}pin.png"/>
+                <em>{{ entry.created|date:"g:i a" }}</em>
+            </span>
+        </a>
+
+        <div class="entry-footer">
+            {% if entry.tags %}
+            <ul class="journal-tags">
+                {% for tag in entry.tags %}
+                <li style="opacity:0.75"><a href="/" title="">{{ tag }}</a></li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="journal-icons">
+                {% if entry.content %}
+                <a href="/"> <img src="/public/images/basic2-059.png"/></a>
+                {% endif %}
+                {% if entry.location %}
+                <a href="/"> <img src="/public/images/basic2-247.png"/></a>
+                {% endif %}
             </div>
-        </li>
-        {% endfor %}
-    </ol>
+
+        </div>
+    </div>
+
+
+    {%endfor %}
 </div>
+{% endfor %}
+
+
 {% endblock %}
 

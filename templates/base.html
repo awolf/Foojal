@@ -3,83 +3,274 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Foojal | {% block title %}{% endblock %} - The Photo Food Journal</title>
-    <link type="text/css" rel="stylesheet" href="/public/stylesheets/screen.css" type="text/css"
+    <link type="text/css" rel="stylesheet" href="/public/stylesheets/style.css" type="text/css"
           media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="/public/stylesheets/shortcodes.css" type="text/css"
+          media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="/public/stylesheets/prettyPhoto.css" type="text/css"
+          media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="/public/stylesheets/custom.css" type="text/css"
+          media="screen, projection">
+    <link href="http://fonts.googleapis.com/css?family=Droid+Sans:r,b" rel="stylesheet" type="text/css">
 
     <link rel="apple-touch-icon" href="/public/images/touch-icon-iphone.png"/>
     <link rel="apple-touch-icon" sizes="72x72" href="/public/images/touch-icon-ipad.png"/>
     <link rel="apple-touch-icon" sizes="114x114" href="/public/images/touch-icon-iphone4.png"/>
     <link rel="apple-touch-startup-image" href="/public/images/apple-touch-startup-image.png">
+    <style type="text/css">
+        h1, h2, h3, h4, h5, h6, .widget h3, .post .title, .slide-nav li span.title, .slide a.btn, #copyright span, .nav-entries {
+            font-family: 'Droid Sans', serif;
+        }
+    </style>
 </head>
-<body>
-<div id="wrap" class="group">
 
 
-    <div id="header" class="group">
-        <img src="/public/images/Foojal.png" alt="Foojal Photo Food Journal Logo"/>
-        
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/account"> <img src="/public/images/icons/person.png" width="15px"> {{ account.nickname }}</a>
-            </li>
-            {%if user%}
-            <li><a href="{{sign_out}}">Sign out</a></li>
-            {% else %}
-            <li><a href="{{sign_in}}">Sign out</a></li>
+<body class="home blog chrome">
+<div id="wrapper">
+<div id="header-out">
+    <div id="header">
+        <div id="top" class="col-full">
+            <div id="logo" class="col-left">
+                <a href="http://www.foojal.com" title="Your photo food journal"><img
+                        src="/public/images/Foojal.png"
+                        alt="Foojal"></a>
+
+                <h1 class="site-title">
+                    <a href="http://www.foojal.com">Foojal</a>
+                </h1><span class="site-description">Your photo food journal</span>
+            </div>
+            <!-- /#logo -->
+            {%if account.user != None %}
+            <div id="navigation" class="col-right">
+                <ul id="main-nav" class="nav fl sf-js-enabled">
+                    <li id="menu-item-91"
+                        class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-91">
+                        <a title="Home" href="/">Home</a>
+                    </li>
+                    <li id="menu-item-88"
+                        class="menu-item menu-item-type-post_type menu-item-object-page menu-item-88">
+                        <a href="/account">{{ account.nickname }}</a>
+                    </li>
+                    <li id="menu-item-109"
+                        class="menu-item menu-item-type-post_type menu-item-object-page menu-item-109">
+                        <a href="http://www.foojal.com/help/">Help</a>
+                    </li>
+                    {%if user%}
+                    <li class="menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="{{sign_out}}">Sign out</a></li>
+                    {% else %}
+                    <li class="menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="{{sign_in}}">Sign in</a></li>
+                    {%endif%}
+                </ul>
+            </div>
+            <!-- /#navigation -->
             {%endif%}
-        </ul>
+            <div class="fix"></div>
+        </div>
+        <!-- /#top -->
     </div>
-
-
-    <div class="main">
-        {%if account.user == None %}
-
-        <h1>Your Journal is empty</h1>
-
-        <h3>Please send a food photo to Food@foojalWorld.appspotmail.com</h3>
-
-        {% else %}
-        {% if account.is_expired %}
-
-        <h3>Your account is expired. Please signup for another year </h3>
-
-        {% else %}
-        {% if error %}
-        <div class="error">
-            {{ error }}
-        </div>
-        {% endif %}
-
-        {% if notice %}
-        <div class="notice">
-            {{ notice }}
-        </div>
-        {% endif %}
-
-        {% if info %}
-        <div class="info">
-            {{ info }}
-        </div>
-        {% endif %}
-
-        {% if success %}
-        <div class="success">
-            {{ success }}
-        </div>
-        {% endif %}
-        {% block content %}{% endblock %}
-        {%endif%}
-        {%endif%}
-
-    </div>
-
-    <div id="footer">
-        Copyright &copy; 2009. Blue Cognition LLC <a href="http://bluecognition.com.com/">www.BlueCognition.com</a>.<br>
-        User is admin is: {{ is_admin }}<br>
-        Current user is: {{ user }}
-    </div>
-    <!-- /footer -->
+    <!-- /#header -->
 </div>
-<!-- /wrap -->
+<!-- /#header-out -->
+<div id="content" class="col-full">
+
+    {%if account.user == None %}
+    <div id="slides">
+        <div class="slides_container col-full" style="overflow-x: hidden; overflow-y: hidden; position: relative;">
+            <div class="slides_control" style="position: relative; width: 2880px; left: -960px; height: 395px;">
+                <div class="slide" style="top: 0px; left: 960px; z-index: 0; position: absolute; display: block;">
+                    <div class="slide-content entry fl">
+                        <h2 class="title">Your Foojal is empty!</h2>
+                        <br/>
+                        <a href="mailto:Food@foojalWorld.appspotmail.com" class="woo-sc-button  red large"><span
+                                class="woo-">Email us a sexy food photo</span></a>
+
+                        <p>Most of us don't drink enough water. Why not get some cool refreshing water to start off your
+                            Foojal food journal.</p>
+                    </div>
+                    <!-- /.slide-content -->
+                    <div class="slide-image fr">
+                        <img class="slide-img" src="/public/images/send.png"
+                             alt="">
+                    </div>
+                    <!-- /.slide-image -->
+                    <div class="fix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.slide -->
+
+
+    {% else %}
+    {% if account.is_expired %}
+    <div class="slides_container col-full" style="overflow-x: hidden; overflow-y: hidden; position: relative;">
+        <div class="slides_control" style="position: relative; width: 2880px; left: -960px; height: 395px;">
+            <div class="slide" style="top: 0px; left: 960px; z-index: 0; position: absolute; display: block;">
+                <div class="slide-content entry fl">
+                    <h3>Your account is expired. Please signup for another year </h3>
+                </div>
+                <!-- /.slide-content -->
+                <div class="slide-image fr">
+                    <img class="slide-img"
+                         src="http://www.foojal.com/wp-content/uploads/2011/04/FoojalScreenshot1.png" alt="">
+                </div>
+                <!-- /.slide-image -->
+                <div class="fix"></div>
+            </div>
+        </div>
+    </div>
+    <!-- /.slide -->
+
+
+    {% else %}
+    {% if error %}
+    <div class="error">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    {% if notice %}
+    <div class="notice">
+        {{ notice }}
+    </div>
+    {% endif %}
+
+    {% if info %}
+    <div class="info">
+        {{ info }}
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div class="success">
+        {{ success }}
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+    {%endif%}
+    {%endif%}
+</div>
+<!-- /#content -->
+<div id="footer">
+    <div id="footer-widgets" class="col-full">
+        <div class="block">
+            <div id="text-6" class="widget widget_text">
+                <h3>
+                    Pages
+                </h3>
+
+                <div class="textwidget">
+                    <ul>
+                        <li>
+                            <a href="http://www.foojal.com/price/" title="Price">Price</a>
+                        </li>
+                        <li>
+                            <a href="http://www.foojal.com/tour/" title="tour Us">Take a Tour</a>
+                        </li>
+                        <li>
+                            <a href="http://www.foojal.com/security/" title="Security">Security</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="block">
+            <div id="text-2" class="widget widget_text">
+                <h3>
+                    Getting Help
+                </h3>
+
+                <div class="textwidget">
+                    <ul>
+                        <li>
+                            <a href="http://www.foojal.com/contact-us/">Get in touch with support</a>
+                        </li>
+                        <li>
+                            <a href="http://www.foojal.com/help/">Help</a>
+                        </li>
+                        <li>
+                            <a href="http://www.foojal.com/screencasts/">Screencasts</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="block">
+            <div id="text-5" class="widget widget_text">
+                <h3>
+                    Legal Mumbo Jumbo
+                </h3>
+
+                <div class="textwidget">
+                    <ul>
+                        <li>
+                            <a href="http://www.foojal.com/terms-of-use/">Terms of Use</a>
+                        </li>
+                        <li>
+                            <a href="http://www.foojal.com/privacy-policy/">Privacy Policy</a>
+                        </li>
+                        <li>
+                            <a href="http://www.foojal.com/copyright-policy">Copyright Policy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="block last">
+            <div id="text-7" class="widget widget_text">
+                <h3>
+                    Real Phone Number
+                </h3>
+
+                <div class="textwidget">
+                    1-800-555-1212
+                </div>
+            </div>
+        </div>
+        <div class="fix"></div>
+    </div>
+    <!-- /#footer-widgets  -->
+    <div class="col-full">
+        <div class="col-left">
+            <div id="copyright">
+                <p>
+                    © 2007 - 2011 <a href="http://www.bluecognition.com"><strong>Blue Cognition
+                    LLC.</strong></a>.
+                    All Rights Reserved.
+                </p>
+                User is admin is: {{ is_admin }}<br>
+                Current user is: {{ user }}
+            </div>
+        </div>
+        <!-- /.col-left  -->
+        <div class="col-right">
+            <div id="credit"></div>
+        </div>
+        <!-- /.col-right  -->
+    </div>
+    <!-- /.col-full  -->
+</div>
+<!-- /#footer  -->
+</div>
+<!-- /#wrapper -->
+<script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-21864521-1']);
+    _gaq.push(['_setDomainName', '.foojal.com']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
 </body>
 </html>
