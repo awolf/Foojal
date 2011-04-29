@@ -1,0 +1,232 @@
+body {
+    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    color: #51463d;
+    font-size: 100%;
+    background: #ffffff;
+}
+
+/* links */
+
+a:link, a:visited {
+    font-weight: bold;
+    text-decoration: none;
+    outline: none;
+    color: #3792b3;
+}
+
+/* page structure 
+--------------------------------------------- */
+
+#wrap {
+    width: 1000px;
+    max-width: 1000px;
+    min-width: 700px;
+    margin: 0 auto;
+    padding: 0 0 0 0;
+}
+
+.main {
+    float: left;
+    width: 100%;
+}
+
+.secondary {
+    float: right;
+    width: 25%;
+}
+
+#footer {
+    clear: both;
+    margin: 0 auto;
+    padding: 10px 0 30px 0;
+    font-size: 1em;
+    /*color: #9c836e;*/
+    border-top: 2px solid #e2e1d4;
+}
+
+/* Header
+--------------------------------------------- */
+#header {
+    float: left;
+    width: 100%;
+    padding: 20px 0 40px 0;
+    position: relative;
+}
+
+#header img {
+    display: block;
+    float: left;
+    position: relative;
+}
+
+#header ul {
+    float: right !important;
+    display: inline-block;
+    padding-top: 60px;
+}
+
+#header ul li {
+    display: inline-block;
+    list-style-type: none;
+    padding-right: 20px;
+}
+
+#header ul li.last {
+    margin-right: 0;
+}
+
+#header ul li a {
+    display: block;
+    float: left;
+    width: 100%;
+    font-size: 1em;
+    line-height: 1.3em;
+    font-weight: bold;
+    text-decoration: none;
+    letter-spacing: 2px;
+}
+
+/* Journal Entries
+--------------------------------------------- */
+ol.entries {
+    list-style-type: none;
+}
+
+ol.entries li {
+    width: 485px;
+    float: left;
+    margin: 0 15px 1.5em 0;
+
+}
+
+ol.entries li div.entry {
+    position: relative;
+    border: 15px solid #e2e1d4;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    background-color: #e2e1d4;
+}
+
+ol.entries li div.entry img {
+    width: 100%;
+}
+
+ol.entries li div.entry a span {
+    display: block;
+    position: absolute;
+    width: 100%;
+    bottom: 1px;
+    left: 0;
+    font-family: Georgia, serif;
+    font-size: 1.1em;
+    line-height: 1.3em;
+    color: #ccc;
+    background: #333;
+    background: rgba(0, 0, 0, .7);
+}
+
+ol.entries li div.entry a span strong {
+    display: block;
+    padding: 10px 10px 0 10px;
+    font-weight: normal;
+    font-style: italic;
+    color: #fff;
+}
+
+ol.entries li div.entry a span em {
+    display: block;
+    padding: 0 10px 10px 10px;
+    font-style: normal;
+    color: #e3c887;
+}
+
+/* comment form */
+
+#comment-form fieldset {
+    margin: 0 0 15px 0;
+}
+
+#comment-form fieldset label {
+    display: block;
+    margin: 0 0 3px 0;
+    font-weight: bold;
+}
+
+#comment-form fieldset input,
+#comment-form fieldset textarea {
+    width: 90%;
+    padding: 5px;
+    font-size: 1.4em;
+    border: none;
+    border-bottom: 1px solid #fff;
+    border-right: 1px solid #fff;
+    background: #e2e1d7 url(../img/input-bg.gif) repeat-x top left;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+#comment-form fieldset textarea {
+    height: 100px;
+}
+
+#comment-form fieldset input:focus,
+#comment-form fieldset textarea:focus {
+    background: #fff;
+}
+
+/* footer 
+--------------------------------------------- */
+
+#footer a {
+    /*color: #51463d;*/
+}
+
+/* flash messages
+--------------------------------------------- */
+.error, .notice, .success {padding:.8em;margin-bottom:1em;border:2px solid #ddd;}
+.error {background:#FBE3E4;color:#8a1f11;border-color:#FBC2C4;}
+.notice {background:#FFF6BF;color:#514721;border-color:#FFD324;}
+.success {background:#E6EFC2;color:#264409;border-color:#C6D880;}
+.error a {color:#8a1f11;}
+.notice a {color:#514721;}
+.success a {color:#264409;}
+
+
+
+/* misc.
+--------------------------------------------- */
+
+span.amp {
+    font-family: Baskerville, "Goudy Old Style", "Palatino", "Book Antiqua", serif;
+    font-weight: normal;
+    font-style: italic;
+    font-size: 1.2em;
+    color: #766557;
+}
+
+hr, .hide {
+    display: none;
+}
+
+a img {
+    border: none;
+}
+
+.group:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+a:link, a:visited {
+    -webkit-transition: color .2s linear;
+}
+
+a:hover {
+    color: rgba(55, 146, 179, .8);
+}
