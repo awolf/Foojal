@@ -91,3 +91,7 @@ AMOUNT_CHARGED_NOTIFICATION = [
         'google-order-number',
         'total-charge-amount',
         ]
+
+PIN_COLORS = ["black","blue","green","grey","purple","red","yellow"]
+
+TAG_PUNCTUATION_BLACKLIST = """!"#$%&()*+,./:;<=>?@[\]^`{|}~"""

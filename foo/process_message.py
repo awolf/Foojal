@@ -14,6 +14,7 @@ import EXIF
 import models
 import pickle
 import settings
+import string
 
 class FindMemeberStatus(FSMAction):
     def execute(self, context, obj):
@@ -201,9 +202,16 @@ class ProcessTags(FSMAction):
         context.logger.info('ProcessTags.execute()')
         message = models.Message.get_by_id(context['key'].id())
         entry = models.Entry.get_by_id(context['entrykey'].id())
+
         if message.subject:
-            entry.tags = message.subject.split(' ')
+            subject = str(message.subject)
+            table = string.maketrans("","")
+            subject = subject.translate(table, settings.TAG_PUNCTUATION_BLACKLIST)
+            tags = subject.split(' ')
+            tags = filter(None,tags)
+            entry.tags = tags
             entry.put()
+
         return 'complete'
 
 
