@@ -110,6 +110,7 @@ class Entry(TemplatedPage):
         values["pincolor"] = settings.PIN_COLORS
 
         entries = models.Entry.all()
+        entries.filter("owner" , account.user)
         entries.filter("tags IN", entry.tags)
         entries.filter("__key__ !=", entry.key())
         results = entries.fetch(10)
