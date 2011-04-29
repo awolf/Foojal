@@ -113,9 +113,9 @@ class Entry(TemplatedPage):
         entries.filter("owner" , account.user)
         entries.filter("tags IN", entry.tags)
         entries.filter("__key__ !=", entry.key())
-        results = entries.fetch(10)
+        values["entries"] = entries.fetch(10)
 
-        values["entries"] = sorted(results, key=lambda entry: entry.created)
+        #values["entries"] = sorted(results, key=lambda entry: entry.created)
 
         values["display"] = ['rotate-right','rotate-none','rotate-left']
         values["pincolor"] = settings.PIN_COLORS

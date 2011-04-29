@@ -14,12 +14,9 @@ import EXIF
 import models
 import pickle
 import settings
-import string
 
 class FindMemeberStatus(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('IsMemeber.execute()')
-        context.logger.info("Process message key := %s" % (str(context['key'])))
         message = models.Message.get_by_id(context['key'].id())
         context['sender'] = message.sender
         account = models.Account.get_account_by_email(message.sender)
@@ -37,21 +34,16 @@ class FindMemeberStatus(FSMAction):
 
 class InviteMemeber(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('InviteMemeber.execute()')
-        context.logger.info("Queueing invitation to %s" % (context['sender']))
-
         models.Invitation.send_invitation(context['sender'])
         return 'success'
 
 
 class ExpiredMemeber(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('ExpiredMemeber.execute()')
         message = models.Message.get_by_id(context['key'].id())
         account = models.Account.get_by_id(message.owner)
 
         # todo: we should email the user to pay up motherfucker
-
         if account:
             if account.is_expired:
                 if account.should_blacklist:
@@ -61,7 +53,6 @@ class ExpiredMemeber(FSMAction):
 
 class BlacklistMemeber(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('BlacklistMemeber.execute()')
         message = models.Message.get_by_id(context['key'].id())
         models.BlackList.blacklist_email(message.sender)
         pass
@@ -69,7 +60,6 @@ class BlacklistMemeber(FSMAction):
 
 class PrepareEntry(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('PrepareEntry.execute()')
         message = models.Message.get_by_id(context['key'].id())
 
         entry = models.Entry()
@@ -88,7 +78,6 @@ class PrepareEntry(FSMAction):
 
 class GetExifTags(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('GetExifTags.execute()')
         message = models.Message.get_by_id(context['key'].id())
 
         blob_reader = blobstore.BlobReader(message.picture_key, buffer_size=5000)
@@ -101,19 +90,10 @@ class GetExifTags(FSMAction):
                 entry.put()
 
                 context['orientation'] = str(tags["Image Orientation"])
-                context.logger.info(str(tags["Image Orientation"]))
-
                 context['longitude'] = tags['GPS GPSLongitude']
-                context.logger.info(str(tags['GPS GPSLongitude']))
-
                 context['longitudeReference'] = str(tags['GPS GPSLongitudeRef'])
-                context.logger.info(str(tags['GPS GPSLongitudeRef']))
-
                 context['latitude'] = tags['GPS GPSLatitude']
-                context.logger.info(str(tags['GPS GPSLatitude']))
-
                 context['latitudeReference'] = str(tags['GPS GPSLatitudeRef'])
-                context.logger.info(str(tags['GPS GPSLatitudeRef']))
             except Exception, err:
                 context.logger.info("Error fetching GPS Tags " + str(err))
 
@@ -125,7 +105,6 @@ class GetExifTags(FSMAction):
 
 class CreatePhoto(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('CreatePhoto.execute()')
 
         if settings.DEBUG: return 'success'
 
@@ -179,8 +158,6 @@ class CreatePhoto(FSMAction):
 
 class GeocodeImage(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('GeocodeImage.execute()')
-
         if context.has_key('longitude') and context.has_key('latitude'):
             longitude = context['longitude'].decode()
             longitude = str(longitude)[1:-1].split(',')
@@ -199,26 +176,16 @@ class GeocodeImage(FSMAction):
 
 class ProcessTags(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('ProcessTags.execute()')
         message = models.Message.get_by_id(context['key'].id())
         entry = models.Entry.get_by_id(context['entrykey'].id())
-
         if message.subject:
-            subject = str(message.subject)
-            table = string.maketrans("","")
-            subject = subject.translate(table, settings.TAG_PUNCTUATION_BLACKLIST)
-            tags = subject.split(' ')
-            tags = filter(None,tags)
-            entry.tags = [x.lower() for x in tags]
+            entry.tags = [tag for tag in message.subject.split(' ') if tag]
             entry.put()
-
         return 'complete'
 
 
 class ProcessContent(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('ProcessContent.execute()')
-
         message = models.Message.get_by_id(context['key'].id())
         entry = models.Entry.get_by_id(context['entrykey'].id())
         if message.body:
@@ -231,8 +198,6 @@ class ProcessContent(FSMAction):
 
 class CleanUpMessage(FSMAction):
     def execute(self, context, obj):
-        context.logger.info('CleanUpMessage.execute()')
-
         message = models.Message.get_by_id(context['key'].id())
         message.delete()
         pass

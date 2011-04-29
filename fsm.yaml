@@ -10,6 +10,7 @@ state_machines:
   context_types:
     key: google.appengine.ext.db.Key
     entrykey: google.appengine.ext.db.Key
+    message: foo.models.Message
 
   states:
   - name: memberstatusstate

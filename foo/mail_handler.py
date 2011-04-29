@@ -71,7 +71,7 @@ class DefaultMailHandler(InboundMailHandler):
         message.sender = mail_message.sender
         message.to = mail_message.to
         if hasattr(mail_message, 'subject'):
-            message.subject = mail_message.subject
+            message.subject = mail_message.subject.lower()
 
         message.body = getMailBody(mail_message)
 
