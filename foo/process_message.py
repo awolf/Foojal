@@ -209,7 +209,7 @@ class ProcessTags(FSMAction):
             subject = subject.translate(table, settings.TAG_PUNCTUATION_BLACKLIST)
             tags = subject.split(' ')
             tags = filter(None,tags)
-            entry.tags = tags
+            entry.tags = [x.lower() for x in tags]
             entry.put()
 
         return 'complete'
