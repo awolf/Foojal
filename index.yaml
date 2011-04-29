@@ -22,6 +22,21 @@ indexes:
   - name: created
     direction: desc
 
+- kind: Entry
+  properties:
+  - name: tags
+  - name: created
+    direction: desc
+
+- kind: Entry
+  properties:
+  - name: tags
+  - name: tags
+  - name: tags
+  - name: tags
+  - name: created
+    direction: desc
+
 - kind: Message
   properties:
   - name: account_key

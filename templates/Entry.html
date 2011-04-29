@@ -1,9 +1,49 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Entry{% endblock %}
 
 {% block content %}
 
+<h2>{{ entry.created|date:"l F d Y" }}</h2>
+
+<div class="col-full" style="margin-bottom:100px">
+    <div class="entry-box " >
+
+        <a href="/">
+
+            {% if entry.picture_url %}
+            <img src="{{ entry.picture_url }}=s400" alt="Photo"/>
+            {% else %}
+            <p>{{ entry.content }}</p>
+            {%endif%}
+            <span>
+                <em>{{ entry.created|date:"g:i a" }}</em>
+            </span>
+        </a>
+
+        <div class="entry-footer">
+            {% if entry.tags %}
+            <ul class="journal-tags">
+                {% for tag in entry.tags %}
+                <li style="opacity:0.75"><a href="/" title="">{{ tag }}</a></li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="journal-icons">
+                {% if entry.content %}
+                <a href="/"> <img src="/public/images/basic2-059.png"/></a>
+                {% endif %}
+                {% if entry.location != None %}
+                <a href="/"> <img src="/public/images/basic2-247.png"/></a>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+<h2> Journal Entries with the same tags</h2>
+        <hr>
 
 {% regroup entries by created|date:"l F d  Y" as day_list %}
 {% for d in day_list %}
@@ -17,9 +57,9 @@
         <a href="/entry/{{entry.key}}">
 
             {% if entry.picture_url %}
-            <img  src="{{ entry.picture_url }}=s400" alt="Photo"/>
+            <img src="{{ entry.picture_url }}=s400" alt="Photo"/>
             {% else %}
-                <p>{{ entry.content }}</p>
+            <p>{{ entry.content }}</p>
             {%endif%}
             <span>
                 <img class="thumbtack" src="/public/images/{{pincolor|random}}pin.png"/>

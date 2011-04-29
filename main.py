@@ -13,6 +13,7 @@ logging.info('Loading %s, app version = %s',
 
 ROUTES = [
         ('/', MainPage),
+        ('/entry/(.*)', Entry),
         ('/account', AccountPage),
         ('/invitation', SendInvite),
         ('/google_checkout/.*', google_checkout.GoogleListener),
