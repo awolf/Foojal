@@ -33,6 +33,9 @@ def main():
 if __name__ == "__main__":
     main()
 
+# todo Trim the content from the email
+
+#~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 # todo Memcache - Added blacklist email list to memcache and update it every 1hr with cron job
 # todo Email - Move all outbound emails to an email.py
 # todo Admin - Add admin pages to the admin section see: http://code.google.com/appengine/docs/python/config/appconfig.html#Administration_Console_Custom_Pages

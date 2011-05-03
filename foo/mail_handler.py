@@ -45,7 +45,7 @@ def getMailBody(mail_message):
     body_text = ""
     for content_type, body in plaintext_bodies:
         body_text = body_text + body.decode() + " "
-    return body_text
+    return body_text.strip()
 
 
 class DefaultMailHandler(InboundMailHandler):

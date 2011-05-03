@@ -202,7 +202,7 @@ class Entry(db.Model):
         account = Account.get_user_account()
 
         if entry.owner == account.user:
-            entry.content = content
+            entry.content = content.strip()
             entry.tags = [tag for tag in tags.lower().split(' ') if tag]
             entry.put()
 
