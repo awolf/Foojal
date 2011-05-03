@@ -68,6 +68,18 @@ class TemplatedPage(webapp.RequestHandler):
             #library.user_cache.clear() # don't want this sticking around
 
 
+class RESTfulHandler(TemplatedPage):
+    def post(self, *args):
+        method = self.request.get('_method')
+
+        if method == "put":
+            self.put(*args)
+        elif method == "delete":
+            self.delete(*args)
+        else:
+            self.post(*args)
+
+
 class MainPage(TemplatedPage):
     """Home page for Foojal"""
 
@@ -90,8 +102,12 @@ class MainPage(TemplatedPage):
         self.write_template(values)
 
 
-class Entry(TemplatedPage):
+class Entry(RESTfulHandler):
     """ Entry detail page """
+
+    def delete(self, key):
+        models.Entry.delete_by_key(key)
+        self.redirect('/')
 
     @login_required
     def get(self, key):
@@ -130,13 +146,14 @@ class Tag(TemplatedPage):
         entries.filter("owner", account.user)
         entries.filter("tags =", tag)
         entries.order("-created")
-        
+
         values["tag"] = tag
         values["entries"] = entries.fetch(10)
         values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
         values["pincolor"] = settings.PIN_COLORS
 
         self.write_template(values)
+
 
 class Map(TemplatedPage):
     """ Entry map page """
@@ -145,7 +162,7 @@ class Map(TemplatedPage):
     def get(self, key):
         """ show journal entry for the sent id """
         values = {}
-        
+
         entry = models.Entry.get(key)
 
         values["entry"] = entry
@@ -153,7 +170,6 @@ class Map(TemplatedPage):
         values["pincolor"] = settings.PIN_COLORS
 
         self.write_template(values)
-
 
 
 class AccountPage(TemplatedPage):

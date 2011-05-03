@@ -30,14 +30,21 @@
 
             <div class="journal-icons">
                 {% if entry.content %}
-                <a href="/"> <img src="/public/images/basic2-247.png"/></a>
+                <a href="/"> <img src="/public/images/note.png"/></a>
                 {% endif %}
                 {% if entry.location != None %}
-                <a href="/entry/map/{{entry.key}}"> <img src="/public/images/basic2-059.png"/></a>
+                <a href="/entry/map/{{entry.key}}"> <img src="/public/images/map_pin.png"/></a>
                 {% endif %}
             </div>
 
         </div>
+         <form action='/entry/{{entry.key}}' method='post'>
+                <input type="hidden" name="_method" value="delete" />
+                <button type="submit">
+                    <img src="/public/images/trash.png" alt="trash">
+                </button>
+          </form>
+
     </div>
 
     <img src="http://maps.google.com/maps/api/staticmap?size=400x512&maptype=roadmap
@@ -86,10 +93,10 @@
 
             <div class="journal-icons">
                 {% if entry.content %}
-                <a href="/"> <img src="/public/images/basic2-247.png"/></a>
+                <a href="/"> <img src="/public/images/note.png"/></a>
                 {% endif %}
                 {% if entry.location %}
-                <a href="/entry/map/{{entry.key}}"> <img src="/public/images/basic2-059.png"/></a>
+                <a href="/entry/map/{{entry.key}}"> <img src="/public/images/map_pin.png"/></a>
                 {% endif %}
             </div>
 

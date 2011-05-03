@@ -39,3 +39,4 @@ if __name__ == "__main__":
 # todo Error - Add a custom error message to the application see: http://code.google.com/appengine/docs/python/config/appconfig.html#Custom_Error_Responses
 # todo Admin - Add appstats to the admin see: http://code.google.com/appengine/docs/python/tools/appstats.html
 # todo Admin - Need the ability to look at images and view the exif data from the photo.
+# todo user - if a person deletes their last photo we should show the send us a sexy food photo page.

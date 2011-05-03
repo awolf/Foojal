@@ -7,6 +7,7 @@ from datetime import timedelta, datetime
 from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import taskqueue
+from google.appengine.ext import blobstore
 
 def save_communication(text):
     CartCommunications(text=text).put()
@@ -109,6 +110,9 @@ class Entry(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
 
+    def has_picture(self):
+        return self.picture_url
+
     @classmethod
     def transfer_to_account(cls, sender, user):
         entries = Entry.all()
@@ -120,6 +124,20 @@ class Entry(db.Model):
         for entry in entries:
             entry.owner = user
             entry.put()
+
+    @classmethod
+    def delete_by_key(cls, key):
+        entry = cls.get(key)
+        account = Account.get_user_account()
+
+        if entry.owner == account.user:
+            if entry.has_picture():
+                picture = blobstore.BlobInfo.get(entry.picture_key)
+                if picture:
+                    picture.delete()
+            entry.delete()
+
+
 
 
 class Account(db.Model):
