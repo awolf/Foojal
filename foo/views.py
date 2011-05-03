@@ -18,7 +18,6 @@ from google.appengine.ext.webapp.util import login_required
 from google.appengine.runtime import DeadlineExceededError
 from google.appengine.runtime import apiproxy_errors
 from google.appengine.api.mail import EmailMessage
-from google.appengine.api.datastore import Key
 
 # Local imports
 import models
@@ -85,7 +84,7 @@ class MainPage(TemplatedPage):
             entries.filter("owner", account.user)
             entries.order("-created")
             values["entries"] = entries.fetch(10)
-            values["display"] = ['rotate-right','rotate-none','rotate-left']
+            values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
             values["pincolor"] = settings.PIN_COLORS
 
         self.write_template(values)
@@ -98,29 +97,64 @@ class Entry(TemplatedPage):
     def get(self, key):
         """ show journal entry for the sent id """
         values = {}
-        
+
         account = models.Account.get_user_account()
         entry = models.Entry.get(key)
 
         if not account or entry.owner != account.user:
             self.redirect(users.create_logout_url("www.foojal.com"))
 
-        values["entry"] = entry
-
-        values["pincolor"] = settings.PIN_COLORS
-
         entries = models.Entry.all()
-        entries.filter("owner" , account.user)
+        entries.filter("owner", account.user)
         entries.filter("tags IN", entry.tags)
         entries.filter("__key__ !=", entry.key())
+
+        values["entry"] = entry
         values["entries"] = entries.fetch(10)
-
-        #values["entries"] = sorted(results, key=lambda entry: entry.created)
-
-        values["display"] = ['rotate-right','rotate-none','rotate-left']
+        values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
         values["pincolor"] = settings.PIN_COLORS
 
         self.write_template(values)
+
+
+class Tag(TemplatedPage):
+    """ Entry tag page """
+
+    @login_required
+    def get(self, tag):
+        """ show journal entry for the sent id """
+        values = {}
+        account = models.Account.get_user_account()
+
+        entries = models.Entry.all()
+        entries.filter("owner", account.user)
+        entries.filter("tags =", tag)
+        entries.order("-created")
+        
+        values["tag"] = tag
+        values["entries"] = entries.fetch(10)
+        values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
+        values["pincolor"] = settings.PIN_COLORS
+
+        self.write_template(values)
+
+class Map(TemplatedPage):
+    """ Entry map page """
+
+    @login_required
+    def get(self, key):
+        """ show journal entry for the sent id """
+        values = {}
+        
+        entry = models.Entry.get(key)
+
+        values["entry"] = entry
+        values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
+        values["pincolor"] = settings.PIN_COLORS
+
+        self.write_template(values)
+
+
 
 class AccountPage(TemplatedPage):
     """ Sign ups and registration """

@@ -1,25 +1,30 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Entry{% endblock %}
 
 {% block content %}
 
+<h2> Tag: {{ tag }}</h2>
 
-{% regroup entries by created|date:"l F d  Y" as day_list %}
-{% for d in day_list %}
-
-<h1 class="entry-date">{{ d.grouper }}</h1>
 <div class="entry-box-wrapper col-full">
-    {% for entry in d.list %}
+
+    <img src="http://maps.google.com/maps/api/staticmap?size=400x512&maptype=roadmap
+    &markers=color:blue
+    {% for entry in entries %}
+     |{{entry.location}}
+    {% endfor %}
+    &sensor=false"/>
+
+    {% for entry in entries %}
 
     <div class="entry-box {{ display|random }}">
 
         <a href="/entry/{{entry.key}}">
 
             {% if entry.picture_url %}
-            <img  src="{{ entry.picture_url }}=s400" alt="Photo"/>
+            <img src="{{ entry.picture_url }}=s400" alt="Photo"/>
             {% else %}
-                <p>{{ entry.content }}</p>
+            <p>{{ entry.content }}</p>
             {%endif%}
             <span>
                 <img class="thumbtack" src="/public/images/{{pincolor|random}}pin.png"/>
@@ -47,12 +52,8 @@
 
         </div>
     </div>
-
-
     {%endfor %}
 </div>
-{% endfor %}
-
 
 {% endblock %}
 

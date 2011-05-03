@@ -24,6 +24,13 @@ indexes:
 
 - kind: Entry
   properties:
+  - name: owner
+  - name: tags
+  - name: created
+    direction: desc
+
+- kind: Entry
+  properties:
   - name: tags
   - name: created
     direction: desc

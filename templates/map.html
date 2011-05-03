@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Entry{% endblock %}
+
+{% block content %}
+
+<h2> Map:</h2>
+<div class="entry-box-wrapper col-full">
+    <img src="http://maps.google.com/maps/api/staticmap?size=850x400&maptype=roadmap&markers=color:blue|{{entry.location}}&zoom=14&sensor=false"/>
+</div>
+
+{% endblock %}
+
