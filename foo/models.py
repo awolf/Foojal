@@ -203,8 +203,21 @@ class Entry(db.Model):
 
         if entry.owner == account.user:
             entry.content = content.strip()
-            entry.tags = [tag for tag in tags.lower().split(' ') if tag]
+
+            entry.tags = [tag for tag in tags.strip().lower().split(' ') if tag]
             entry.put()
+
+    @classmethod
+    def add_new_entry(cls, tags, content, account):
+
+        entry = Entry()
+        entry.owner = account.user
+        entry.content = content.strip()
+        entry.tags = [tag for tag in tags.strip().lower().split(' ') if tag]
+        entry.put()
+
+        return entry.key()
+
 
 
 class BlackList(db.Model):

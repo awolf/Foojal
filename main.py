@@ -14,6 +14,7 @@ logging.info('Loading %s, app version = %s',
 ROUTES = [
         ('/', MainPage),
         ('/entry/map/(.*)', Map),
+        ('/entry/new', NewEntry),
         ('/entry/(.*)', Entry),
         ('/tag/(.*)', Tag),
         ('/account', AccountPage),

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import urllib2
 
 from google.appengine.dist import use_library
 
@@ -25,6 +26,14 @@ import settings
 import google_checkout
 
 IS_DEV = os.environ['SERVER_SOFTWARE'].startswith('Dev')  # Development server
+
+def unescape(s):
+    s = s.replace("&lt;", "<")
+    s = s.replace("&gt;", ">")
+    # this has to be last:
+    s = s.replace("&amp;", "&")
+    return s
+
 
 class TemplatedPage(webapp.RequestHandler):
     """Base class for templatized handlers."""
@@ -101,6 +110,23 @@ class MainPage(TemplatedPage):
 
         self.write_template(values)
 
+
+class NewEntry(TemplatedPage):
+    def get(self):
+        """ Account Display page """
+
+        self.write_template({})
+
+    def post(self):
+        tags = self.request.get('tags')
+        content = self.request.get('content')
+        account = models.Account.get_user_account()
+
+        key = models.Entry.add_new_entry(tags, content, account)
+
+        self.redirect('/entry/' + key.__str__())
+
+
 class Entry(RESTfulHandler):
     """ Entry detail page """
 
@@ -166,6 +192,8 @@ class Tag(TemplatedPage):
     def get(self, tag):
         """ show journal entry for the sent id """
         values = {}
+        tag = urllib2.unquote(tag)
+
         account = models.Account.get_user_account()
 
         entries = models.Entry.all()
@@ -187,6 +215,7 @@ class Map(TemplatedPage):
     @login_required
     def get(self, key):
         """ show journal entry for the sent id """
+
         values = {}
 
         entry = models.Entry.get(key)
@@ -204,16 +233,18 @@ class AccountPage(TemplatedPage):
     @login_required
     def get(self):
         """ Account Display page """
+
         account = models.Account.get_user_account()
 
         if account:
             self.write_template({'account': account})
-            return
+        return
 
         self.write_template({})
 
-    def post(self):
-        """Processes the signup creation request."""
+        def post(self):
+            """Processes the signup creation request."""
+
         account = models.Account.get_user_account()
 
         if account is None:
@@ -236,10 +267,12 @@ class PurchasePage(TemplatedPage):
     @login_required
     def get(self):
         """ Purchase Display page """
+
         self.write_template({})
 
-    def post(self):
-        """ Start the purchase process"""
+        def post(self):
+            """ Start the purchase process"""
+
         cart = models.get_year_cart()
 
         url = google_checkout.post_shopping_cart(cart)
@@ -263,18 +296,19 @@ class Invite(TemplatedPage):
     @login_required
     def get(self, unique_key):
         assert unique_key
+
         logging.info("The unique key:" + unique_key)
 
         if unique_key is None:
             self.redirect('/')
-            return
+        return
 
         invitation = models.Invitation.get_invitation_by_unique_key(unique_key)
 
         if invitation is None:
             logging.error("The unique key:" + unique_key + " did not match any existing invitation keys")
-            self.redirect('/')
-            return
+        self.redirect('/')
+        return
 
         account = models.Account.get_user_account()
 
@@ -292,6 +326,7 @@ class SendInvite(webapp.RequestHandler):
 
     def post(self):
         address = self.request.get('email')
+
         key = self.request.get('key')
         message = EmailMessage()
         message.sender = settings.INVITATION_EMAIL

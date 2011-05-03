@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Entry{% endblock %}
+
+{% block content %}
+<h1>New journal Entry.</h1>
+<br>
+        
+<div class="col-full" style="margin-bottom:100px">
+    <form action='' method='post'>
+            <ol>
+                <li><label>Tags</label>
+                    <input name='tags' type='text' class="title" size="62" value='{% for tag in entry.tags %}{{tag|safe}} {% endfor %}'/>
+                </li>
+
+
+                <li class="textarea"><label for="contentText">Note</label>
+                    <textarea name="content" id="contentText" rows="10" cols="50">{{ entry.content|safe }}</textarea>
+                </li>
+
+                <li>
+                    <button type="submit">Save</button>
+                </li>
+            </ol>
+        </form>
+</div>
+
+{% endblock %}
+
