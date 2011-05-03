@@ -5,18 +5,18 @@ from fantasm import config
 
 class Dashboard(webapp.RequestHandler):
     """ The main dashboard. """
-
+    
     def get(self):
         """ GET """
-
+        
         self.response.out.write(self.generateDashboard())
-
-
+        
+        
     def generateDashboard(self):
         """ Generates the HTML for the dashboard. """
-
+        
         currentConfig = config.currentConfiguration()
-
+        
         s = """
 <html>
 <head>
@@ -56,13 +56,13 @@ class Dashboard(webapp.RequestHandler):
     <td><a href='%(rootUrl)sgraphviz/%(machineName)s/'>view</a></td>
   </tr>
 """ % {
-                'class': 'ae-even' if even else '',
-                'machineName': machine.name,
-                'queueName': machine.queueName,
-                'numStates': len(machine.states),
-                'numTransitions': len(machine.transitions),
-                'rootUrl': currentConfig.rootUrl,
-                }
+    'class': 'ae-even' if even else '',
+    'machineName': machine.name,
+    'queueName': machine.queueName,
+    'numStates': len(machine.states),
+    'numTransitions': len(machine.transitions),
+    'rootUrl': currentConfig.rootUrl,
+}
 
         s += """
 </tbody>

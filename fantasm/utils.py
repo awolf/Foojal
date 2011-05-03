@@ -19,23 +19,20 @@ Copyright 2010 VendAsta Technologies Inc.
 from fantasm import constants
 from google.appengine.api.taskqueue.taskqueue import Queue
 
-class NoOpQueue(Queue):
+class NoOpQueue( Queue ):
     """ A Queue instance that does not Queue """
-
+    
     def add(self, task, transactional=False):
         """ see taskqueue.Queue.add """
         pass
-
-
+       
 def knuthHash(number):
     """A decent hash function for integers."""
-    return (number * 2654435761) % 2 ** 32
-
+    return (number * 2654435761) % 2**32
 
 def boolConverter(boolStr):
     """ A converter that maps some common bool string to True """
     return {'1': True, 'True': True, 'true': True}.get(boolStr, False)
-
 
 def outputAction(action):
     """ Outputs the name of the action 
@@ -44,7 +41,6 @@ def outputAction(action):
     """
     if action:
         return str(action.__class__.__name__).split('.')[-1]
-
 
 def outputTransitionConfig(transitionConfig):
     """ Outputs a GraphViz directed graph node
@@ -55,12 +51,11 @@ def outputTransitionConfig(transitionConfig):
     label = transitionConfig.event
     if transitionConfig.action:
         label += '/ ' + outputAction(transitionConfig.action)
-    return '"%(fromState)s" -> "%(toState)s" [label="%(label)s"];' %\
-           {'fromState': transitionConfig.fromState.name,
-            'toState': transitionConfig.toState.name,
-            'label': label}
-
-
+    return '"%(fromState)s" -> "%(toState)s" [label="%(label)s"];' % \
+            {'fromState': transitionConfig.fromState.name, 
+             'toState': transitionConfig.toState.name, 
+             'label': label}
+            
 def outputStateConfig(stateConfig, colorMap=None):
     """ Outputs a GraphViz directed graph node
     
@@ -82,17 +77,16 @@ def outputStateConfig(stateConfig, colorMap=None):
         label += '|fan in period = %(fanin)ds' % {'fanin': stateConfig.fanInPeriod}
     shape = 'Mrecord'
     if colorMap.get(stateConfig.name):
-        return '"%(stateName)s" [style=filled,fillcolor="%(fillcolor)s",shape=%(shape)s,label="{%(label)s}"];' %\
+        return '"%(stateName)s" [style=filled,fillcolor="%(fillcolor)s",shape=%(shape)s,label="{%(label)s}"];' % \
                {'stateName': stateConfig.name,
                 'fillcolor': colorMap.get(stateConfig.name, 'white'),
                 'shape': shape,
                 'label': label}
     else:
-        return '"%(stateName)s" [shape=%(shape)s,label="{%(label)s}"];' %\
+        return '"%(stateName)s" [shape=%(shape)s,label="{%(label)s}"];' % \
                {'stateName': stateConfig.name,
                 'shape': shape,
                 'label': label}
-
 
 def outputMachineConfig(machineConfig, colorMap=None, skipStateNames=None):
     """ Outputs a GraphViz directed graph of the state machine 
@@ -116,7 +110,7 @@ def outputMachineConfig(machineConfig, colorMap=None, skipStateNames=None):
         if stateConfig.final:
             lines.append('"%(stateName)s" -> "__end__"' % {'stateName': stateConfig.name})
     for transitionConfig in machineConfig.transitions.values():
-        if transitionConfig.fromState.name in skipStateNames or\
+        if transitionConfig.fromState.name in skipStateNames or \
            transitionConfig.toState.name in skipStateNames:
             continue
         lines.append(outputTransitionConfig(transitionConfig))

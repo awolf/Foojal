@@ -19,7 +19,7 @@ Copyright 2010 VendAsta Technologies Inc.
 
 class Transition(object):
     """ A transition object for a machine. """
-
+    
     def __init__(self, name, target, action=None, countdown=0, retryOptions=None, queueName=None):
         """ Constructor 
         
@@ -31,14 +31,14 @@ class Transition(object):
         @param queueName: the name of the queue to Queue into 
         """
         assert queueName
-
+        
         self.target = target
         self.name = name
         self.action = action
         self.countdown = countdown
         self.retryOptions = retryOptions
         self.queueName = queueName
-
+        
     # W0613:144:Transition.execute: Unused argument 'obj'
     # args are present for a future(?) transition action
     def execute(self, context, obj): # pylint: disable-msg=W0613
@@ -52,8 +52,8 @@ class Transition(object):
                 self.action.execute(context, obj)
             except Exception:
                 context.logger.error('Error processing action for transition. (Machine %s, Transition %s, Action %s)',
-                                     context.machineName,
-                                     self.name,
-                                     self.action.__class__)
+                              context.machineName, 
+                              self.name, 
+                              self.action.__class__)
                 raise
         context.currentState = self.target

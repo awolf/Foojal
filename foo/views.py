@@ -109,6 +109,33 @@ class Entry(RESTfulHandler):
         models.Entry.delete_by_key(key)
         self.redirect('/')
 
+    def put(self, key):
+        tags = cgi.escape(self.request.get('tags'))
+        content = cgi.escape(self.request.get('content'))
+
+        models.Entry.update_entry(key, tags, content)
+
+        values = {}
+
+        account = models.Account.get_user_account()
+        entry = models.Entry.get(key)
+
+        if not account or entry.owner != account.user:
+            self.redirect(users.create_logout_url("www.foojal.com"))
+
+        entries = models.Entry.all()
+        entries.filter("owner", account.user)
+        entries.filter("tags IN", entry.tags)
+        entries.filter("__key__ !=", entry.key())
+
+        values["entry"] = entry
+        values["entries"] = entries.fetch(10)
+        values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
+        values["pincolor"] = settings.PIN_COLORS
+
+        self.write_template(values)
+
+
     @login_required
     def get(self, key):
         """ show journal entry for the sent id """

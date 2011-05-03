@@ -75,10 +75,10 @@ class DefaultMailHandler(InboundMailHandler):
 
         message.body = getMailBody(mail_message)
 
-        #        if we are developing lets attach a local file.
-        if settings.DEBUG:
-            image = open('bigphoto.JPG', 'r')
-            mail_message.attachments = [(image.name, image.read())]
+        # if we are developing lets attach a local file.
+#        if settings.DEBUG:
+#            image = open('bigphoto.JPG', 'r')
+#            mail_message.attachments = [(image.name, image.read())]
 
         if hasPhotoAttached(mail_message):
             # Get the image data from the first attachment

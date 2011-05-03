@@ -94,50 +94,6 @@ class Message(db.Model):
     modified = db.DateTimeProperty(auto_now=True)
 
 
-class Entry(db.Model):
-    owner = db.UserProperty()
-    sender = db.EmailProperty()
-
-    tags = db.StringListProperty()
-    content = db.TextProperty()
-
-    location = db.GeoPtProperty()
-    exif_data = db.BlobProperty()
-
-    picture_url = db.StringProperty()
-    picture_key = db.StringProperty()
-
-    created = db.DateTimeProperty(auto_now_add=True)
-    modified = db.DateTimeProperty(auto_now=True)
-
-    def has_picture(self):
-        return self.picture_url
-
-    @classmethod
-    def transfer_to_account(cls, sender, user):
-        entries = Entry.all()
-        entries.filter("sender", sender)
-        entries.filter("owner", None)
-
-        entries.fetch(500)
-
-        for entry in entries:
-            entry.owner = user
-            entry.put()
-
-    @classmethod
-    def delete_by_key(cls, key):
-        entry = cls.get(key)
-        account = Account.get_user_account()
-
-        if entry.owner == account.user:
-            if entry.has_picture():
-                picture = blobstore.BlobInfo.get(entry.picture_key)
-                if picture:
-                    picture.delete()
-            entry.delete()
-
-
 class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
     nickname = db.StringProperty()
@@ -195,6 +151,60 @@ class Account(db.Model):
             "SELECT * FROM Account WHERE user = :1", user).get()
 
         return account
+
+
+class Entry(db.Model):
+    owner = db.UserProperty()
+    sender = db.EmailProperty()
+
+    tags = db.StringListProperty()
+    content = db.TextProperty()
+
+    location = db.GeoPtProperty()
+    exif_data = db.BlobProperty()
+
+    picture_url = db.StringProperty()
+    picture_key = db.StringProperty()
+
+    created = db.DateTimeProperty(auto_now_add=True)
+    modified = db.DateTimeProperty(auto_now=True)
+
+    def has_picture(self):
+        return self.picture_url
+
+    @classmethod
+    def transfer_to_account(cls, sender, user):
+        entries = Entry.all()
+        entries.filter("sender", sender)
+        entries.filter("owner", None)
+
+        entries.fetch(500)
+
+        for entry in entries:
+            entry.owner = user
+            entry.put()
+
+    @classmethod
+    def delete_by_key(cls, key):
+        entry = cls.get(key)
+        account = Account.get_user_account()
+
+        if entry.owner == account.user:
+            if entry.has_picture():
+                picture = blobstore.BlobInfo.get(entry.picture_key)
+                if picture:
+                    picture.delete()
+            entry.delete()
+
+    @classmethod
+    def update_entry(cls, key, tags, content):
+        entry = cls.get(key)
+        account = Account.get_user_account()
+
+        if entry.owner == account.user:
+            entry.content = content
+            entry.tags = [tag for tag in tags.lower().split(' ') if tag]
+            entry.put()
 
 
 class BlackList(db.Model):

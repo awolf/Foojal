@@ -24,25 +24,26 @@ from google.appengine.api import memcache
 from google.appengine.ext import db
 
 from fantasm.models import _FantasmTaskSemaphore
+from fantasm import constants
 from fantasm.exceptions import FanInWriteLockFailureRuntimeError
 from fantasm.exceptions import FanInReadLockFailureRuntimeError
 
 # a variety of locking mechanisms to enforce idempotency (of the framework) in the face of retries
 
-class ReadWriteLock(object):
+class ReadWriteLock( object ):
     """ A read/write lock that allows
     
     1. non-blocking write (for speed of fan-out)
     2. blocking read (speed not reqd in fan-in)
     """
-
+    
     INDEX_PARAM = 'index'
     LOCK_PARAM = 'lock'
-
+    
     # 20 iterations * 0.25s = 5s total wait time
     BUSY_WAIT_ITERS = 20
     BUSY_WAIT_ITER_SECS = 0.250
-
+    
     def __init__(self, taskNameBase, context, obj=None):
         """ ctor 
         
@@ -52,15 +53,15 @@ class ReadWriteLock(object):
         self.taskNameBase = taskNameBase
         self.context = context
         self.obj = obj
-
+        
     def indexKey(self):
         """ Returns the lock index key """
         return ReadWriteLock.INDEX_PARAM + '-' + self.taskNameBase
-
+    
     def lockKey(self, index):
         """ Returns the lock key """
         return self.taskNameBase + '-' + ReadWriteLock.LOCK_PARAM + '-' + str(index)
-
+        
     def currentIndex(self):
         """ Returns the current lock index from memcache, or sets it if it is missing
         
@@ -72,10 +73,10 @@ class ReadWriteLock(object):
             # using 'random.randint' here instead of '1' helps when the index is ejected from memcache
             # instead of restarting at the same counter, we jump (likely) far way from existing task job
             # names. 
-            memcache.add(indexKey, random.randint(1, 2 ** 32))
+            memcache.add(indexKey, random.randint(1, 2**32))
             index = memcache.get(indexKey)
         return index
-
+    
     def acquireWriteLock(self, index, nextEvent=None, raiseOnFail=True):
         """ Acquires the write lock 
         
@@ -84,72 +85,71 @@ class ReadWriteLock(object):
         """
         acquired = True
         lockKey = self.lockKey(index)
-        writers = memcache.incr(lockKey, initial_value=2 ** 16)
-        if writers < 2 ** 16:
+        writers = memcache.incr(lockKey, initial_value=2**16)
+        if writers < 2**16:
             acquired = False
             if raiseOnFail:
                 # this will escape as a 500 error and the Task will be re-tried by appengine
-                raise FanInWriteLockFailureRuntimeError(nextEvent,
-                                                        self.context.machineName,
-                                                        self.context.currentState.name,
+                raise FanInWriteLockFailureRuntimeError(nextEvent, 
+                                                        self.context.machineName, 
+                                                        self.context.currentState.name, 
                                                         self.context.instanceName)
         return acquired
-
+            
     def releaseWriteLock(self, index):
         """ Acquires the write lock 
         
         @param index: an int, the current index
         """
         released = True
-
+        
         lockKey = self.lockKey(index)
         memcache.decr(lockKey)
-
+        
         return released
-
+    
     def acquireReadLock(self, index, nextEvent=None, raiseOnFail=False):
         """ Acquires the read lock
         
         @param index: an int, the current index
         """
         acquired = True
-
+        
         lockKey = self.lockKey(index)
         indexKey = self.indexKey()
-
+        
         # tell writers to use another index
         memcache.incr(indexKey)
-
+        
         # tell writers they missed the boat
-        memcache.decr(lockKey, 2 ** 15)
-
+        memcache.decr(lockKey, 2**15) 
+        
         # busy wait for writers
         for i in xrange(ReadWriteLock.BUSY_WAIT_ITERS):
             counter = memcache.get(lockKey)
             # counter is None --> ejected from memcache, or no writers
             # int(counter) <= 2**15 --> writers have all called memcache.decr
-            if counter is None or int(counter) <= 2 ** 15:
+            if counter is None or int(counter) <= 2**15:
                 break
             time.sleep(ReadWriteLock.BUSY_WAIT_ITER_SECS)
             self.context.logger.debug("Tried to acquire lock '%s' %d times...", lockKey, i + 1)
-
+        
         # FIXME: is there anything else that can be done? will work packages be lost? maybe queue another task
         #        to sweep up later?
         if i >= (ReadWriteLock.BUSY_WAIT_ITERS - 1): # pylint: disable-msg=W0631
             self.context.logger.critical("Gave up waiting for all fan-in work items.")
             acquired = False
             if raiseOnFail:
-                raise FanInReadLockFailureRuntimeError(nextEvent,
-                                                       self.context.machineName,
-                                                       self.context.currentState.name,
+                raise FanInReadLockFailureRuntimeError(nextEvent, 
+                                                       self.context.machineName, 
+                                                       self.context.currentState.name, 
                                                        self.context.instanceName)
-
+        
         return acquired
-
-
-class RunOnceSemaphore(object):
+    
+class RunOnceSemaphore( object ):
     """ A object used to enforce run-once semantics """
-
+    
     def __init__(self, semaphoreKey, context, obj=None):
         """ ctor 
         
@@ -170,18 +170,18 @@ class RunOnceSemaphore(object):
                  the second arg is the payload used on initial creation.
         """
         assert payload # so that something is always injected into memcache
-
+        
         # the semaphore is stored in two places, memcache and datastore
         # we use memcache for speed and datastore for 100% reliability
         # in case of memcache ejection
-
+        
         # check memcache
         cached = memcache.get(self.semaphoreKey)
         if cached:
             if cached != payload:
                 self.logger.critical("Run-once semaphore memcache payload write error.")
             return (False, cached)
-
+        
         # check datastore
         def txn():
             """ lock in transaction to avoid races between Tasks """
@@ -195,27 +195,27 @@ class RunOnceSemaphore(object):
                     self.logger.critical("Run-once semaphore datastore payload write error.")
                 memcache.set(self.semaphoreKey, entity.payload) # maybe reduces chance of ejection???
                 return (False, entity.payload)
-
+                
         # and return whether or not the lock was written
         if transactional:
             return db.run_in_transaction(txn)
         else:
             return txn()
-
+    
     def readRunOnceSemaphore(self, payload=None, transactional=True):
         """ Reads the semaphore
         
         @return: True if the semaphore exists
         """
         assert payload
-
+        
         # check memcache
         cached = memcache.get(self.semaphoreKey)
         if cached:
             if cached != payload:
                 self.logger.critical("Run-once semaphore memcache payload read error.")
             return cached
-
+        
         # check datastore
         def txn():
             """ lock in transaction to avoid races between Tasks """
@@ -224,7 +224,7 @@ class RunOnceSemaphore(object):
                 if entity.payload != payload:
                     self.logger.critical("Run-once semaphore datastore payload read error.")
                 return entity.payload
-
+            
         # return whether or not the lock was read 
         if transactional:
             return db.run_in_transaction(txn)

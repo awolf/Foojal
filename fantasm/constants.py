@@ -47,12 +47,12 @@ STARTED_AT_PARAM = '__sa__'
 
 # this dict is used for casting strings in HttpRequest.GET to the appropriate type to put into FSMContext
 PARAM_TYPES = {
-    STEPS_PARAM: int,
-    GEN_PARAM: simplejson.loads,
+    STEPS_PARAM : int,
+    GEN_PARAM : simplejson.loads,
     INDEX_PARAM: int,
     FORK_PARAM: int,
     STARTED_AT_PARAM: float,
-    }
+}
 
 CHARS_FOR_RANDOM = 'BDGHJKLMNPQRTVWXYZ23456789' # no vowels or things that look like vowels - profanity-free!
 
@@ -101,7 +101,7 @@ MAX_DOUBLINGS_ATTRIBUTE = 'max_doublings'
 
 ROOT_URL_ATTRIBUTE = 'root_url'
 STATE_MACHINES_ATTRIBUTE = 'state_machines'
-
+                        
 MACHINE_NAME_ATTRIBUTE = 'name'
 MACHINE_STATES_ATTRIBUTE = 'states'
 MACHINE_TRANSITIONS_ATTRIBUTE = 'transitions'
@@ -110,11 +110,11 @@ MACHINE_LOGGING_NAME_ATTRIBUTE = 'logging'
 VALID_MACHINE_ATTRIBUTES = (NAMESPACE_ATTRIBUTE, MAX_RETRIES_ATTRIBUTE, TASK_RETRY_LIMIT_ATTRIBUTE,
                             MIN_BACKOFF_SECONDS_ATTRIBUTE, MAX_BACKOFF_SECONDS_ATTRIBUTE,
                             TASK_AGE_LIMIT_ATTRIBUTE, MAX_DOUBLINGS_ATTRIBUTE,
-                            MACHINE_NAME_ATTRIBUTE, QUEUE_NAME_ATTRIBUTE,
+                            MACHINE_NAME_ATTRIBUTE, QUEUE_NAME_ATTRIBUTE, 
                             MACHINE_STATES_ATTRIBUTE, MACHINE_CONTEXT_TYPES_ATTRIBUTE,
                             MACHINE_LOGGING_NAME_ATTRIBUTE)
-# MACHINE_TRANSITIONS_ATTRIBUTE is intentionally not in this list;
-# it is used internally only
+                            # MACHINE_TRANSITIONS_ATTRIBUTE is intentionally not in this list;
+                            # it is used internally only
 
 LOGGING_DEFAULT = 'default'
 LOGGING_PERSISTENT = 'persistent'
@@ -130,9 +130,9 @@ STATE_CONTINUATION_ATTRIBUTE = 'continuation'
 STATE_FAN_IN_ATTRIBUTE = 'fan_in'
 STATE_TRANSITIONS_ATTRIBUTE = 'transitions'
 VALID_STATE_ATTRIBUTES = (NAMESPACE_ATTRIBUTE, STATE_NAME_ATTRIBUTE, STATE_ENTRY_ATTRIBUTE, STATE_EXIT_ATTRIBUTE,
-                          STATE_ACTION_ATTRIBUTE, STATE_INITIAL_ATTRIBUTE, STATE_FINAL_ATTRIBUTE,
+                          STATE_ACTION_ATTRIBUTE, STATE_INITIAL_ATTRIBUTE, STATE_FINAL_ATTRIBUTE, 
                           STATE_CONTINUATION_ATTRIBUTE, STATE_FAN_IN_ATTRIBUTE, STATE_TRANSITIONS_ATTRIBUTE)
-
+                        
 TRANS_TO_ATTRIBUTE = 'to'
 TRANS_EVENT_ATTRIBUTE = 'event'
 TRANS_ACTION_ATTRIBUTE = 'action'
