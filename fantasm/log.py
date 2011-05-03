@@ -28,9 +28,9 @@ from google.appengine.api.taskqueue import taskqueue
 
 LOG_ERROR_MESSAGE = 'Exception constructing log message. Please adjust your usage of context.logger.'
 
-def _log(instanceName, 
+def _log(instanceName,
          machineName, stateName, actionName, transitionName,
-         level, namespace, tags, message, stack, time, 
+         level, namespace, tags, message, stack, time,
          *args, **kwargs): # pylint: disable-msg=W0613
     """ Creates a _FantasmLog that can be used for debugging 
     
@@ -58,8 +58,8 @@ def _log(instanceName,
         message = message % args
     except TypeError: # TypeError: not enough arguments for format string
         pass
-    
-    _FantasmLog(instanceName=instanceName, 
+
+    _FantasmLog(instanceName=instanceName,
                 machineName=machineName,
                 stateName=stateName,
                 actionName=actionName,
@@ -67,13 +67,14 @@ def _log(instanceName,
                 level=level,
                 namespace=namespace,
                 tags=list(set(tags)) or [],
-                message=message, 
+                message=message,
                 stack=stack,
                 time=time).put()
 
-class Logger( object ):
+
+class Logger(object):
     """ A object that allows an FSMContext to have methods debug, info etc. similar to logging.debug/info etc. """
-    
+
     _LOGGING_MAP = {
         logging.CRITICAL: logging.critical,
         logging.ERROR: logging.error,
@@ -81,7 +82,7 @@ class Logger( object ):
         logging.INFO: logging.info,
         logging.DEBUG: logging.debug
     }
-    
+
     def __init__(self, context, obj=None, persistentLogging=False):
         """ Constructor 
         
@@ -95,11 +96,11 @@ class Logger( object ):
         self.tags = []
         self.persistentLogging = persistentLogging
         self.__obj = obj
-        
+
     def getLoggingMap(self):
         """ One layer of indirection to fetch self._LOGGING_MAP (required for minimock to work) """
         return self._LOGGING_MAP
-    
+
     def _log(self, level, message, *args, **kwargs):
         """ Logs the message to the normal logging module and also queues a Task to create an _FantasmLog
         
@@ -113,21 +114,21 @@ class Logger( object ):
         """
         if not (self.level <= level <= self.maxLevel):
             return
-        
+
         namespace = kwargs.pop('namespace', None)
         tags = kwargs.pop('tags', None)
-        
+
         self.getLoggingMap()[level](message, *args, **kwargs)
-        
+
         if not self.persistentLogging:
             return
-        
+
         stack = None
         if 'exc_info' in kwargs:
             f = StringIO.StringIO()
             traceback.print_exc(25, f)
             stack = f.getvalue()
-            
+
         # this _log method requires everything to be serializable, which is not the case for the logging
         # module. if message is not a basestring, then we simply cast it to a string to allow _something_
         # to be logged in the deferred task
@@ -139,19 +140,19 @@ class Logger( object ):
                 if args:
                     args = []
                 logging.warning(message, exc_info=True)
-                
+
         stateName = None
         if self.context.currentState:
             stateName = self.context.currentState.name
-            
+
         transitionName = None
         if self.context.startingState and self.context.startingEvent:
             transitionName = self.context.startingState.getTransition(self.context.startingEvent).name
-            
+
         actionName = None
         if self.context.currentAction:
             actionName = self.context.currentAction.__class__.__name__
-            
+
         # in immediateMode, tack the messages onto obj so that they can be returned
         # in the http response in handler.py
         if self.__obj is not None:
@@ -160,7 +161,7 @@ class Logger( object ):
                     self.__obj[constants.MESSAGES_PARAM].append(message % args)
                 except TypeError:
                     self.__obj[constants.MESSAGES_PARAM].append(message)
-                
+
         serialized = deferred.serialize(_log,
                                         self.context.instanceName,
                                         self.context.machineName,
@@ -175,34 +176,34 @@ class Logger( object ):
                                         datetime.datetime.now(), # FIXME: called .utcnow() instead?
                                         *args,
                                         **kwargs)
-        
+
         try:
-            task = taskqueue.Task(url=constants.DEFAULT_LOG_URL, 
-                                  payload=serialized, 
+            task = taskqueue.Task(url=constants.DEFAULT_LOG_URL,
+                                  payload=serialized,
                                   retry_options=taskqueue.TaskRetryOptions(task_retry_limit=20))
             # FIXME: a batch add may be more optimal, but there are quite a few more corners to deal with
             taskqueue.Queue(name=constants.DEFAULT_LOG_QUEUE_NAME).add(task)
-            
+
         except taskqueue.TaskTooLargeError:
             logging.warning("fantasm log message too large - skipping persistent storage")
-            
+
         except taskqueue.Error:
             logging.warning("error queuing log message Task - skipping persistent storage", exc_info=True)
-        
+
     def setLevel(self, level):
         """ Sets the minimum logging level to log 
         
         @param level: a log level (ie. logging.CRITICAL)
         """
         self.level = level
-        
+
     def setMaxLevel(self, maxLevel):
         """ Sets the maximum logging level to log 
         
         @param maxLevel: a max log level (ie. logging.CRITICAL)
         """
         self.maxLevel = maxLevel
-        
+
     def debug(self, message, *args, **kwargs):
         """ Logs the message to the normal logging module and also queues a Task to create an _FantasmLog
         at level logging.DEBUG
@@ -212,7 +213,7 @@ class Logger( object ):
         @param kwargs:   
         """
         self._log(logging.DEBUG, message, *args, **kwargs)
-        
+
     def info(self, message, *args, **kwargs):
         """ Logs the message to the normal logging module and also queues a Task to create an _FantasmLog
         at level logging.INFO
@@ -222,7 +223,7 @@ class Logger( object ):
         @param kwargs:   
         """
         self._log(logging.INFO, message, *args, **kwargs)
-        
+
     def warning(self, message, *args, **kwargs):
         """ Logs the message to the normal logging module and also queues a Task to create an _FantasmLog
         at level logging.WARNING
@@ -232,9 +233,9 @@ class Logger( object ):
         @param kwargs:   
         """
         self._log(logging.WARNING, message, *args, **kwargs)
-        
+
     warn = warning
-        
+
     def error(self, message, *args, **kwargs):
         """ Logs the message to the normal logging module and also queues a Task to create an _FantasmLog
         at level logging.ERROR
@@ -244,7 +245,7 @@ class Logger( object ):
         @param kwargs:   
         """
         self._log(logging.ERROR, message, *args, **kwargs)
-        
+
     def critical(self, message, *args, **kwargs):
         """ Logs the message to the normal logging module and also queues a Task to create an _FantasmLog
         at level logging.CRITICAL
@@ -254,7 +255,7 @@ class Logger( object ):
         @param kwargs:   
         """
         self._log(logging.CRITICAL, message, *args, **kwargs)
-        
+
     # pylint: disable-msg=W0613
     # - kwargs is overridden in this case, and never used
     def exception(self, message, *args, **kwargs):

@@ -92,6 +92,6 @@ AMOUNT_CHARGED_NOTIFICATION = [
         'total-charge-amount',
         ]
 
-PIN_COLORS = ["black","blue","green","grey","purple","red","yellow"]
+PIN_COLORS = ["black", "blue", "green", "grey", "purple", "red", "yellow"]
 
 TAG_PUNCTUATION_BLACKLIST = """!"#$%&()*+,./:;<=>?@[\]^`{|}~"""

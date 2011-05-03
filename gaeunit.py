@@ -54,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 __author__ = "George Lei and Steven R. Farley"
 __email__ = "George.Z.Lei@Gmail.com"
 __version__ = "#Revision: 1.2.8 $"[11:-2]
-__copyright__= "Copyright (c) 2008-2009, George Lei and Steven R. Farley"
+__copyright__ = "Copyright (c) 2008-2009, George Lei and Steven R. Farley"
 __license__ = "BSD"
 __url__ = "http://code.google.com/p/gaeunit"
 
@@ -67,7 +67,7 @@ import cgi
 import django.utils.simplejson
 
 from google.appengine.ext import webapp
-from google.appengine.api import apiproxy_stub_map  
+from google.appengine.api import apiproxy_stub_map
 from google.appengine.api import datastore_file_stub
 from google.appengine.ext.webapp.util import run_wsgi_app
 
@@ -107,7 +107,7 @@ class MainTestPageHandler(webapp.RequestHandler):
             error = _log_error("The format '%s' is not valid." % cgi.escape(format))
             self.error(404)
             self.response.out.write(error)
-            
+
     def _render_html(self):
         suite, error = _create_suite(self.request)
         if not error:
@@ -115,14 +115,14 @@ class MainTestPageHandler(webapp.RequestHandler):
         else:
             self.error(404)
             self.response.out.write(error)
-        
+
     def _render_plain(self):
         self.response.headers["Content-Type"] = "text/plain"
         runner = unittest.TextTestRunner(self.response.out)
         suite, error = _create_suite(self.request)
         if not error:
-            self.response.out.write("====================\n" \
-                                    "GAEUnit Test Results\n" \
+            self.response.out.write("====================\n"\
+                                    "GAEUnit Test Results\n"\
                                     "====================\n\n")
             _run_test_suite(runner, suite)
         else:
@@ -153,10 +153,10 @@ class JsonTestResult(unittest.TestResult):
     def _list(self, list):
         dict = []
         for test, err in list:
-            d = { 
-              'desc': test.shortDescription() or str(test), 
-              'detail': err,
-            }
+            d = {
+                'desc': test.shortDescription() or str(test),
+                'detail': err,
+                }
             dict.append(d)
         return dict
 
@@ -173,7 +173,7 @@ class JsonTestRunner:
 
 
 class JsonTestRunHandler(webapp.RequestHandler):
-    def get(self):    
+    def get(self):
         self.response.headers["Content-Type"] = "text/javascript"
         test_name = self.request.get("name")
         _load_default_test_modules()
@@ -211,20 +211,20 @@ def _create_suite(request):
 
     try:
         if not package_name and not test_name:
-                modules = _load_default_test_modules()
-                for module in modules:
-                    suite.addTest(loader.loadTestsFromModule(module))
+            modules = _load_default_test_modules()
+            for module in modules:
+                suite.addTest(loader.loadTestsFromModule(module))
         elif test_name:
-                _load_default_test_modules()
-                suite.addTest(loader.loadTestsFromName(test_name))
+            _load_default_test_modules()
+            suite.addTest(loader.loadTestsFromName(test_name))
         elif package_name:
-                package = reload(__import__(package_name))
-                module_names = package.__all__
-                for module_name in module_names:
-                    suite.addTest(loader.loadTestsFromName('%s.%s' % (package_name, module_name)))
-    
+            package = reload(__import__(package_name))
+            module_names = package.__all__
+            for module_name in module_names:
+                suite.addTest(loader.loadTestsFromName('%s.%s' % (package_name, module_name)))
+
         if suite.countTestCases() == 0:
-            raise Exception("'%s' is not found or does not contain any tests." %  \
+            raise Exception("'%s' is not found or does not contain any tests." %\
                             (test_name or package_name or 'local directory: \"%s\"' % _LOCAL_TEST_DIR))
     except Exception, e:
         error = str(e)
@@ -251,7 +251,7 @@ def _get_tests_from_suite(suite, tests):
 def _test_suite_to_json(suite):
     tests = []
     _get_tests_from_suite(suite, tests)
-    test_tuples = [(type(test).__module__, type(test).__name__, test._testMethodName) \
+    test_tuples = [(type(test).__module__, type(test).__name__, test._testMethodName)\
                    for test in tests]
     test_dict = {}
     for test_tuple in test_tuples:
@@ -271,7 +271,7 @@ def _test_suite_to_json(suite):
             else:
                 method_list = mod_dict[class_name]
                 method_list.append(method_name)
-                
+
     return django.utils.simplejson.dumps(test_dict)
 
 
@@ -283,25 +283,25 @@ def _run_test_suite(runner, suite):
     test suite, run the test suite, and restore the development apiproxy.
     This isolates the test datastore from the development datastore.
 
-    """        
+    """
     original_apiproxy = apiproxy_stub_map.apiproxy
     try:
-       apiproxy_stub_map.apiproxy = apiproxy_stub_map.APIProxyStubMap() 
-       temp_stub = datastore_file_stub.DatastoreFileStub('GAEUnitDataStore', None, None, trusted=True)  
-       apiproxy_stub_map.apiproxy.RegisterStub('datastore', temp_stub)
-       # Allow the other services to be used as-is for tests.
-       for name in ['user', 'urlfetch', 'mail', 'memcache', 'images']: 
-           apiproxy_stub_map.apiproxy.RegisterStub(name, original_apiproxy.GetStub(name))
-       runner.run(suite)
+        apiproxy_stub_map.apiproxy = apiproxy_stub_map.APIProxyStubMap()
+        temp_stub = datastore_file_stub.DatastoreFileStub('GAEUnitDataStore', None, None, trusted=True)
+        apiproxy_stub_map.apiproxy.RegisterStub('datastore', temp_stub)
+        # Allow the other services to be used as-is for tests.
+        for name in ['user', 'urlfetch', 'mail', 'memcache', 'images']:
+            apiproxy_stub_map.apiproxy.RegisterStub(name, original_apiproxy.GetStub(name))
+        runner.run(suite)
     finally:
-       apiproxy_stub_map.apiproxy = original_apiproxy
+        apiproxy_stub_map.apiproxy = original_apiproxy
 
 
 def _log_error(s):
-   logging.warn(s)
-   return s
+    logging.warn(s)
+    return s
 
-           
+
 ################################################
 # Browser HTML, CSS, and Javascript
 ################################################
@@ -458,13 +458,13 @@ _MAIN_PAGE_CONTENT = """
 ##############################################################################
 
 
-application = webapp.WSGIApplication([('%s'      % _WEB_TEST_DIR, MainTestPageHandler),
-                                      ('%s/run'  % _WEB_TEST_DIR, JsonTestRunHandler),
+application = webapp.WSGIApplication([('%s' % _WEB_TEST_DIR, MainTestPageHandler),
+                                      ('%s/run' % _WEB_TEST_DIR, JsonTestRunHandler),
                                       ('%s/list' % _WEB_TEST_DIR, JsonTestListHandler)],
-                                      debug=True)
+                                     debug=True)
 
 def main():
-    run_wsgi_app(application)                                    
+    run_wsgi_app(application)
 
 if __name__ == '__main__':
     main()

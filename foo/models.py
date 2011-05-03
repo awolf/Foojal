@@ -138,8 +138,6 @@ class Entry(db.Model):
             entry.delete()
 
 
-
-
 class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
     nickname = db.StringProperty()

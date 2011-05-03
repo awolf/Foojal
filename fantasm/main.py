@@ -39,19 +39,20 @@ def createApplication():
         an instance of webapp.WSGIApplication with all fantasm handlers registered.
     """
     return webapp.WSGIApplication([
-        (r"^/[^\/]+/fsm/.+",       handlers.FSMHandler),
-        (r"^/[^\/]+/cleanup/",     handlers.FSMFanInCleanupHandler),
-        (r"^/[^\/]+/graphviz/.+",  handlers.FSMGraphvizHandler),
-        (r"^/[^\/]+/log/",         handlers.FSMLogHandler),
-        (r"^/[^\/]+/?",            console.Dashboard),
-    ],
-    debug=True)
+                                          (r"^/[^\/]+/fsm/.+", handlers.FSMHandler),
+                                          (r"^/[^\/]+/cleanup/", handlers.FSMFanInCleanupHandler),
+                                          (r"^/[^\/]+/graphviz/.+", handlers.FSMGraphvizHandler),
+                                          (r"^/[^\/]+/log/", handlers.FSMLogHandler),
+                                          (r"^/[^\/]+/?", console.Dashboard),
+                                          ],
+                                  debug=True)
 
 APP = createApplication()
 
 def main():
     """ Main entry point. """
     import os
+
     if os.environ.get('SERVER_SOFTWARE') == 'Development/1.0':
         # this seems to be a dev_appserver.py bug. causes unicode errors when trying to process the request
         os.environ['QUERY_STRING'] = str(os.environ['QUERY_STRING'])

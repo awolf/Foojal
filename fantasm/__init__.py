@@ -19,4 +19,3 @@ Copyright 2010 VendAsta Technologies Inc.
 
 # W0401:  2: Wildcard import fsm
 # pylint: disable-msg=W0401
-from fantasm.fsm import *

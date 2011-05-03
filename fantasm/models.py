@@ -46,7 +46,7 @@ class Encoder(simplejson.JSONEncoder): # pylint: disable-msg=W0232
             return {'__db.Key__': True, 'key': str(obj)}
         if isinstance(obj, db.Model):
             return {'__db.Model__': True, 'key': str(obj.key())} # turns into a db.Key across serialization
-        if isinstance(obj, datetime.datetime) and \
+        if isinstance(obj, datetime.datetime) and\
            obj.tzinfo is None: # only UTC datetime objects are supported
             return {'__datetime.datetime__': True, 'datetime': {'year': obj.year,
                                                                 'month': obj.month,
@@ -57,25 +57,26 @@ class Encoder(simplejson.JSONEncoder): # pylint: disable-msg=W0232
                                                                 'microsecond': obj.microsecond}}
         return simplejson.JSONEncoder.default(self, obj)
 
+
 class JSONProperty(db.Property):
     """
     From Google appengine cookbook... a Property for storing dicts in the datastore
     """
     data_type = datastore_types.Text
-    
+
     def get_value_for_datastore(self, modelInstance):
         """ see Property.get_value_for_datastore """
         value = super(JSONProperty, self).get_value_for_datastore(modelInstance)
         return db.Text(self._deflate(value))
-    
+
     def validate(self, value):
         """ see Property.validate """
         return self._inflate(value)
-    
+
     def make_value_from_datastore(self, value):
         """ see Property.make_value_from_datastore """
         return self._inflate(value)
-    
+
     def _inflate(self, value):
         """ decodes string -> dict """
         if value is None:
@@ -83,24 +84,26 @@ class JSONProperty(db.Property):
         if isinstance(value, unicode) or isinstance(value, str):
             return simplejson.loads(value, object_hook=decode)
         return value
-    
+
     def _deflate(self, value):
         """ encodes dict -> string """
         return simplejson.dumps(value, cls=Encoder)
-    
-    
-class _FantasmFanIn( db.Model ):
+
+
+class _FantasmFanIn(db.Model):
     """ A model used to store FSMContexts for fan in """
     workIndex = db.StringProperty()
     context = JSONProperty(indexed=False)
     createdTime = db.DateTimeProperty(auto_now_add=True)
-    
-class _FantasmInstance( db.Model ):
+
+
+class _FantasmInstance(db.Model):
     """ A model used to to store FSMContext instances """
     instanceName = db.StringProperty()
     createdTime = db.DateTimeProperty(auto_now_add=True)
-    
-class _FantasmLog( db.Model ):
+
+
+class _FantasmLog(db.Model):
     """ A model used to store log messages """
     instanceName = db.StringProperty()
     machineName = db.StringProperty()
@@ -113,7 +116,8 @@ class _FantasmLog( db.Model ):
     stack = db.TextProperty()
     tags = db.StringListProperty()
 
-class _FantasmTaskSemaphore( db.Model ):
+
+class _FantasmTaskSemaphore(db.Model):
     """ A model that simply stores the task name so that we can guarantee only-once semantics. """
     createdTime = db.DateTimeProperty(auto_now_add=True)
     payload = db.StringProperty(indexed=False)

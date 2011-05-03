@@ -19,7 +19,7 @@ Copyright 2010 VendAsta Technologies Inc.
 
 class FSMAction(object):
     """ Defines the interface for all user actions. """
-    
+
     def execute(self, context, obj):
         """ Executes some action. The return value is ignored, _except_ for the main state action.
         
@@ -33,10 +33,11 @@ class FSMAction(object):
         exactly the same context.
         """
         raise NotImplementedError()
-    
+
+
 class ContinuationFSMAction(FSMAction):
     """ Defines the interface for all continuation actions. """
-    
+
     def continuation(self, context, obj, token=None):
         """ Accepts a token (may be None) and returns the next token for the continutation. 
         
@@ -46,10 +47,11 @@ class ContinuationFSMAction(FSMAction):
         @param obj: An object which the action can operate on
         """
         raise NotImplementedError()
-    
+
+
 class DatastoreContinuationFSMAction(ContinuationFSMAction):
     """ A datastore continuation. """
-    
+
     def continuation(self, context, obj, token=None):
         """ Accepts a token (an optional cursor) and returns the next token for the continutation. 
         The results of the query are stored on obj.results.
@@ -60,25 +62,25 @@ class DatastoreContinuationFSMAction(ContinuationFSMAction):
         if cursor:
             query.with_cursor(cursor)
         limit = self.getBatchSize(context, obj)
-        
+
         # place results on obj.results
         obj['results'] = query.fetch(limit)
         obj.results = obj['results'] # deprecated interface
-        
+
         # add first obj.results item on obj.result - convenient for batch size 1
         if obj['results'] and len(obj['results']) > 0:
             obj['result'] = obj['results'][0]
         else:
             obj['result'] = None
         obj.result = obj['result'] # deprecated interface
-            
+
         if len(obj['results']) == limit:
             return query.cursor()
-        
+
     def getQuery(self, context, obj):
         """ Returns a GqlQuery """
         raise NotImplementedError()
-    
+
     # W0613: 78:DatastoreContinuationFSMAction.getBatchSize: Unused argument 'obj'
     def getBatchSize(self, context, obj): # pylint: disable-msg=W0613
         """ Returns a batch size, default 1. Override for different values. """

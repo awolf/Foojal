@@ -90,7 +90,7 @@ def make_string(seq):
         # Screen out non-printing characters
         if 32 <= c and c < 256:
             str += chr(c)
-        # If no printing chars
+            # If no printing chars
     if not str:
         return seq
     return str
@@ -1661,7 +1661,7 @@ def process_file(f, stop_tag='UNDEF', details=True, strict=False, debug=False):
                     % intr_off.values[0]
                 hdr.dump_IFD(intr_off.values[0], 'EXIF Interoperability',
                              dict=INTR_TAGS, stop_tag=stop_tag)
-            # GPS IFD
+                # GPS IFD
         gps_off = hdr.tags.get(IFD_name + ' GPSInfo')
         if gps_off:
             if debug:

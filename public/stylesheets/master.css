@@ -40,8 +40,7 @@ a:link, a:visited {
     clear: both;
     margin: 0 auto;
     padding: 10px 0 30px 0;
-    font-size: 1em;
-    /*color: #9c836e;*/
+    font-size: 1em; /*color: #9c836e;*/
     border-top: 2px solid #e2e1d4;
 }
 
@@ -181,20 +180,46 @@ ol.entries li div.entry a span em {
 --------------------------------------------- */
 
 #footer a {
-    /*color: #51463d;*/
+/*color: #51463d;*/
 }
 
 /* flash messages
 --------------------------------------------- */
-.error, .notice, .success {padding:.8em;margin-bottom:1em;border:2px solid #ddd;}
-.error {background:#FBE3E4;color:#8a1f11;border-color:#FBC2C4;}
-.notice {background:#FFF6BF;color:#514721;border-color:#FFD324;}
-.success {background:#E6EFC2;color:#264409;border-color:#C6D880;}
-.error a {color:#8a1f11;}
-.notice a {color:#514721;}
-.success a {color:#264409;}
+.error, .notice, .success {
+    padding: .8em;
+    margin-bottom: 1em;
+    border: 2px solid #ddd;
+}
 
+.error {
+    background: #FBE3E4;
+    color: #8a1f11;
+    border-color: #FBC2C4;
+}
 
+.notice {
+    background: #FFF6BF;
+    color: #514721;
+    border-color: #FFD324;
+}
+
+.success {
+    background: #E6EFC2;
+    color: #264409;
+    border-color: #C6D880;
+}
+
+.error a {
+    color: #8a1f11;
+}
+
+.notice a {
+    color: #514721;
+}
+
+.success a {
+    color: #264409;
+}
 
 /* misc.
 --------------------------------------------- */

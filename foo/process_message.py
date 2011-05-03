@@ -105,7 +105,6 @@ class GetExifTags(FSMAction):
 
 class CreatePhoto(FSMAction):
     def execute(self, context, obj):
-
         if settings.DEBUG: return 'success'
 
         message = models.Message.get_by_id(context['key'].id())
@@ -134,7 +133,6 @@ class CreatePhoto(FSMAction):
                 img.resize(height=1600)
 
         img.im_feeling_lucky()
-
 
         rotated_image = img.execute_transforms(output_encoding=images.JPEG)
 
