@@ -101,7 +101,6 @@ class MainPage(TemplatedPage):
 
         self.write_template(values)
 
-
 class Entry(RESTfulHandler):
     """ Entry detail page """
 
@@ -110,8 +109,8 @@ class Entry(RESTfulHandler):
         self.redirect('/')
 
     def put(self, key):
-        tags = cgi.escape(self.request.get('tags'))
-        content = cgi.escape(self.request.get('content'))
+        tags = self.request.get('tags')
+        content = self.request.get('content')
 
         models.Entry.update_entry(key, tags, content)
 

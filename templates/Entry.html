@@ -53,7 +53,7 @@
 
 
                 <li class="textarea"><label for="contentText">Note</label>
-                    <textarea name="content" id="contentText" rows="10" cols="50">{{ entry.content }}</textarea>
+                    <textarea name="content" id="contentText" rows="10" cols="50">{{ entry.content|safe }}</textarea>
                 </li>
 
                 <li>
