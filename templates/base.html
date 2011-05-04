@@ -7,8 +7,6 @@
           media="screen, projection">
     <link type="text/css" rel="stylesheet" href="/public/stylesheets/shortcodes.css" type="text/css"
           media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="/public/stylesheets/prettyPhoto.css" type="text/css"
-          media="screen, projection">
     <link type="text/css" rel="stylesheet" href="/public/stylesheets/custom.css" type="text/css"
           media="screen, projection">
     <link href="http://fonts.googleapis.com/css?family=Droid+Sans:r,b" rel="stylesheet" type="text/css">
@@ -123,8 +121,15 @@
     </div>
     <!-- /.slide -->
 
-
     {% else %}
+    <!-- /.toolbar -->
+    <ul class="toolbar" style="float: left; width: 100%;">
+        <li><a href="/entry/new"> <img src="/public/images/newentry.png"></a></li>
+        <li><a href="/entry/new"> <img src="/public/images/month.png"></a></li>
+        <li><a href="/entry/new"> <img src="/public/images/week.png"></a></li>
+        <li><a href="/entry/new"> <img src="/public/images/day.png"></a></li>
+    </ul>
+
     {% if error %}
     <div class="error">
         {{ error }}

@@ -1,3 +1,30 @@
+/* Toolbars
+--------------------------------------------- */
+
+ul.toolbar {
+    list-style-type: none;
+    margin: 0px 0px 30px 0px;
+    padding: 5px 15px 5px 0px;
+}
+
+ul.toolbar li {
+    display: inline-block;
+    margin: 0px;
+    padding: 10px 10px 10px 10px;
+    min-width: 50px;
+    text-align:center;
+    cursor: default;
+
+
+}
+
+
+
+ul.toolbar li a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
 /* Journal Entries
 --------------------------------------------- */
 
