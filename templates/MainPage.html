@@ -3,47 +3,6 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class="entry-box-wrapper col-full">
-    {% for entry in entries %}
-
-    <div class="entry-box {{ display|random }}">
-
-        <a href="/entry/{{entry.key}}">
-
-            {% if entry.picture_url %}
-            <img src="{{ entry.picture_url }}=s400" alt="Photo"/>
-            {% else %}
-            <p>{{ entry.content }}</p>
-            {%endif%}
-            <span>
-                <img class="thumbtack" src="/public/images/{{pincolor|random}}pin.png"/>
-                <em>{{ entry.created|date:"D d Y - g:i a" }}</em>
-            </span>
-        </a>
-
-        <div class="entry-footer">
-            {% if entry.tags %}
-            <ul class="journal-tags">
-                {% for tag in entry.tags %}
-                <li style="opacity:0.75"><a href="/tag/{{ tag|escape }}" title="">{{ tag }}</a></li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-
-            <div class="journal-icons">
-                {% if entry.content %}
-                <a href="/"> <img src="/public/images/note.png"/></a>
-                {% endif %}
-                {% if entry.location %}
-                <a href="/entry/map/{{entry.key}}"> <img src="/public/images/map_pin.png"/></a>
-                {% endif %}
-            </div>
-
-        </div>
-    </div>
-
-
-    {%endfor %}
-</div>
+{%include "_entries.html"%}
 {% endblock %}
 

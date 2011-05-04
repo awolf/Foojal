@@ -5,127 +5,45 @@
 {% block content %}
 
 <div class="col-full" style="margin-bottom:100px">
-    <div class="entry-box ">
-
-        <a href="/">
-
-            {% if entry.picture_url %}
-            <img src="{{ entry.picture_url }}=s400" alt="Photo"/>
-            {% else %}
-            <p>{{ entry.content|safe }}</p>
-            {%endif%}
-            <span>
-                <em>{{ entry.created|date:"g:i a" }}</em>
-            </span>
-        </a>
-
-        <div class="entry-footer">
-            {% if entry.tags %}
-            <ul class="journal-tags">
-                {% for tag in entry.tags %}
-                <li style="opacity:0.75"><a href="/tag/{{ tag }}" title="">{{ tag }}</a></li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-
-            <div class="journal-icons">
-                {% if entry.content %}
-                <a href="/"> <img src="/public/images/note.png"/></a>
-                {% endif %}
-                {% if entry.location != None %}
-                <a href="/entry/map/{{entry.key}}"> <img src="/public/images/map_pin.png"/></a>
-                {% endif %}
-            </div>
-
-        </div>
-        <form action='/entry/{{entry.key}}' method='post'>
-            <input type="hidden" name="_method" value="delete"/>
-            <button type="submit">
-                Delete
-            </button>
-        </form>
-
-        <form action='' method='post'>
-            <ol>
-                <li><label>Tags</label>
-                    <input name='tags' type='text' class="title" size="62" value='{% for tag in entry.tags %}{{tag|safe}} {% endfor %}'/>
-                </li>
-
-
-                <li class="textarea"><label for="contentText">Note</label>
-                    <textarea name="content" id="contentText" rows="10" cols="50">{{ entry.content|safe }}</textarea>
-                </li>
-
-                <li>
-                    <input type="hidden" name="_method" value="put"/>
-                    <button type="submit">Save</button>
-                </li>
-            </ol>
-        </form>
-    </div>
-{% if entry.location %}
-    <img src="http://maps.google.com/maps/api/staticmap?size=400x512&maptype=roadmap
-&markers=color:blue|{{entry.location}}&zoom=14&sensor=false"/>
-{% endif %}
+    {%include "_entry.html"%}
 </div>
-<h2> Journal Entries with the same tags</h2>
-<hr>
-<img src="http://maps.google.com/maps/api/staticmap?size=400x512&maptype=roadmap
-    &markers=color:blue
-    {% for entry in entries %}
-     |{{entry.location}}
-    {% endfor %}
-    &sensor=false"/>
-{% regroup entries by created|date:"l F d  Y" as day_list %}
-{% for d in day_list %}
+<div class="col-full" style="margin-bottom:100px">
 
-<h2 class="entry-date">{{ d.grouper }}</h2>
-<div class="entry-box-wrapper col-full">
+    <form action='/entry/{{entry.key}}' method='post'>
+        <input type="hidden" name="_method" value="delete"/>
+        <button type="submit">
+            Delete
+        </button>
+    </form>
 
-
-    {% for entry in d.list %}
-
-    <div class="entry-box {{ display|random }}">
-
-        <a href="/entry/{{entry.key}}">
-
-            {% if entry.picture_url %}
-            <img src="{{ entry.picture_url }}=s400" alt="Photo"/>
-            {% else %}
-            <p>{{ entry.content }}</p>
-            {%endif%}
-            <span>
-                <img class="thumbtack" src="/public/images/{{pincolor|random}}pin.png"/>
-                <em>{{ entry.created|date:"g:i a" }}</em>
-            </span>
-        </a>
-
-        <div class="entry-footer">
-            {% if entry.tags %}
-            <ul class="journal-tags">
-                {% for tag in entry.tags %}
-                <li style="opacity:0.75"><a href="/tag/{{ tag|escape }}" title="">{{ tag }}</a></li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-
-            <div class="journal-icons">
-                {% if entry.content %}
-                <a href="/"> <img src="/public/images/note.png"/></a>
-                {% endif %}
-                {% if entry.location %}
-                <a href="/entry/map/{{entry.key}}"> <img src="/public/images/map_pin.png"/></a>
-                {% endif %}
-            </div>
-
-        </div>
-    </div>
+    <form action='' method='post'>
+        <ol>
+            <li><label>Tags</label>
+                <input name='tags' type='text' class="title" size="62"
+                       value='{% for tag in entry.tags %}{{tag|safe}} {% endfor %}'/>
+            </li>
 
 
-    {%endfor %}
+            <li class="textarea"><label for="contentText">Note</label>
+                <textarea name="content" id="contentText" rows="10" cols="50">{{ entry.content|safe }}</textarea>
+            </li>
+
+            <li>
+                <input type="hidden" name="_method" value="put"/>
+                <button type="submit">Save</button>
+            </li>
+        </ol>
+    </form>
 </div>
-{% endfor %}
+<div class="col-full" style="margin-bottom:100px">
+    {% include "_entrymap.html" %}
 
+    <h2> Journal Entries with the same tags</h2>
+    <hr>
+    {%include "entriesmap.html" %}
 
+    {% include "_entries.html" %}
+
+</div>
 {% endblock %}
 
