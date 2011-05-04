@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %} Your Account {% endblock %}
+
+{% block content %}
+<div class="span-24 last">
+    <h1>Your Account </h1>
+    <fieldset>
+        <form name="account" action='' method='post'>
+            <ol>
+                <li><label for="name">Name</label>
+                    <input name='name' type='text' class="title" value='{{account.nickname}}'/>
+                </li>
+                <li><label>Expiration Date</label>
+                    {{ account.expiration_date|date:"M d Y" }}
+                </li>
+                <li><label for="countries">Country</label>
+                    <select name="countries" onChange="account.submit();">
+                        {% for k, v in countries.items %}
+                        <option value="{{k}}"
+                        {% if k == account.country_code %} SELECTED {% endif %} >{{v}}</option>
+                        {% endfor %}
+                    </select>
+                </li>
+                <li><label for="timezones">Timezone</label>
+                    <select name="timezones">
+                        {% for timezone in timezones %}
+                        <option value="{{timezone}}"
+                        {% if timezone == account.timezone %} SELECTED {% endif %}>{{timezone}}</option>
+                        {% endfor %}
+                    </select>
+                </li>
+                <li>
+                    <button type="submit" class="button positive">
+                        Save
+                    </button>
+                </li>
+            </ol>
+        </form>
+    </fieldset>
+
+
+    Buy a year subscription to Foojal you photo food journal. <a href="/purchase">Buy now!</a>
+</div>
+{% endblock %}

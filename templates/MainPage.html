@@ -3,14 +3,8 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-
-
-{% regroup entries by created|date:"l F d  Y" as day_list %}
-{% for d in day_list %}
-
-<h1 class="entry-date">{{ d.grouper }}</h1>
 <div class="entry-box-wrapper col-full">
-    {% for entry in d.list %}
+    {% for entry in entries %}
 
     <div class="entry-box {{ display|random }}">
 
@@ -23,7 +17,7 @@
             {%endif%}
             <span>
                 <img class="thumbtack" src="/public/images/{{pincolor|random}}pin.png"/>
-                <em>{{ entry.created|date:"g:i a" }}</em>
+                <em>{{ entry.created|date:"D d Y - g:i a" }}</em>
             </span>
         </a>
 
@@ -51,8 +45,5 @@
 
     {%endfor %}
 </div>
-{% endfor %}
-
-
 {% endblock %}
 

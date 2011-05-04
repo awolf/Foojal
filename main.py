@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 
 from google.appengine.dist import use_library
 
@@ -17,7 +18,7 @@ ROUTES = [
         ('/entry/new', NewEntry),
         ('/entry/(.*)', Entry),
         ('/tag/(.*)', Tag),
-        ('/account', AccountPage),
+        ('/account', Account),
         ('/invitation', SendInvite),
         ('/google_checkout/.*', google_checkout.GoogleListener),
         ('/purchase', PurchasePage),
@@ -34,7 +35,8 @@ def main():
 if __name__ == "__main__":
     main()
 
-# todo Trim the content from the email
+# todo - Timezones
+
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 # todo Memcache - Added blacklist email list to memcache and update it every 1hr with cron job
@@ -44,3 +46,7 @@ if __name__ == "__main__":
 # todo Admin - Add appstats to the admin see: http://code.google.com/appengine/docs/python/tools/appstats.html
 # todo Admin - Need the ability to look at images and view the exif data from the photo.
 # todo user - if a person deletes their last photo we should show the send us a sexy food photo page.
+
+# todo - Facebook
+# todo - Twitter
+# todo - collage

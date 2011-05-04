@@ -12,13 +12,10 @@ ul.toolbar li {
     margin: 0px;
     padding: 10px 10px 10px 10px;
     min-width: 50px;
-    text-align:center;
+    text-align: center;
     cursor: default;
 
-
 }
-
-
 
 ul.toolbar li a {
     color: #ffffff;
@@ -52,7 +49,6 @@ entry-date {
     float: left;
 
     background-color: #fff;
-
 }
 
 .entry-box p {
@@ -74,9 +70,11 @@ entry-date {
 }
 
 .entry-box .thumbtack {
+    position: absolute;
+    display: block;
     width: 25px;
-    margin-top: -10px;
-    margin-left: 85px
+    right: 50%;
+    top: -10px;
 }
 
 .entry-box span em {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import urllib2
+from datetime import datetime
 
 from google.appengine.dist import use_library
 
@@ -24,6 +24,8 @@ from google.appengine.api.mail import EmailMessage
 import models
 import settings
 import google_checkout
+import urllib2
+import pytz
 
 IS_DEV = os.environ['SERVER_SOFTWARE'].startswith('Dev')  # Development server
 
@@ -104,7 +106,14 @@ class MainPage(TemplatedPage):
             entries = models.Entry.all()
             entries.filter("owner", account.user)
             entries.order("-created")
-            values["entries"] = entries.fetch(10)
+
+            entries.fetch(10)
+            data = []
+            for entry in entries:
+                entry.created = entry.created.astimezone(account.tz)
+                data.append(entry)
+
+            values["entries"] = data
             values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
             values["pincolor"] = settings.PIN_COLORS
 
@@ -227,7 +236,7 @@ class Map(TemplatedPage):
         self.write_template(values)
 
 
-class AccountPage(TemplatedPage):
+class Account(TemplatedPage):
     """ Sign ups and registration """
 
     @login_required
@@ -235,15 +244,19 @@ class AccountPage(TemplatedPage):
         """ Account Display page """
 
         account = models.Account.get_user_account()
-
+        values = {}
         if account:
-            self.write_template({'account': account})
-        return
+            values['account'] = account
+            values['countries'] = pytz.country_names
+            values['timezones'] = pytz.country_timezones[account.country_code]
+            
+            self.write_template(values)
+            return
 
         self.write_template({})
 
-        def post(self):
-            """Processes the signup creation request."""
+    def post(self):
+        """Processes the signup creation request."""
 
         account = models.Account.get_user_account()
 
@@ -251,10 +264,14 @@ class AccountPage(TemplatedPage):
             return self.redirect(users.create_login_url(self.request.get_full_path().encode('utf-8')))
 
         # Save the values from the form
+        account.country_code = self.request.get('countries')
+        account.timezone = self.request.get('timezones')
         account.nickname = cgi.escape(self.request.get('name'))
         account.put()
 
         values = {
+            'countries': pytz.country_names,
+            'timezones': pytz.country_timezones[account.country_code],
             'success': 'Information Saved!',
             'account': account
         }
@@ -301,14 +318,14 @@ class Invite(TemplatedPage):
 
         if unique_key is None:
             self.redirect('/')
-        return
+            return
 
         invitation = models.Invitation.get_invitation_by_unique_key(unique_key)
 
         if invitation is None:
             logging.error("The unique key:" + unique_key + " did not match any existing invitation keys")
-        self.redirect('/')
-        return
+            self.redirect('/')
+            return
 
         account = models.Account.get_user_account()
 

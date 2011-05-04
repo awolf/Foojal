@@ -1,6 +1,7 @@
 import logging
 import uuid
 import string
+import pytz
 import settings
 
 from datetime import timedelta, datetime
@@ -78,6 +79,42 @@ def GetGeoPt(coordinate, GPSReference):
     return GPS_Coordinate
 
 
+class UtcDateTimeProperty(db.DateTimeProperty):
+    '''Marks DateTimeProperty values returned from the datastore as UTC. Ensures
+    all values destined for the datastore are converted to UTC if marked with an
+    alternate Timezone.
+
+    Inspired by
+    http://www.letsyouandhimfight.com/2008/04/12/time-zones-in-google-app-engine/
+    http://code.google.com/appengine/articles/extending_models.html
+    '''
+
+    def get_value_for_datastore(self, model_instance):
+        '''Returns the value for writing to the datastore. If value is None,
+        return None, else ensure date is converted to UTC. Note Google App
+        Engine already does this. Called by datastore
+        '''
+
+        date = super(UtcDateTimeProperty,
+                     self).get_value_for_datastore(model_instance)
+        if date:
+            if date.tzinfo:
+                return date.astimezone(pytz.utc)
+            else:
+                return date.replace(tzinfo=pytz.utc)
+        else:
+            return None
+
+    def make_value_from_datastore(self, value):
+        '''Returns the value retrieved from the datastore. Ensures all dates
+        are properly marked as UTC if not None'''
+
+        if value is None:
+            return None
+        else:
+            return value.replace(tzinfo=pytz.utc)
+
+
 class Message(db.Model):
     owner = db.UserProperty()
     sender = db.EmailProperty()
@@ -98,6 +135,9 @@ class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
     nickname = db.StringProperty()
 
+    country_code = db.StringProperty(default="us")
+    timezone = db.StringProperty(default="America/Phoenix")
+
     expiration_date = db.DateTimeProperty()
 
     address_list = db.StringListProperty()
@@ -105,6 +145,10 @@ class Account(db.Model):
 
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
+
+    @property
+    def tz(self):
+        return pytz.timezone(self.timezone)
 
     @property
     def is_expired(self):
@@ -166,7 +210,7 @@ class Entry(db.Model):
     picture_url = db.StringProperty()
     picture_key = db.StringProperty()
 
-    created = db.DateTimeProperty(auto_now_add=True)
+    created = UtcDateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
 
     def has_picture(self):
@@ -209,7 +253,6 @@ class Entry(db.Model):
 
     @classmethod
     def add_new_entry(cls, tags, content, account):
-
         entry = Entry()
         entry.owner = account.user
         entry.content = content.strip()
@@ -217,7 +260,6 @@ class Entry(db.Model):
         entry.put()
 
         return entry.key()
-
 
 
 class BlackList(db.Model):
