@@ -222,9 +222,7 @@ class Entry(db.Model):
         entries.filter("sender", sender)
         entries.filter("owner", None)
 
-        entries.fetch(500)
-
-        for entry in entries:
+        for entry in entries.fetch(500):
             entry.owner = user
             entry.put()
 
@@ -252,14 +250,56 @@ class Entry(db.Model):
             entry.put()
 
     @classmethod
-    def add_new_entry(cls, tags, content, account):
+    def add_new_entry(cls, tags, content):
         entry = Entry()
-        entry.owner = account.user
+        entry.owner = Account.get_user_account().user
         entry.content = content.strip()
         entry.tags = [tag for tag in tags.strip().lower().split(' ') if tag]
         entry.put()
 
         return entry.key()
+
+    @classmethod
+    def get_latest_entries(cls, count=20):
+        """Get the latest or top 20(count) entries
+            for the current user
+        """
+
+        account = Account.get_user_account()
+
+        entries = cls.all()
+        entries.filter("owner", account.user)
+        entries.order("-created")
+
+
+        data = []
+        for entry in entries.fetch(count):
+            entry.created = entry.created.astimezone(account.tz)
+            data.append(entry)
+
+        return data
+
+    @classmethod
+    def get_entries_by_tags(cls, tags, key=None, count=20):
+        """Get the latest or top 20(count) entries
+            that contain the supplied tags
+
+            If a key is supplied it will be skipped
+        """
+
+        account = Account.get_user_account()
+
+        entries = cls.all()
+        entries.filter("owner", account.user)
+        entries.filter("tags IN", tags)
+        if key:
+            entries.filter("__key__ !=", key)
+
+        data = []
+        for entry in entries.fetch(count):
+            entry.created = entry.created.astimezone(account.tz)
+            data.append(entry)
+        return data
 
 
 class BlackList(db.Model):

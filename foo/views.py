@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-from datetime import datetime
-
 from google.appengine.dist import use_library
 
 use_library('django', '1.2')
@@ -27,16 +25,6 @@ import google_checkout
 import urllib2
 import pytz
 
-IS_DEV = os.environ['SERVER_SOFTWARE'].startswith('Dev')  # Development server
-
-def unescape(s):
-    s = s.replace("&lt;", "<")
-    s = s.replace("&gt;", ">")
-    # this has to be last:
-    s = s.replace("&amp;", "&")
-    return s
-
-
 class TemplatedPage(webapp.RequestHandler):
     """Base class for templatized handlers."""
 
@@ -47,8 +35,10 @@ class TemplatedPage(webapp.RequestHandler):
         params['request'] = request
         params['user'] = request.user
         params['is_admin'] = request.user_is_admin
-        params['is_dev'] = IS_DEV
+        params['is_dev'] = settings.DEBUG
         params['current_uri'] = self.request.uri
+        params['display'] = ['rotate-right', 'rotate-none', 'rotate-left']
+        params['pincolor'] = settings.PIN_COLORS
 
         full_path = request.uri
         if request.user is None:
@@ -96,27 +86,9 @@ class MainPage(TemplatedPage):
 
     @login_required
     def get(self):
-        values = {}
-
-        account = models.Account.get_user_account()
-
-        if account is not None:
-            #values["account"] = account
-
-            entries = models.Entry.all()
-            entries.filter("owner", account.user)
-            entries.order("-created")
-
-            entries.fetch(10)
-            data = []
-            for entry in entries:
-                entry.created = entry.created.astimezone(account.tz)
-                data.append(entry)
-
-            values["entries"] = data
-            values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
-            values["pincolor"] = settings.PIN_COLORS
-
+        values = {
+            "entries": models.Entry.get_latest_entries(),
+        }
         self.write_template(values)
 
 
@@ -129,9 +101,8 @@ class NewEntry(TemplatedPage):
     def post(self):
         tags = self.request.get('tags')
         content = self.request.get('content')
-        account = models.Account.get_user_account()
 
-        key = models.Entry.add_new_entry(tags, content, account)
+        key = models.Entry.add_new_entry(tags, content)
 
         self.redirect('/entry/' + key.__str__())
 
@@ -144,52 +115,36 @@ class Entry(RESTfulHandler):
         self.redirect('/')
 
     def put(self, key):
+        account = models.Account.get_user_account()
+        if not account:
+            self.redirect(users.create_logout_url("www.foojal.com"))
+
         tags = self.request.get('tags')
         content = self.request.get('content')
 
+        # Update the entry
         models.Entry.update_entry(key, tags, content)
 
-        values = {}
-
-        account = models.Account.get_user_account()
-        entry = models.Entry.get(key)
-
-        if not account or entry.owner != account.user:
-            self.redirect(users.create_logout_url("www.foojal.com"))
-
-        entries = models.Entry.all()
-        entries.filter("owner", account.user)
-        entries.filter("tags IN", entry.tags)
-        entries.filter("__key__ !=", entry.key())
-
-        values["entry"] = entry
-        values["entries"] = entries.fetch(10)
-        values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
-        values["pincolor"] = settings.PIN_COLORS
+        entity = models.Entry.get(key)
+        values = {
+            "entry": entity,
+            "entries": models.Entry.get_entries_by_tags(tags=entity.tags, key=entity.key()),
+        }
 
         self.write_template(values)
 
 
     @login_required
     def get(self, key):
-        """ show journal entry for the sent id """
-        values = {}
+        """ show journal entry for a single entry """
 
-        account = models.Account.get_user_account()
         entry = models.Entry.get(key)
+        entries = models.Entry.get_entries_by_tags(tags=entry.tags, key=entry.key())
 
-        if not account or entry.owner != account.user:
-            self.redirect(users.create_logout_url("www.foojal.com"))
-
-        entries = models.Entry.all()
-        entries.filter("owner", account.user)
-        entries.filter("tags IN", entry.tags)
-        entries.filter("__key__ !=", entry.key())
-
-        values["entry"] = entry
-        values["entries"] = entries.fetch(10)
-        values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
-        values["pincolor"] = settings.PIN_COLORS
+        values = {
+            "entry": entry,
+            "entries": entries
+        }
 
         self.write_template(values)
 
@@ -200,38 +155,28 @@ class Tag(TemplatedPage):
     @login_required
     def get(self, tag):
         """ show journal entry for the sent id """
-        values = {}
+
         tag = urllib2.unquote(tag)
+        entries = models.Entry.get_entries_by_tags(tags=[tag])
 
-        account = models.Account.get_user_account()
-
-        entries = models.Entry.all()
-        entries.filter("owner", account.user)
-        entries.filter("tags =", tag)
-        entries.order("-created")
-
-        values["tag"] = tag
-        values["entries"] = entries.fetch(10)
-        values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
-        values["pincolor"] = settings.PIN_COLORS
+        values = {
+            "tag": tag,
+            "entries": entries
+        }
 
         self.write_template(values)
 
 
 class Map(TemplatedPage):
-    """ Entry map page """
+    """ Map an entries using Google static map API """
 
     @login_required
     def get(self, key):
         """ show journal entry for the sent id """
 
-        values = {}
-
-        entry = models.Entry.get(key)
-
-        values["entry"] = entry
-        values["display"] = ['rotate-right', 'rotate-none', 'rotate-left']
-        values["pincolor"] = settings.PIN_COLORS
+        values = {
+            "entry": models.Entry.get(key)
+        }
 
         self.write_template(values)
 
@@ -244,24 +189,17 @@ class Account(TemplatedPage):
         """ Account Display page """
 
         account = models.Account.get_user_account()
-        values = {}
-        if account:
-            values['account'] = account
-            values['countries'] = pytz.country_names
-            values['timezones'] = pytz.country_timezones[account.country_code]
-            
-            self.write_template(values)
-            return
+        values = {
+            'account': account,
+            'countries': pytz.country_names,
+            'timezones': pytz.country_timezones[account.country_code]}
 
-        self.write_template({})
+        self.write_template(values)
 
     def post(self):
         """Processes the signup creation request."""
 
         account = models.Account.get_user_account()
-
-        if account is None:
-            return self.redirect(users.create_login_url(self.request.get_full_path().encode('utf-8')))
 
         # Save the values from the form
         account.country_code = self.request.get('countries')
@@ -287,11 +225,10 @@ class PurchasePage(TemplatedPage):
 
         self.write_template({})
 
-        def post(self):
-            """ Start the purchase process"""
+    def post(self):
+        """ Start the purchase process"""
 
         cart = models.get_year_cart()
-
         url = google_checkout.post_shopping_cart(cart)
 
         if url:
@@ -303,6 +240,7 @@ class PurchasePage(TemplatedPage):
             values = {
                 'error': 'The shopping cart is down'}
             cart.status = 'Error' # we could use some more context
+            cart.put()
 
         self.write_template(values)
 
