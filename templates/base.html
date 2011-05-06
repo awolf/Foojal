@@ -130,10 +130,10 @@
     <!-- /.slide -->
 
     {% else %}
-    {% if display_date != None %}
+    {% if heading  %}
     <div>
         <h1>
-            {{ display_date|date:"l F j " }}
+            {{ heading }}
         </h1>
     </div>
     {% endif%}

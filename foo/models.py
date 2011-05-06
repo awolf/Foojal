@@ -4,7 +4,7 @@ import string
 import pytz
 import settings
 
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import taskqueue
@@ -22,6 +22,19 @@ def generate_purchase_key():
     get_new_id()
     return key
 
+def week_begin_end_dates(week, year):
+    d = date(year, 1, 1)
+    delta_days = d.isoweekday() - 1
+    delta_weeks = week
+    if year == d.isocalendar()[0]:
+        delta_weeks -= 1
+    # delta for the beginning of the week
+    delta = timedelta(days=-delta_days, weeks=delta_weeks)
+    beginning = d + delta
+    # delta2 for the end of the week
+    delta2 = timedelta(days=6-delta_days, weeks=delta_weeks)
+    end = d + delta2
+    return beginning, end
 
 def get_new_id():
     'get the last id for Purchase Model'
@@ -302,10 +315,8 @@ class Entry(db.Model):
         return data
 
 #    @classmethod
-#    def get_todays_entries(cls, account):
-#
-#        today = datetime.utcnow().replace(tzinfo=pytz.utc)
-#        today_local = today.astimezone(account.tz)
+#    def get_day_entries(cls, account, day):
+#        today_local = day.astimezone(account.tz)
 #
 #        from_date_local = datetime( hour=0, minute=0, day=today_local.day, year=today_local.year, month=today_local.month).replace(tzinfo=account.tz)
 #        to_date_local = datetime(hour=23, minute=59, day=today_local.day, year=today_local.year, month=today_local.month).replace(tzinfo=account.tz)
@@ -313,11 +324,34 @@ class Entry(db.Model):
 #        date_from = from_date_local.astimezone(pytz.utc)
 #        date_to = to_date_local.astimezone(pytz.utc)
 #
+#        entries = cls.all()
+#        entries.filter("owner", account.user)
+#        entries.filter("created >=", date_from)
+#        entries.filter("created <=", date_to)
+#        entries.order("-created")
+#
+#        data = []
+#        for entry in entries.fetch(30):
+#            entry.created = entry.created.astimezone(account.tz)
+#            data.append(entry)
+#        return data
+
+#    @classmethod
+#    def get_week_entries(cls, account, week, year):
+#
+#        beginning_date, end_date = week_begin_end_dates(week, year)
+#
+#        from_date_local = datetime( hour=0, minute=0, day=beginning_date.day, year=beginning_date.year, month=beginning_date.month).replace(tzinfo=account.tz)
+#        to_date_local = datetime(hour=23, minute=59, day=end_date.day, year=end_date.year, month=end_date.month).replace(tzinfo=account.tz)
+#
+#        date_from = from_date_local.astimezone(pytz.utc)
+#        date_to = to_date_local.astimezone(pytz.utc)
 #
 #        entries = cls.all()
 #        entries.filter("owner", account.user)
 #        entries.filter("created >=", date_from)
 #        entries.filter("created <=", date_to)
+#        entries.order("-created")
 #
 #        data = []
 #        for entry in entries.fetch(30):
@@ -326,15 +360,10 @@ class Entry(db.Model):
 #        return data
 
     @classmethod
-    def get_day_entries(cls, account, day):
-        today_local = day.astimezone(account.tz)
-
-        from_date_local = datetime( hour=0, minute=0, day=today_local.day, year=today_local.year, month=today_local.month).replace(tzinfo=account.tz)
-        to_date_local = datetime(hour=23, minute=59, day=today_local.day, year=today_local.year, month=today_local.month).replace(tzinfo=account.tz)
-
-        date_from = from_date_local.astimezone(pytz.utc)
-        date_to = to_date_local.astimezone(pytz.utc)
-
+    def get_entries_from_to(cls, account, from_date, to_date):
+        date_from = from_date.astimezone(pytz.utc)
+        date_to = to_date.astimezone(pytz.utc)
+    
         entries = cls.all()
         entries.filter("owner", account.user)
         entries.filter("created >=", date_from)
@@ -346,8 +375,6 @@ class Entry(db.Model):
             entry.created = entry.created.astimezone(account.tz)
             data.append(entry)
         return data
-
-
 
 class BlackList(db.Model):
     email = db.EmailProperty(required=True)

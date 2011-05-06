@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from datetime import datetime, timedelta
-from time import strftime
+from datetime import datetime, date
 from google.appengine.dist import use_library
+import date_helper
 
 use_library('django', '1.2')
 
@@ -30,7 +30,7 @@ import pytz
 class TemplatedPage(webapp.RequestHandler):
     """Base class for templatized handlers."""
 
-    def write_template(self, params):
+    def write_template(self, params, template_name=None):
         """Write out the template with the same name as the class name."""
 
         request = self.request
@@ -49,8 +49,11 @@ class TemplatedPage(webapp.RequestHandler):
             params['account'] = models.Account.get_user_account()
             params['sign_out'] = users.create_logout_url("/")
         try:
-            path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates',
-                                self.__class__.__name__ + '.html')
+            if template_name:
+                path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates', template_name + ".html")
+            else:
+                path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates',
+                                    self.__class__.__name__ + '.html')
 
             self.response.out.write(template.render(path, params))
         except DeadlineExceededError:
@@ -67,8 +70,6 @@ class TemplatedPage(webapp.RequestHandler):
         except AssertionError:
             logging.exception('AssertionError')
             return HttpResponse('AssertionError')
-            #finally:
-            #library.user_cache.clear() # don't want this sticking around
 
 
 class RESTfulHandler(TemplatedPage):
@@ -83,18 +84,8 @@ class RESTfulHandler(TemplatedPage):
             self.post(*args)
 
 
-class MainPage(TemplatedPage):
-    """Home page for Foojal"""
-
-    @login_required
-    def get(self):
-        values = {
-            "entries": models.Entry.get_latest_entries(),
-        }
-        self.write_template(values)
-
-
 class NewEntry(TemplatedPage):
+    @login_required
     def get(self):
         """ Account Display page """
 
@@ -108,47 +99,74 @@ class NewEntry(TemplatedPage):
 
         self.redirect('/entry/' + key.__str__())
 
+
 class Today(TemplatedPage):
-
+    @login_required
     def get(self):
-
         account = models.Account.get_user_account()
-        utc = datetime.utcnow().replace(tzinfo=pytz.utc)
-        today = utc.astimezone(account.tz)
-        previous_date =  today - timedelta(days=1)
-        previous_date_url = strftime("/day/%d/%m/%Y", previous_date.timetuple())
+        if account is None:
+            self.write_template({})
+            return
 
-#        next_date = today + timedelta(days=1)
-#        next_date_url = strftime("/day/%d/%m/%Y", next_date.timetuple())
+        today = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(account.tz)
+        data = date_helper.get_day_data(account, today.date())
 
         values = {
-            "entries": models.Entry.get_day_entries(account, today),
-            "display_date": today,
-            "previous_date_url": previous_date_url
+            "entries": models.Entry.get_entries_from_to(account, data['from_date'], data['to_date']),
+            "heading": data['heading'],
+            "display_date": data['target_day'],
+            "previous_date_url": data['previous_date_url'],
+            "next_date_url": data['next_date_url']
         }
-        self.write_template(values)
+        self.write_template(values, "Entries")
+
 
 class Day(TemplatedPage):
-
+    @login_required
     def get(self, day, month, year):
-
         account = models.Account.get_user_account()
-
-        target_day = datetime( hour=0, minute=0, day=int(day), year=int(year), month=int(month)).replace(tzinfo=account.tz)
-
-        previous_date =  target_day - timedelta(days=1)
-        previous_date_url = strftime("/day/%d/%m/%Y", previous_date.timetuple())
-
-        next_date = target_day + timedelta(days=1)
-        next_date_url = strftime("/day/%d/%m/%Y", next_date.timetuple())
+        data = date_helper.get_day_data(account, date(int(year), month=int(month), day=int(day)))
 
         values = {
-            "entries": models.Entry.get_day_entries(account, target_day),
-            "display_date": target_day,
-            "previous_date_url": previous_date_url,
-            "next_date_url": next_date_url
+            "entries": models.Entry.get_entries_from_to(account, data['from_date'], data['to_date']),
+            "heading": data['heading'],
+            "display_date": data['target_day'],
+            "previous_date_url": data['previous_date_url'],
+            "next_date_url": data['next_date_url']
         }
-        self.write_template(values)
+        self.write_template(values, "Entries")
+
+
+class Week(TemplatedPage):
+    @login_required
+    def get(self, week, year):
+        account = models.Account.get_user_account()
+        data = date_helper.get_week_data(account, int(week), int(year))
+
+        values = {
+            "entries": models.Entry.get_entries_from_to(account, data['from_date'], data['to_date']),
+            "heading": data['heading'],
+            "display_date": data['target_day'],
+            "previous_date_url": data['previous_date_url'],
+            "next_date_url": data['next_date_url']
+        }
+        self.write_template(values, "Entries")
+
+
+class Month(TemplatedPage):
+    @login_required
+    def get(self, month, year):
+        account = models.Account.get_user_account()
+        data = date_helper.get_month_data(account, int(month), int(year))
+
+        values = {
+            "entries": models.Entry.get_entries_from_to(account, data['from_date'], data['to_date']),
+            "heading": data['heading'],
+            "display_date": data['target_day'],
+            "previous_date_url": data['previous_date_url'],
+            "next_date_url": data['next_date_url']
+        }
+        self.write_template(values, "Entries")
 
 
 class Entry(RESTfulHandler):
@@ -173,7 +191,7 @@ class Entry(RESTfulHandler):
         values = {
             "entry": entity,
             "entries": models.Entry.get_entries_by_tags(tags=entity.tags, key=entity.key()),
-        }
+            }
 
         self.write_template(values)
 
@@ -182,7 +200,7 @@ class Entry(RESTfulHandler):
     def get(self, key):
         """ show journal entry for a single entry """
         request = self.request
-        
+
         entry = models.Entry.get(key)
         entries = models.Entry.get_entries_by_tags(tags=entry.tags, key=entry.key())
 

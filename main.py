@@ -20,8 +20,8 @@ ROUTES = [
         ('/tag/(.*)', Tag),
         ('/today', Today),
         ('/day/(.*)/(.*)/(.*)', Day),
-        ('/week/(.*)/(.*)', Entry),
-        ('/month/(.*)/(.*)', Entry),
+        ('/week/(.*)/(.*)', Week),
+        ('/month/(.*)/(.*)', Month),
         ('/account', Account),
         ('/invitation', SendInvite),
         ('/google_checkout/.*', google_checkout.GoogleListener),
@@ -38,8 +38,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# todo - Timezones
 
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
