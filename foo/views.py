@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from datetime import datetime, timedelta
+from time import strftime
 from google.appengine.dist import use_library
 
 use_library('django', '1.2')
@@ -106,6 +108,48 @@ class NewEntry(TemplatedPage):
 
         self.redirect('/entry/' + key.__str__())
 
+class Today(TemplatedPage):
+
+    def get(self):
+
+        account = models.Account.get_user_account()
+        utc = datetime.utcnow().replace(tzinfo=pytz.utc)
+        today = utc.astimezone(account.tz)
+        previous_date =  today - timedelta(days=1)
+        previous_date_url = strftime("/day/%d/%m/%Y", previous_date.timetuple())
+
+#        next_date = today + timedelta(days=1)
+#        next_date_url = strftime("/day/%d/%m/%Y", next_date.timetuple())
+
+        values = {
+            "entries": models.Entry.get_day_entries(account, today),
+            "display_date": today,
+            "previous_date_url": previous_date_url
+        }
+        self.write_template(values)
+
+class Day(TemplatedPage):
+
+    def get(self, day, month, year):
+
+        account = models.Account.get_user_account()
+
+        target_day = datetime( hour=0, minute=0, day=int(day), year=int(year), month=int(month)).replace(tzinfo=account.tz)
+
+        previous_date =  target_day - timedelta(days=1)
+        previous_date_url = strftime("/day/%d/%m/%Y", previous_date.timetuple())
+
+        next_date = target_day + timedelta(days=1)
+        next_date_url = strftime("/day/%d/%m/%Y", next_date.timetuple())
+
+        values = {
+            "entries": models.Entry.get_day_entries(account, target_day),
+            "display_date": target_day,
+            "previous_date_url": previous_date_url,
+            "next_date_url": next_date_url
+        }
+        self.write_template(values)
+
 
 class Entry(RESTfulHandler):
     """ Entry detail page """
@@ -137,7 +181,8 @@ class Entry(RESTfulHandler):
     @login_required
     def get(self, key):
         """ show journal entry for a single entry """
-
+        request = self.request
+        
         entry = models.Entry.get(key)
         entries = models.Entry.get_entries_by_tags(tags=entry.tags, key=entry.key())
 

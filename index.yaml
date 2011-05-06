@@ -20,6 +20,11 @@ indexes:
   properties:
   - name: owner
   - name: created
+
+- kind: Entry
+  properties:
+  - name: owner
+  - name: created
     direction: desc
 
 - kind: Entry

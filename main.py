@@ -13,11 +13,15 @@ logging.info('Loading %s, app version = %s',
              __name__, os.getenv('CURRENT_VERSION_ID'))
 
 ROUTES = [
-        ('/', MainPage),
+        ('/', Today),
         ('/entry/map/(.*)', Map),
         ('/entry/new', NewEntry),
         ('/entry/(.*)', Entry),
         ('/tag/(.*)', Tag),
+        ('/today', Today),
+        ('/day/(.*)/(.*)/(.*)', Day),
+        ('/week/(.*)/(.*)', Entry),
+        ('/month/(.*)/(.*)', Entry),
         ('/account', Account),
         ('/invitation', SendInvite),
         ('/google_checkout/.*', google_checkout.GoogleListener),

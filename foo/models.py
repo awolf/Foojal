@@ -301,6 +301,53 @@ class Entry(db.Model):
             data.append(entry)
         return data
 
+#    @classmethod
+#    def get_todays_entries(cls, account):
+#
+#        today = datetime.utcnow().replace(tzinfo=pytz.utc)
+#        today_local = today.astimezone(account.tz)
+#
+#        from_date_local = datetime( hour=0, minute=0, day=today_local.day, year=today_local.year, month=today_local.month).replace(tzinfo=account.tz)
+#        to_date_local = datetime(hour=23, minute=59, day=today_local.day, year=today_local.year, month=today_local.month).replace(tzinfo=account.tz)
+#
+#        date_from = from_date_local.astimezone(pytz.utc)
+#        date_to = to_date_local.astimezone(pytz.utc)
+#
+#
+#        entries = cls.all()
+#        entries.filter("owner", account.user)
+#        entries.filter("created >=", date_from)
+#        entries.filter("created <=", date_to)
+#
+#        data = []
+#        for entry in entries.fetch(30):
+#            entry.created = entry.created.astimezone(account.tz)
+#            data.append(entry)
+#        return data
+
+    @classmethod
+    def get_day_entries(cls, account, day):
+        today_local = day.astimezone(account.tz)
+
+        from_date_local = datetime( hour=0, minute=0, day=today_local.day, year=today_local.year, month=today_local.month).replace(tzinfo=account.tz)
+        to_date_local = datetime(hour=23, minute=59, day=today_local.day, year=today_local.year, month=today_local.month).replace(tzinfo=account.tz)
+
+        date_from = from_date_local.astimezone(pytz.utc)
+        date_to = to_date_local.astimezone(pytz.utc)
+
+        entries = cls.all()
+        entries.filter("owner", account.user)
+        entries.filter("created >=", date_from)
+        entries.filter("created <=", date_to)
+        entries.order("-created")
+
+        data = []
+        for entry in entries.fetch(30):
+            entry.created = entry.created.astimezone(account.tz)
+            data.append(entry)
+        return data
+
+
 
 class BlackList(db.Model):
     email = db.EmailProperty(required=True)

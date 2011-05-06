@@ -41,21 +41,29 @@
             {%if account.user != None %}
             <div id="navigation" class="col-right">
                 <ul id="main-nav" class="nav fl sf-js-enabled">
-                    <li id="menu-item-91"
-                        class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-91">
-                        <a title="Home" href="/">Home</a>
+
+                    <li
+                            class="menu-item menu-item-type-post_type menu-item-object-page menu-item-88">
+                        <a href="/today"> <img src="/public/images/today.png"></a>
                     </li>
+
+                    <li
+                            class="menu-item menu-item-type-post_type menu-item-object-page menu-item-88">
+                        <a href="/entry/new"> <img src="/public/images/new.png"></a>
+                    </li>
+
                     <li id="menu-item-88"
                         class="menu-item menu-item-type-post_type menu-item-object-page menu-item-88">
-                        <a href="/account">{{ account.nickname }}</a>
+                        <a href="/account"><img src="/public/images/settings.png"></a>
                     </li>
                     <li id="menu-item-109"
                         class="menu-item menu-item-type-post_type menu-item-object-page menu-item-109">
-                        <a href="http://www.foojal.com/help/">Help</a>
+                        <a href="http://www.foojal.com/help/"><img src="/public/images/help.png"></a>
                     </li>
                     {%if user%}
                     <li class="menu-item menu-item-type-post_type menu-item-object-page">
-                        <a href="{{sign_out}}">Sign out</a></li>
+                        <a href="{{sign_out}}"> <img src="/public/images/signout.png"></a>
+                    </li>
                     {% else %}
                     <li class="menu-item menu-item-type-post_type menu-item-object-page">
                         <a href="{{sign_in}}">Sign in</a></li>
@@ -122,13 +130,14 @@
     <!-- /.slide -->
 
     {% else %}
-    <!-- /.toolbar -->
-    <ul class="toolbar" style="float: left; width: 100%;">
-        <li><a href="/entry/new"> <img src="/public/images/newentry.png"></a></li>
-        <li><a href="/entry/new"> <img src="/public/images/month.png"></a></li>
-        <li><a href="/entry/new"> <img src="/public/images/week.png"></a></li>
-        <li><a href="/entry/new"> <img src="/public/images/day.png"></a></li>
-    </ul>
+    {% if display_date != None %}
+    <div>
+        <h1>
+            {{ display_date|date:"l F j " }}
+        </h1>
+    </div>
+    {% endif%}
+
 
     {% if error %}
     <div class="error">
