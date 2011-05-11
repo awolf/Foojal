@@ -14,19 +14,16 @@
                 <li><label>Expiration Date</label>
                     {{ account.expiration_date|date:"M d Y" }}
                 </li>
-                <li><label for="countries">Country</label>
-                    <select name="countries" onChange="account.submit();">
-                        {% for k, v in countries.items %}
-                        <option value="{{k}}"
-                        {% if k == account.country_code %} SELECTED {% endif %} >{{v}}</option>
-                        {% endfor %}
-                    </select>
-                </li>
                 <li><label for="timezones">Timezone</label>
                     <select name="timezones">
-                        {% for timezone in timezones %}
-                        <option value="{{timezone}}"
-                        {% if timezone == account.timezone %} SELECTED {% endif %}>{{timezone}}</option>
+                        {% regroup zones by zone as zone_list %}
+                        {% for zone in zone_list %}
+                        <optgroup label="{{zone.grouper}}">
+                            {% for item in zone.list %}
+                            <option value="{{item.key}}"
+                            {% if item.key == account.timezone %} SELECTED {% endif %}>{{item.value}}</option>
+                            {% endfor %}
+                        </optgroup>
                         {% endfor %}
                     </select>
                 </li>

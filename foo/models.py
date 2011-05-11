@@ -148,7 +148,6 @@ class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
     nickname = db.StringProperty()
 
-    country_code = db.StringProperty(default="us")
     timezone = db.StringProperty(default="America/Phoenix")
 
     expiration_date = db.DateTimeProperty()

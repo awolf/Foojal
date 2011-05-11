@@ -39,6 +39,14 @@ def main():
 if __name__ == "__main__":
     main()
 
+#todo App write more test code.
+#todo App fix the timezones
+#todo App Test production billing system
+#todo
+#todo
+#todo Marketing Slides video 
+#todo 
+#todo Add calender for easier navigation
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 # todo Memcache - Added blacklist email list to memcache and update it every 1hr with cron job

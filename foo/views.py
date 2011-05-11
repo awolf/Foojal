@@ -105,7 +105,7 @@ class Today(TemplatedPage):
     def get(self):
         account = models.Account.get_user_account()
         if account is None:
-            self.write_template({})
+            self.write_template({},"Entries")
             return
 
         today = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(account.tz)
@@ -254,8 +254,8 @@ class Account(TemplatedPage):
         account = models.Account.get_user_account()
         values = {
             'account': account,
-            'countries': pytz.country_names,
-            'timezones': pytz.country_timezones[account.country_code]}
+            'zones' : settings.COUNTRY_TIMEZONES
+        }
 
         self.write_template(values)
 
@@ -265,14 +265,12 @@ class Account(TemplatedPage):
         account = models.Account.get_user_account()
 
         # Save the values from the form
-        account.country_code = self.request.get('countries')
         account.timezone = self.request.get('timezones')
         account.nickname = cgi.escape(self.request.get('name'))
         account.put()
 
         values = {
-            'countries': pytz.country_names,
-            'timezones': pytz.country_timezones[account.country_code],
+            'zones' : settings.COUNTRY_TIMEZONES,
             'success': 'Information Saved!',
             'account': account
         }
