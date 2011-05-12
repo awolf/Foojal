@@ -2,8 +2,6 @@ from calendar import monthrange
 from time import strftime
 from datetime import datetime, timedelta, date
 
-import models
-
 def week_begin_end_dates(week, year):
     d = date(year, 1, 1)
     delta_days = d.isoweekday() - 1
@@ -50,7 +48,7 @@ def get_day_data(account, date):
 
 def get_week_data(account, week, year):
     today = datetime.utcnow().replace(tzinfo=account.tz).date()
-    beginning_date, end_date = models.week_begin_end_dates(int(week), int(year))
+    beginning_date, end_date = week_begin_end_dates(int(week), int(year))
 
     from_date = datetime(hour=0, minute=0, day=beginning_date.day, year=beginning_date.year,
                          month=beginning_date.month).replace(tzinfo=account.tz)
@@ -77,14 +75,15 @@ def get_week_data(account, week, year):
     }
     return values
 
+
 def get_month_data(account, month, year):
-    
     today = datetime.utcnow().replace(tzinfo=account.tz)
     days_in_month = monthrange(int(year), int(month))[1]
 
-    from_date = datetime( hour=0, minute=0, day=1, year=int(year), month=int(month)).replace(tzinfo=account.tz)
+    from_date = datetime(hour=0, minute=0, day=1, year=int(year), month=int(month)).replace(tzinfo=account.tz)
 
-    to_date = datetime( hour=23, minute=59, second=59, day=days_in_month, year=int(year), month=int(month)).replace(tzinfo=account.tz)
+    to_date = datetime(hour=23, minute=59, second=59, day=days_in_month, year=int(year), month=int(month)).replace(
+        tzinfo=account.tz)
 
     a_day = timedelta(days=1)
 

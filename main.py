@@ -39,16 +39,20 @@ def main():
 if __name__ == "__main__":
     main()
 
+
 #todo App write more test code.
-#todo App fix the timezones
-#todo App Test production billing system
-#todo
-#todo
+    # Test entry code
+    # Test get tags code refactor
+    # Test production billing system
+
+    # if lat or long is zero dont record the goepoint
+    
 #todo Marketing Slides video 
 #todo 
 #todo Add calender for easier navigation
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+# todo MicroBlog - Add microblog for the food you have eaten
 # todo Memcache - Added blacklist email list to memcache and update it every 1hr with cron job
 # todo Email - Move all outbound emails to an email.py
 # todo Admin - Add admin pages to the admin section see: http://code.google.com/appengine/docs/python/config/appconfig.html#Administration_Console_Custom_Pages

@@ -14,4 +14,4 @@ class TestTimezoneOptions(unittest.TestCase):
 
             date_at_timezone = now.astimezone(timezone)
 
-            assert(date_at_timezone)
+            assert date_at_timezone 
