@@ -2,9 +2,12 @@
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 """
 Routines for testing WSGI applications.
-
 Most interesting is TestApp
 """
+
+from google.appengine.dist import use_library
+
+use_library('django', '1.2')
 
 import sys
 import random

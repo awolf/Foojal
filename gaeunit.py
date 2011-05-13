@@ -58,6 +58,9 @@ __copyright__ = "Copyright (c) 2008-2009, George Lei and Steven R. Farley"
 __license__ = "BSD"
 __url__ = "http://code.google.com/p/gaeunit"
 
+from google.appengine.dist import use_library
+use_library('django', '1.2')
+
 import sys
 import os
 import unittest

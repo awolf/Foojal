@@ -1,49 +1,45 @@
+
+from google.appengine.dist import use_library
+use_library('django', '1.2')
+
+from datetime import datetime
+from time import strftime
 import os
 import unittest
+from appengine_config import webapp_add_wsgi_middleware
 from foo.views import Today
 from webtest import TestApp
 from google.appengine.ext import webapp
+from google.appengine.ext import testbed
+from google.appengine.api.users import User
+from foo.models import Account
 
-from google.appengine.api import users
-from webob import Request
-
-class AddUserToRequestMiddleware(object):
-    """Add a user object and a user_is_admin flag to each request."""
-
-    def __init__(self, app):
-        self.app = app
-
-    def __call__(self, environ, start_response):
-        req = Request(environ)
-
-        # Add some helpfull things to the request.
-        req.user = users.get_current_user()
-        req.user_is_admin = str(users.is_current_user_admin())
-
-        resp = req.get_response(self.app)
-        return resp(environ, start_response)
-
-
-def webapp_add_wsgi_middleware(app):
-    app = AddUserToRequestMiddleware(app)
-    return app
+def addAccount(email):
+    Account.create_account_for_user(User(email='test@example.com'))
 
 
 class IndexTest(unittest.TestCase):
     def setUp(self):
-        self.application = webapp.WSGIApplication([('/', Today)], debug=True)
+        os.environ['USER_EMAIL'] = 'test@example.com'
+        os.environ['USER_IS_ADMIN'] = '1'
+        self.application = webapp_add_wsgi_middleware(webapp.WSGIApplication([('/', Today)], debug=True))
+
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_user_stub()
+
+    def tearDown(self):
+        self.testbed.deactivate()
 
     def test_default_page(self):
-        os.environ['USER_EMAIL'] = 'test@example.com'
-        os.environ['REMOTE_USER'] = 'test@example.com'
-        os.environ['USER_IS_ADMIN'] = '1'
-        os.environ['USER_ID'] = '1'
-        os.environ['AUTH_DOMAIN'] = 'foojalworld'
-        app = TestApp(webapp_add_wsgi_middleware(self.application))
-
+        adam = 'test'
+        addAccount('test@example.com')
+        app = TestApp(self.application)
         response = app.get('/')
+        date = strftime("%A %B %d", datetime.utcnow().timetuple())
         self.assertEqual('200 OK', response.status)
-        #self.assertTrue('Hello, World!' in response)
+        self.assertTrue(date in response)
 
 #  def test_page_with_param(self):
 #      app = TestApp(self.application)
