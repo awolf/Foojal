@@ -241,9 +241,10 @@ class Entry(db.Model):
             entry.delete()
 
     @classmethod
-    def update_entry(cls, key, tags, content):
+    def update_entry(cls, key, tags, content, account=None ):
         entry = cls.get(key)
-        account = Account.get_user_account()
+        if account is None:
+            account = Account.get_user_account()
 
         if entry.owner == account.user:
             entry.content = content.strip()
@@ -252,9 +253,13 @@ class Entry(db.Model):
             entry.put()
 
     @classmethod
-    def add_new_entry(cls, tags, content):
+    def add_new_entry(cls, tags, content, account=None):
         entry = Entry()
-        entry.owner = Account.get_user_account().user
+        if account:
+            entry.owner = account.user
+        else:
+            entry.owner = Account.get_user_account().user
+            
         entry.content = content.strip()
         entry.tags = [tag for tag in tags.strip().lower().split(' ') if tag]
         entry.put()
@@ -262,14 +267,15 @@ class Entry(db.Model):
         return entry.key()
 
     @classmethod
-    def get_entries_by_tags(cls, tags, key=None, count=20):
+    def get_entries_by_tags(cls, tags, key=None, count=20, account=None):
         """Get the latest or top 20(count) entries
             that contain the supplied tags
 
             If a key is supplied it will be skipped
         """
 
-        account = Account.get_user_account()
+        if account is None:
+            account = Account.get_user_account()
 
         entries = cls.all()
         entries.filter("owner", account.user)

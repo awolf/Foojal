@@ -1,6 +1,8 @@
+from calendar import monthrange
+from time import strftime
 import unittest
 from foo.date_helper import week_begin_end_dates, get_day_data, get_week_data, get_month_data
-from datetime import date
+from datetime import date, datetime, timedelta
 from foo.models import Account
 from google.appengine.ext import testbed
 
@@ -39,7 +41,7 @@ class TestWeekDatesHelper(unittest.TestCase):
         assert(end == date(2012, 1, 1))
 
 
-class TestDateHelpersTimeDeltas(unittest.TestCase):
+class TestDateHelpersTimeSpans(unittest.TestCase):
     """ Testing the single day helpers in
     the date helpers module."""
 
@@ -83,3 +85,157 @@ class TestDateHelpersTimeDeltas(unittest.TestCase):
         assert(days == 30)
         assert(hours == 23)
         assert(minutes == 59)
+
+
+class TestDayDateHelpers(unittest.TestCase):
+    """ Testing the single day helpers in
+    the date helpers module."""
+
+    account = None
+
+    def setUp(self):
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.account = Account(timezone='America/Phoenix')
+
+    def tearDown(self):
+        self.testbed.deactivate()
+
+    def test_day_in_the_past(self):
+        day = date(2011, 2, 22)
+        values = get_day_data(self.account, day)
+
+        from_date = datetime(hour=0, minute=0, day=day.day, year=day.year, month=day.month).replace(
+            tzinfo=self.account.tz)
+        to_date = datetime(hour=23, minute=59, second=59, day=day.day, year=day.year, month=day.month).replace(
+            tzinfo=self.account.tz)
+
+        assert from_date == values['from_date']
+        assert to_date == values['to_date']
+        assert from_date == values['target_day']
+        assert from_date == values['display_date']
+        assert values['previous_date_url'] == "/day/21/02/2011"
+        assert values['next_date_url'] == "/day/23/02/2011"
+
+    def test_today(self):
+        day = datetime.utcnow()
+        yesterday = day - timedelta(days=1)
+        values = get_day_data(self.account, day)
+
+        from_date = datetime(hour=0, minute=0, day=day.day, year=day.year, month=day.month).replace(
+            tzinfo=self.account.tz)
+        to_date = datetime(hour=23, minute=59, second=59, day=day.day, year=day.year, month=day.month).replace(
+            tzinfo=self.account.tz)
+
+        assert from_date == values['from_date']
+        assert to_date == values['to_date']
+        assert from_date == values['target_day']
+        assert from_date == values['display_date']
+        assert values['previous_date_url'] == strftime("/day/%d/%m/%Y", yesterday.timetuple())
+        assert values['next_date_url'] is None
+
+
+class TestWeekDateHelpers(unittest.TestCase):
+    """ Testing the week helpers in
+    the date helpers module."""
+
+    account = None
+
+    def setUp(self):
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.account = Account(timezone='America/Phoenix')
+
+    def tearDown(self):
+        self.testbed.deactivate()
+
+    def test_week_in_the_past(self):
+        values = get_week_data(self.account, "8", "2011")
+
+        from_date = datetime(hour=0, minute=0, day=21, year=2011, month=2).replace(tzinfo=self.account.tz)
+        to_date = datetime(hour=23, minute=59, day=27, year=2011, month=2).replace(tzinfo=self.account.tz)
+
+        assert from_date == values['from_date']
+        assert to_date == values['to_date']
+        assert from_date == values['target_day']
+        assert from_date == values['display_date']
+        assert values['previous_date_url'] == "/week/07/2011"
+        assert values['next_date_url'] == "/week/09/2011"
+
+    def test_today(self):
+        calendar = datetime.utcnow().isocalendar()
+        week = calendar[1]
+        year = calendar[0]
+        week_begin, week_end = week_begin_end_dates(week, year)
+
+        values = get_week_data(self.account, week, year)
+
+        from_date = datetime(hour=0, minute=0, day=week_begin.day, year=week_begin.year,
+                             month=week_begin.month).replace(tzinfo=self.account.tz)
+        to_date = datetime(hour=23, minute=59, day=week_end.day, year=week_end.year, month=week_end.month).replace(
+            tzinfo=self.account.tz)
+
+        previous_date_url = "/week/" + str(week - 1) + "/2011"
+
+        assert from_date == values['from_date']
+        assert to_date == values['to_date']
+        assert from_date == values['target_day']
+        assert from_date == values['display_date']
+        assert values['previous_date_url'] == previous_date_url
+        assert values['next_date_url'] is None
+
+
+class TestMonthDateHelpers(unittest.TestCase):
+    """ Testing the month helpers in
+    the date helpers module."""
+
+    account = None
+
+    def setUp(self):
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.account = Account(timezone='America/Phoenix')
+
+    def tearDown(self):
+        self.testbed.deactivate()
+
+    def test_month_in_the_past(self):
+        values = get_month_data(self.account, "1", "2011")
+
+        from_date = datetime(hour=0, minute=0, day=1, year=2011, month=1).replace(tzinfo=self.account.tz)
+        to_date = datetime(hour=23, minute=59, day=31, year=2011, month=1).replace(tzinfo=self.account.tz)
+
+        assert from_date == values['from_date']
+        assert to_date == values['to_date']
+        assert from_date == values['target_day']
+        assert from_date == values['display_date']
+        assert values['previous_date_url'] == "/month/12/2010"
+        assert values['next_date_url'] == "/month/02/2011"
+
+    def test_today(self):
+        today = datetime.date(datetime.now())
+        month = today.month
+        year = today.year
+
+        values = get_month_data(self.account, month, year)
+        days_in_month = monthrange(int(year), int(month))[1]
+
+        from_date = datetime(hour=0, minute=0, day=1, year=int(year), month=int(month)).replace(tzinfo=self.account.tz)
+
+        to_date = datetime(hour=23, minute=59, day=days_in_month, year=int(year), month=int(month)).replace(
+            tzinfo=self.account.tz)
+
+        a_day = timedelta(days=1)
+
+        previous_date = from_date - a_day
+        previous_date_url = strftime("/month/%m/%Y", previous_date.timetuple())
+
+        assert from_date == values['from_date']
+        assert to_date == values['to_date']
+        assert from_date == values['target_day']
+        assert from_date == values['display_date']
+        assert values['previous_date_url'] == previous_date_url
+        assert values['next_date_url'] is None

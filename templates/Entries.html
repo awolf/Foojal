@@ -7,9 +7,9 @@
     {% if next_date_url %}
     <li><a href="{{next_date_url}}"> <img src="/public/images/next.png"></a></li>
     {% endif %}
-    <li><a href="/month/{{ display_date|date:" n/Y" }}"> <img src="/public/images/month.png"></a></li>
-    <li><a href="/week/{{ display_date|date:" W/Y" }}"> <img src="/public/images/week.png"></a></li>
-    <li><a href="/day/{{ display_date|date:" j/n/Y" }}"> <img src="/public/images/day.png"></a></li>
+    <li><a href="/month/{{ display_date|date:"n/Y" }}"> <img src="/public/images/month.png"></a></li>
+    <li><a href="/week/{{ display_date|date:"W/Y" }}"> <img src="/public/images/week.png"></a></li>
+    <li><a href="/day/{{ display_date|date:"j/n/Y" }}"> <img src="/public/images/day.png"></a></li>
     {% if previous_date_url %}
     <li><a href="{{previous_date_url}}"> <img src="/public/images/previous.png"></a></li>
     {% endif%}

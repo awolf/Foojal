@@ -6,5 +6,5 @@ test_cases = [
             {'file_name': 'LG VX110000.JPG','has_geo':False},
             {'file_name': 'Motorola Droid.JPG','has_geo':True},
             {'file_name': 'Palm Pre.JPG','has_geo':False},
-            {'file_name': 'Photo.JPG','has_geo':True},
+            {'file_name': 'photo.JPG','has_geo':True},
             ]

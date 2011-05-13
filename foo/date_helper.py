@@ -82,7 +82,7 @@ def get_month_data(account, month, year):
 
     from_date = datetime(hour=0, minute=0, day=1, year=int(year), month=int(month)).replace(tzinfo=account.tz)
 
-    to_date = datetime(hour=23, minute=59, second=59, day=days_in_month, year=int(year), month=int(month)).replace(
+    to_date = datetime(hour=23, minute=59, day=days_in_month, year=int(year), month=int(month)).replace(
         tzinfo=account.tz)
 
     a_day = timedelta(days=1)

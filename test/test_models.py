@@ -1,3 +1,4 @@
+from datetime import date
 import unittest
 from google.appengine.ext.db import BadValueError
 from google.appengine.api.users import User
@@ -180,3 +181,180 @@ class TestBlackList(unittest.TestCase):
         BlackList.blacklist_email(EMAIL)
         blacklist = BlackList.get_blacklist_by_email(EMAIL)
         self.assertTrue(blacklist.counter == 2)
+
+
+class TestEntries(unittest.TestCase):
+    account = None
+    email_to = 'test@example.com'
+    content = "Eat to many wings at the party"
+    tags = "Dinner party spicy beer"
+    tag_list = [u'dinner', u'party', u'spicy', u'beer']
+
+    def setUp(self):
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_user_stub()
+        self.account = Account.create_account_for_user(user=User(email=self.email_to))
+
+    def tearDown(self):
+        self.testbed.deactivate()
+
+    def test_add_entry(self):
+        entries = Entry.all().get()
+        assert entries is None
+
+        entry = Entry()
+        entry.owner = self.account.user
+        entry.put()
+
+        entries = Entry.all().fetch(10)
+        assert len(entries) is 1
+
+    def test_update_entry(self):
+        entry = Entry()
+        entry.owner = self.account.user
+        entry.put()
+
+        assert entry.content is None
+        assert entry.tags == []
+
+        entry.update_entry(entry.key(), self.tags, self.content, self.account)
+
+        entries = Entry.all().fetch(1)
+        result = entries[0]
+        assert result.content == self.content
+        assert result.tags == self.tag_list
+
+    def test_adding_new_entry(self):
+        key = Entry.add_new_entry(self.tags, self.content, self.account)
+
+        entry = Entry.get(key)
+
+        assert entry
+        assert entry.content == self.content
+        assert entry.tags == self.tag_list
+
+    def test_get_all_entries_by_tag(self):
+        Entry.add_new_entry(self.tags, self.content, self.account)
+        Entry.add_new_entry(self.tags, self.content, self.account)
+        Entry.add_new_entry(self.tags, self.content, self.account)
+
+        entries = Entry.get_entries_by_tags(tags=['dinner'], account=self.account)
+
+        assert len(entries) == 3
+
+    def test_get_all_entries_by_tag(self):
+        Entry.add_new_entry(self.tags, self.content, self.account)
+        key = Entry.add_new_entry(self.tags, self.content, self.account)
+        Entry.add_new_entry(self.tags, self.content, self.account)
+
+        entries = Entry.get_entries_by_tags(tags=['dinner'], key=key, account=self.account)
+
+        assert len(entries) == 2
+
+    def test_get_all_entries_by_tag_limit_2(self):
+        Entry.add_new_entry(self.tags, self.content, self.account)
+        Entry.add_new_entry(self.tags, self.content, self.account)
+        Entry.add_new_entry(self.tags, self.content, self.account)
+
+        entries = Entry.get_entries_by_tags(tags=['dinner'], count=2, account=self.account)
+
+        assert len(entries) == 2
+
+
+class TestEntriesTags(unittest.TestCase):
+    account = None
+    email_to = 'test@example.com'
+
+    def setUp(self):
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_user_stub()
+        self.account = Account.create_account_for_user(user=User(email=self.email_to))
+
+    def tearDown(self):
+        self.testbed.deactivate()
+
+    def test_tags_with_uppercase_letters(self):
+        entry = Entry()
+        entry.owner = self.account.user
+        entry.put()
+
+        Entry.update_entry(entry.key(), "THIS IS CAPITALIZED", "", self.account)
+
+        entry = Entry.get(entry.key())
+
+        assert entry.tags == [u'this', u'is', u'capitalized']
+
+    def test_tags_with_extra_spaces(self):
+        entry = Entry()
+        entry.owner = self.account.user
+        entry.put()
+
+        Entry.update_entry(entry.key(), " THIS  is  CAPITALIZED ", "", self.account)
+
+        entry = Entry.get(entry.key())
+
+        assert entry.tags == [u'this', u'is', u'capitalized']
+
+
+class TestEntriesTags(unittest.TestCase):
+    account = None
+    email_to = 'test@example.com'
+
+    content = "Eat to many wings at the party"
+    tags = "Dinner party spicy beer"
+
+    dates = [
+        datetime(2011, 1, 12),
+        datetime(2011, 4, 12)
+    ]
+
+    def setUp(self):
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_user_stub()
+        self.account = Account.create_account_for_user(user=User(email=self.email_to))
+
+        for date in self.dates:
+            entry = Entry()
+            entry.owner = self.account.user
+            entry.created = date.replace(tzinfo=self.account.tz)
+            entry.put()
+
+    def tearDown(self):
+        self.testbed.deactivate()
+
+    def test_should_return_two_entries(self):
+        entries = Entry.get_entries_from_to(
+                            self.account,
+                            from_date=datetime(2011,1,1).replace(tzinfo=pytz.utc),
+                            to_date=datetime(2011,5,1).replace(tzinfo=pytz.utc))
+
+        assert len(entries) == 2
+
+    def test_should_not_return_other_users_data(self):
+        account_b = Account.create_account_for_user(user=User(email='someone@else.com'))
+        entry = Entry()
+        entry.owner = account_b.user
+        entry.created = datetime(2011,1,12).replace(tzinfo=account_b.tz)
+        entry.put()
+
+        entries = Entry.get_entries_from_to(
+                            self.account,
+                            from_date=datetime(2011,1,1).replace(tzinfo=pytz.utc),
+                            to_date=datetime(2011,5,1).replace(tzinfo=pytz.utc))
+
+        assert len(entries) == 2
+
+    def test_should_return_results_in_users_timezone(self):
+        entries = Entry.get_entries_from_to(
+                            self.account,
+                            from_date=datetime(2011,1,1).replace(tzinfo=pytz.utc),
+                            to_date=datetime(2011,5,1).replace(tzinfo=pytz.utc))
+        
+        for entry in entries:
+            assert entry.created == entry.created.astimezone(self.account.tz)
