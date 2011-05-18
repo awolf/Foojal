@@ -335,18 +335,3 @@ class Invite(TemplatedPage):
         models.Entry.transfer_to_account(invitation.to_address, account.user)
         models.Invitation.remove_all_invites_by_email(invitation.to_address)
         self.redirect('/')
-
-
-class SendInvite(webapp.RequestHandler):
-    """ Send out invitation to user """
-
-    def post(self):
-        address = self.request.get('email')
-
-        key = self.request.get('key')
-        message = EmailMessage()
-        message.sender = settings.INVITATION_EMAIL
-        message.to = address
-        message.subject = settings.INVITATION_SUBJECT
-        message.body = settings.INVITATION_EMAIL_CONTENT % settings.INVITATION_URL + key
-        message.send()

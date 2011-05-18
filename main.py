@@ -2,6 +2,7 @@
 import sys
 
 from google.appengine.dist import use_library
+from foo.tasks import SendInvite
 
 use_library('django', '1.2')
 

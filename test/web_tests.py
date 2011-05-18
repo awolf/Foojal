@@ -1,5 +1,7 @@
 
 from google.appengine.dist import use_library
+import pytz
+
 use_library('django', '1.2')
 
 from datetime import datetime
@@ -33,11 +35,12 @@ class IndexTest(unittest.TestCase):
         self.testbed.deactivate()
 
     def test_default_page(self):
-        adam = 'test'
         addAccount('test@example.com')
         app = TestApp(self.application)
         response = app.get('/')
-        date = strftime("%A %B %d", datetime.utcnow().timetuple())
+        #print response
+        date = strftime("%A %B %d", datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone("America/Phoenix")).timetuple())
+        #print date
         self.assertEqual('200 OK', response.status)
         self.assertTrue(date in response)
 

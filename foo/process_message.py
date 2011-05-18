@@ -165,6 +165,8 @@ class GeocodeImage(FSMAction):
             latitude = str(latitude)[1:-1].split(',')
             latitudeCoordinate = models.GetGeoPt(latitude, str(context['latitudeReference']))
 
+            if latitudeCoordinate is None or longitudeCoordinate is None:
+                return 'success'
             entry = models.Entry.get_by_id(context['entrykey'].id())
             entry.location = db.GeoPt(latitudeCoordinate, longitudeCoordinate)
             entry.put()

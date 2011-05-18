@@ -77,7 +77,7 @@ class Test_Google_New_Order_Notification(unittest.TestCase):
       <items>
         <item>
           <digital-content>
-            <description>One Year Subscription.: Your subscription to Foojal.com has been setup. Please check &lt;a href="http://FoojalWorld.appspot.com/account" target="_blank"&gt;http://FoojalWorld.appspot.&lt;WBR&gt;com/account&lt;/a&gt; to access your purchase.</description>
+            <description>One Year Subscription.: Your subscription to Foojal.com has been setup. Please check &lt;a href="http://app.foojal.com/account" target="_blank"&gt;http://app.foojal.&lt;WBR&gt;com/account&lt;/a&gt; to access your purchase.</description>
             <display-disposition>PESSIMISTIC</display-disposition>
           </digital-content>
           <item-name>One Year Subscription.</item-name>
@@ -126,7 +126,7 @@ class Test_Google_New_Order_Notification(unittest.TestCase):
     <items>
       <item>
         <digital-content>
-          <description>One Year Subscription.: Your subscription to Foojal.com has been setup. Please check &lt;a href="http://FoojalWorld.appspot.com/account" target="_blank"&gt;http://FoojalWorld.appspot.&lt;WBR&gt;com/account&lt;/a&gt; to access your purchase.</description>
+          <description>One Year Subscription.: Your subscription to Foojal.com has been setup. Please check &lt;a href="http://app.foojal.com/account" target="_blank"&gt;http://app.foojal.&lt;WBR&gt;com/account&lt;/a&gt; to access your purchase.</description>
           <display-disposition>PESSIMISTIC</display-disposition>
         </digital-content>
         <item-name>One Year Subscription.</item-name>

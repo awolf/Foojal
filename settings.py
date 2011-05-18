@@ -9,7 +9,7 @@ ENABLE_DEBUG = True
 SITE_DOWN_MESSAGE = "The website is currently undergoing maintenance  and will be back online shortly."
 SITE_EMAIL = 'support@foojal.com'
 SITE_NAME = "Foojal"
-SITE_URL = 'http://FoojalWorld.appspot.com'
+SITE_URL = 'http://app.foojal.com'
 PURCHASE_ID_START = 999 #purchase id start number
 
 MEMCACHE_LENGTH = 3600 #default memcache length in seconds
@@ -53,18 +53,7 @@ GOOGLE_URL = 'https://sandbox.google.com/checkout/api/checkout/v2/merchantChecko
 NO_IMAGE_URL = '/public/images/noimage.gif'
 ALLOWED_IMAGE_EXTENSIONS = ('.jpg', '.JPG', '.jpeg', '.JPEG')
 
-#Invitations
-INVITATION_EMAIL = 'Invites@foojalworld.appspotmail.com'
-INVITATION_SUBJECT = 'Your Foojal Invitation'
-INVITATION_URL = 'http://foojalworld.appspot.com/invites/'
-INVITATION_EMAIL_CONTENT = """
-You have been invited to Foojal.com!
 
-To accept this invitation, click the following link,
-or copy and paste the URL into your browser's address
-bar:
-
-%s"""
 
 #Google checkout text after successful transaction
 DOWNLOAD_INSTRUCTIONS = 'Your subscription to Foojal.com has been setup. Please check ' + SITE_URL + '/account to access your purchase.'

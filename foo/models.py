@@ -78,6 +78,8 @@ def GetGeoPt(coordinate, GPSReference):
     if  GPSReference == "W" or GPSReference == "S":
         GPS_Coordinate = GPS_Coordinate * -1.0
 
+    if GPS_Coordinate == 0.0:
+        return None
     return GPS_Coordinate
 
 
