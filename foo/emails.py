@@ -1,6 +1,7 @@
 from google.appengine.api.mail import EmailMessage
+import settings
 
-def MakeInvitationEmail(address, key):
+def get_invitation_email(address, key):
     """ prepare the invitation email message """
 
     EMAIL = 'Invites@foojals.appspotmail.com'
@@ -23,4 +24,76 @@ bar:
     return message
 
 
-def Make
+def get_first_trail_communication_email(address, nickname):
+    """ prepare the invitation email message """
+
+    SUBJECT = 'Foojal: First couple of days'
+    EMAIL_CONTENT = """
+
+Hello %s
+
+Just checking it to see how you are liking your first few days of Foojal.com.
+If you have any questions during your trial period please email us, we would
+love to talk with you.
+
+Your Team:
+%s"""
+
+    message = EmailMessage()
+    message.sender = settings.SITE_EMAIL
+    message.to = address
+    message.subject = SUBJECT
+    message.body = EMAIL_CONTENT % (nickname, settings.SITE_EMAIL)
+    return message
+
+
+def get_second_trial_communication_email(address, nickname):
+    """ prepare the invitation email message """
+
+    SUBJECT = "Foojal: Don't lose out."
+    EMAIL_CONTENT = """
+
+Hello %s
+
+Just checking it to see how you are liking your Foojal.com trail subscription.
+
+Sign up today for a full year of Foojal.com for only $24.00 a year before we increase the price.
+That's only $2.00 a month
+
+If you have any questions during your trial period please email us, we would
+love to talk with you.
+
+Thank you, Kathy and Adam
+%s"""
+
+    message = EmailMessage()
+    message.sender = settings.SITE_EMAIL
+    message.to = address
+    message.subject = SUBJECT
+    message.body = EMAIL_CONTENT % (nickname, settings.SITE_EMAIL)
+    return message
+
+
+def get_last_trial_communication_email(address, nickname):
+    """ prepare the invitation email message """
+
+    SUBJECT = "Foojal: Your trial is over!"
+    EMAIL_CONTENT = """
+
+Hello %s
+
+We hope you liked your Foojal.com trail and that you will join us for a full year for only $24.00.
+
+To get a full year subscription to the best online photo food journal go to your account page at http://app.foojal.com/account .
+
+If you have any questions please email us, we would love to talk with you.
+
+Thank you, Kathy and Adam
+
+"""
+    message = EmailMessage()
+    message.sender = settings.SITE_EMAIL
+    message.to = address
+    message.subject = SUBJECT
+    message.body = EMAIL_CONTENT % nickname
+    return message

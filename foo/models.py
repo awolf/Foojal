@@ -366,7 +366,7 @@ class Invitation(db.Model):
         invite.to_address = email
         invite.put()
 
-        taskqueue.Queue('invite').add(
+        taskqueue.Queue('mail').add(
             taskqueue.Task(url='/invitation', params={'email': invite.to_address, 'key': invite.unique_key}))
 
 

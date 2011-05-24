@@ -18,7 +18,7 @@ queue:
   rate: 100/s
   bucket_size: 100
 
-- name: invite
+- name: mail
   rate: 10/s
   bucket_size: 20
   max_concurrent_requests: 10

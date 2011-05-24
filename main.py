@@ -2,7 +2,7 @@
 import sys
 
 from google.appengine.dist import use_library
-from foo.tasks import SendInvite
+from foo.tasks import SendInvite, SendTrialMessage
 
 use_library('django', '1.2')
 
@@ -24,6 +24,7 @@ ROUTES = [
         ('/week/(.*)/(.*)', Week),
         ('/month/(.*)/(.*)', Month),
         ('/account', Account),
+        ('/trial_message', SendTrialMessage),
         ('/invitation', SendInvite),
         ('/google_checkout/.*', google_checkout.GoogleListener),
         ('/purchase', PurchasePage),
