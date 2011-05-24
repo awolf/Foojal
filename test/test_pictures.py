@@ -28,7 +28,7 @@ class TestGeoPoint(unittest.TestCase):
                 assert log
                 assert lat
 
-                print "The file %s has lat long of %s %s" % (path, str(lat), str(log))
+                print "%s has lat long of %s %s" % (test['file_name'], str(lat), str(log))
 
 
 class TestExifExtract(unittest.TestCase):
