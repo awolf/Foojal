@@ -4,5 +4,5 @@ cron:
   schedule: every day 01:00
 
 - description: Send Trial Messages
-  url: trial_message/?method=POST
+  url: /trial_message/
   schedule: every day 01:00

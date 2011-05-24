@@ -5,7 +5,7 @@ from foo.models import Account
 class SendTrialMessage(webapp.RequestHandler):
     """ Send out trial expiring notifications to trial users """
 
-    def post(self):
+    def get(self):
         logging.info("Starting trial account messaging")
         Account.send_trial_notifications()
         logging.info("Ending trial account messaging")
