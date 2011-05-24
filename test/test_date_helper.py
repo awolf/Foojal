@@ -119,14 +119,20 @@ class TestDayDateHelpers(unittest.TestCase):
         assert values['next_date_url'] == "/day/23/02/2011"
 
     def test_today(self):
-        day = datetime.utcnow()
-        yesterday = day - timedelta(days=1)
-        values = get_day_data(self.account, day)
+        """ Test that getting the current day will
+        return the correct dates including a
+        none for the next day """
 
+        today = datetime.utcnow()
+        day = datetime(hour=12, minute=0, day=today.day, year=today.year, month=today.month)
+        yesterday = day - timedelta(days=1)
+        
         from_date = datetime(hour=0, minute=0, day=day.day, year=day.year, month=day.month).replace(
             tzinfo=self.account.tz)
         to_date = datetime(hour=23, minute=59, second=59, day=day.day, year=day.year, month=day.month).replace(
             tzinfo=self.account.tz)
+
+        values = get_day_data(self.account, day)
 
         assert from_date == values['from_date']
         assert to_date == values['to_date']
