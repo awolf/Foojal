@@ -40,16 +40,12 @@ if __name__ == "__main__":
     main()
 
 
-#todo App write more test code.
-    # Test entry code
+# todo App write more test code.
     # Test get tags code refactor
     # Test production billing system
 
-#todo Marketing Slides video 
-#todo 
-#todo Add calender for easier navigation
-
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+#todo Add calender for easier navigation
 # todo MicroBlog - Add microblog for the food you have eaten
 # todo Memcache - Added blacklist email list to memcache and update it every 1hr with cron job
 # todo Email - Move all outbound emails to an email.py

@@ -37,7 +37,7 @@ class TestExifExtract(unittest.TestCase):
         test_cases = fixtures.test_cases
         for test in test_cases:
             path = '/Users/awolf/Desktop/home/test/images/' + test['file_name']
-            print "Testing EXIF extract" + test['file_name']
+            print "Testing EXIF extract " + test['file_name']
             tags = foo.EXIF.process_file(open(path, 'r'))
             assert tags
 
