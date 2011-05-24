@@ -33,6 +33,10 @@ handlers:
 - url: /.*
   script: main.py
 
+- url: /trial_message.*
+  script: main.py
+  login: admin
+
 - url: /_ah/mail/invites.+
   script: mail_handler.py
   login: admin
