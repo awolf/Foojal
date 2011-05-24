@@ -54,6 +54,7 @@ def amount_notification(notification_dict):
     account = models.Account.all().filter("user", cart.user).get()
     if account:
         account.expiration_date = account.expiration_date + timedelta(days=+cart.number_of_days)
+        account.trial = False
         account.put()
         purchase.processed = True
         purchase.put()

@@ -1,10 +1,11 @@
 import logging
 import uuid
 import string
+import emails
 import pytz
 import settings
 
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import taskqueue
@@ -141,6 +142,7 @@ class Account(db.Model):
 
     timezone = db.StringProperty(default="America/Phoenix")
 
+    trial = db.BooleanProperty(default=True)
     expiration_date = db.DateTimeProperty()
 
     address_list = db.StringListProperty()
@@ -199,6 +201,38 @@ class Account(db.Model):
             "SELECT * FROM Account WHERE user = :1", user).get()
 
         return account
+
+    @classmethod
+    def get_trial_accounts_expiring_in(cls, number_of_days):
+
+        target_day = datetime.utcnow() + timedelta(days= number_of_days)
+
+        from_date = datetime(hour=0, minute=0, second=0, day=target_day.day, year=target_day.year, month=target_day.month)
+        to_date = datetime(hour=23, minute=59, second=59, day=target_day.day, year=target_day.year, month=target_day.month)
+
+        accounts = cls.all()
+        accounts.filter("expiration_date >=", from_date)
+        accounts.filter("expiration_date <=", to_date)
+        accounts.filter("trial =", True)
+
+        return accounts.fetch(500)
+
+
+    @classmethod
+    def send_trial_notifications(cls):
+
+        for account in cls.get_trial_accounts_expiring_in(1):
+            emails.get_first_trial_communication_email(account).send()
+            logging.info("Sending trial account message to %s expiration date is: %s " % (account.user.email(), account.expiration_date))
+
+
+        for account in cls.get_trial_accounts_expiring_in(3):
+            emails.get_second_trial_communication_email(account).send()
+            logging.info("Sending trial account message to %s expiration date is: %s " % (account.user.email(), account.expiration_date))
+
+        for account in cls.get_trial_accounts_expiring_in(5):
+            emails.get_last_trial_communication_email(account).send()
+            logging.info("Sending trial account message to %s expiration date is: %s " % (account.user.email(), account.expiration_date))
 
 
 class Entry(db.Model):

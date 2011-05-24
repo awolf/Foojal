@@ -1,5 +1,8 @@
 import unittest
+from google.appengine.api.users import User
 import foo.emails
+from foo.models import Account
+from google.appengine.ext import testbed
 
 test_code = """
 
@@ -40,44 +43,55 @@ class TestInvitationEmails(unittest.TestCase):
 class TestFirstTrialEmail(unittest.TestCase):
     """ Test the first email sent to trial accounts """
 
+
     def setUp(self):
-        self.address = "awolf@foojal.com"
-        self.nickname = "Adam"
-        self.message = foo.emails.get_first_trail_communication_email(self.address, self.nickname)
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_user_stub()
+        self.account = Account.create_account_for_user(user=User(email='awolf@foojal.com'))
+        self.account.nickname = "Adam"
+        
+        self.message = foo.emails.get_first_trial_communication_email(self.account)
 
     def test_message_body_contains_nickname(self):
         """ test that the users nickname is
         added to email message"""
         
         assert self.message
-        assert self.message.body.find(self.nickname)
+        assert self.message.body.find(self.account.nickname)
 
     def test_message_is_addressed_correctly(self):
         """ test that the message is address to the user """
         
         assert self.message
-        assert self.message.to == self.address
+        assert self.message.to == self.account.user.email()
 
 class TestSecondTrialEmail(unittest.TestCase):
     """ Test the second email sent to trial accounts """
 
     def setUp(self):
-        self.address = "awolf@foojal.com"
-        self.nickname = "Adam"
-        self.message = foo.emails.get_second_trial_communication_email(self.address, self.nickname)
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_user_stub()
+        self.account = Account.create_account_for_user(user=User(email='awolf@foojal.com'))
+        self.account.nickname = "Adam"
+
+        self.message = foo.emails.get_second_trial_communication_email(self.account)
 
     def test_message_body_contains_nickname(self):
         """ test that the users nickname is
         added to email message"""
 
         assert self.message
-        assert self.message.body.find(self.nickname)
+        assert self.message.body.find(self.account.nickname)
 
     def test_message_is_addressed_correctly(self):
         """ test that the message is address to the user """
 
         assert self.message
-        assert self.message.to == self.address
+        assert self.message.to == self.account.user.email()
 
     def test_message_contains_price(self):
         
@@ -89,23 +103,28 @@ class TestLastTrialEmail(unittest.TestCase):
     """ Test the last email sent to trial accounts """
 
     def setUp(self):
-        self.address = "awolf@foojal.com"
-        self.nickname = "Adam"
-        self.message = foo.emails.get_last_trial_communication_email(self.address, self.nickname)
+        self.testbed = testbed.Testbed()
+        self.testbed.activate()
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_user_stub()
+        self.account = Account.create_account_for_user(user=User(email='awolf@foojal.com'))
+        self.account.nickname = "Adam"
+
+        self.message = foo.emails.get_last_trial_communication_email(self.account)
 
     def test_message_body_contains_nickname(self):
         """ test that the users nickname is
         added to email message"""
 
         assert self.message
-        assert self.message.body.find(self.nickname)
+        assert self.message.body.find(self.account.nickname)
 
 
     def test_message_is_addressed_correctly(self):
         """ test that the message is address to the user """
 
         assert self.message
-        assert self.message.to == self.address
+        assert self.message.to == self.account.user.email()
 
     def test_message_contains_price(self):
 

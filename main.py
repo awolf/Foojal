@@ -1,14 +1,12 @@
 #!/usr/bin/env python
-import sys
-
 from google.appengine.dist import use_library
-from foo.tasks import SendInvite, SendTrialMessage
-
 use_library('django', '1.2')
 
 from google.appengine.ext.webapp.util import run_wsgi_app
 from foo.mail_handler import *
+from foo.tasks import *
 from foo.views import *
+from foo.jobs import *
 
 logging.info('Loading %s, app version = %s',
              __name__, os.getenv('CURRENT_VERSION_ID'))
@@ -47,8 +45,6 @@ if __name__ == "__main__":
     # Test get tags code refactor
     # Test production billing system
 
-    # if lat or long is zero dont record the goepoint
-    
 #todo Marketing Slides video 
 #todo 
 #todo Add calender for easier navigation

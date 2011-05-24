@@ -13,7 +13,6 @@ import logging
 # AppEngine imports
 from django.http import HttpResponse
 from google.appengine.api import users
-from google.appengine.api import taskqueue
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required

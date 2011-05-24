@@ -24,7 +24,7 @@ bar:
     return message
 
 
-def get_first_trail_communication_email(address, nickname):
+def get_first_trial_communication_email(account):
     """ prepare the invitation email message """
 
     SUBJECT = 'Foojal: First couple of days'
@@ -41,13 +41,13 @@ Your Team:
 
     message = EmailMessage()
     message.sender = settings.SITE_EMAIL
-    message.to = address
+    message.to = account.user.email()
     message.subject = SUBJECT
-    message.body = EMAIL_CONTENT % (nickname, settings.SITE_EMAIL)
+    message.body = EMAIL_CONTENT % (account.user.nickname, settings.SITE_EMAIL)
     return message
 
 
-def get_second_trial_communication_email(address, nickname):
+def get_second_trial_communication_email(account):
     """ prepare the invitation email message """
 
     SUBJECT = "Foojal: Don't lose out."
@@ -68,13 +68,13 @@ Thank you, Kathy and Adam
 
     message = EmailMessage()
     message.sender = settings.SITE_EMAIL
-    message.to = address
+    message.to = account.user.email()
     message.subject = SUBJECT
-    message.body = EMAIL_CONTENT % (nickname, settings.SITE_EMAIL)
+    message.body = EMAIL_CONTENT % (account.nickname, settings.SITE_EMAIL)
     return message
 
 
-def get_last_trial_communication_email(address, nickname):
+def get_last_trial_communication_email(account):
     """ prepare the invitation email message """
 
     SUBJECT = "Foojal: Your trial is over!"
@@ -93,7 +93,9 @@ Thank you, Kathy and Adam
 """
     message = EmailMessage()
     message.sender = settings.SITE_EMAIL
-    message.to = address
+    message.to = account.user.email()
     message.subject = SUBJECT
-    message.body = EMAIL_CONTENT % nickname
+    message.body = EMAIL_CONTENT % account.nickname
     return message
+
+
