@@ -4,6 +4,9 @@ from google.appengine.ext.db import BadValueError
 from google.appengine.api.users import User
 from google.appengine.ext import testbed
 
+from gaetestbed import MailTestCase
+
+
 from foo.models import *
 from google.appengine.ext import db
 import pytz
@@ -86,7 +89,7 @@ class TestAccountBlackListing(unittest.TestCase):
         assert self.account.should_blacklist
 
 
-class TestAccountTrialNotifications(unittest.TestCase):
+class TestAccountTrialNotifications(MailTestCase, unittest.TestCase):
     account = None
 
     def setUp(self):
@@ -95,6 +98,9 @@ class TestAccountTrialNotifications(unittest.TestCase):
         self.testbed.init_datastore_v3_stub()
         self.testbed.init_mail_stub()
         self.testbed.init_user_stub()
+
+        super(TestAccountTrialNotifications, self).setUp()
+
         account1 = Account.create_account_for_user(user=User(email='test5@example.com'))
         account1.expiration_date = datetime.utcnow() + timedelta(days=5)
         account1.put()
@@ -115,12 +121,13 @@ class TestAccountTrialNotifications(unittest.TestCase):
         assert len(Account.get_trial_accounts_expiring_in(3)) is 0
         assert len(Account.get_trial_accounts_expiring_in(7)) is 0
 
+
     def test_send_trial_account_notifications(self):
 
         Account.send_trial_notifications()
 
-
-        #assert
+        # This will fail if an e-mail wasn't sent.
+        self.assertEmailSent(to='test5@example.com', subject='Foojal: First couple of days')
 
 
 class TestAccount(unittest.TestCase):

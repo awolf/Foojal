@@ -69,3 +69,4 @@ skip_files:
 - ^(.*/)?bigPhoto.JPG
 - ^(.*/)?.*/test/.*
 
+

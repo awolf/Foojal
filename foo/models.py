@@ -225,16 +225,15 @@ class Account(db.Model):
     def send_trial_notifications(cls):
 
         for account in cls.get_trial_accounts_expiring_in(1):
-            emails.get_first_trial_communication_email(account).send()
+            emails.get_last_trial_communication_email(account).send()
             logging.info("Sending trial account message to %s expiration date is: %s " % (account.user.email(), account.expiration_date))
-
 
         for account in cls.get_trial_accounts_expiring_in(3):
             emails.get_second_trial_communication_email(account).send()
             logging.info("Sending trial account message to %s expiration date is: %s " % (account.user.email(), account.expiration_date))
 
         for account in cls.get_trial_accounts_expiring_in(5):
-            emails.get_last_trial_communication_email(account).send()
+            emails.get_first_trial_communication_email(account).send()            
             logging.info("Sending trial account message to %s expiration date is: %s " % (account.user.email(), account.expiration_date))
 
 
