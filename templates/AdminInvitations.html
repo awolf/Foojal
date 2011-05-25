@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Entry{% endblock %}
+
+{% block content %}
+<h1>Invitation Admin</h1>
+<br>
+
+<div class="col-full" style="margin-bottom:100px">
+    <table>
+        <thead>
+        <tr>
+            <td>Address</td>
+            <td>Created On</td>
+            <td>&nbsp;</td>
+        </tr>
+        </thead>
+        {% for invite in invites %}
+        <tr>
+            <td>{{ to_address }}</td>
+            <td>{{ created }}</td>
+            <td>
+                <form action='' method='post'><input name='key' type='hidden' value='{( unique_key }}'/>
+                    <button type="submit">Resend</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
