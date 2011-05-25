@@ -99,3 +99,11 @@ Thank you, Kathy and Adam
     return message
 
 
+def send_admin_notification(subject, data):
+    message = EmailMessage()
+    message.sender = settings.SITE_EMAIL
+    message.to = settings.ADMIN_EMAIL
+    message.subject = subject
+    message.body = data
+    message.send()
+

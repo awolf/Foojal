@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 from google.appengine.dist import use_library
+import foo
+
 use_library('django', '1.2')
 
 from google.appengine.ext.webapp.util import run_wsgi_app
@@ -21,7 +23,7 @@ ROUTES = [
         ('/day/(.*)/(.*)/(.*)', Day),
         ('/week/(.*)/(.*)', Week),
         ('/month/(.*)/(.*)', Month),
-        ('/account', Account),
+        ('/account', foo.views.Account),
         ('/trial_message', SendTrialMessage),
         ('/invitation', SendInvite),
         ('/google_checkout/.*', google_checkout.GoogleListener),
@@ -29,6 +31,7 @@ ROUTES = [
         ('/invites/(.*)', Invite),
         ('/_ah/mail/invites.+', InvitesMailHandler),
         ('/_ah/mail/.+', DefaultMailHandler),
+        ('/admin/invitations', AdminInvitations),
         ]
 
 application = webapp.WSGIApplication(ROUTES, debug=settings.ENABLE_DEBUG)

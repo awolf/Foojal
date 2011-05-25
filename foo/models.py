@@ -186,8 +186,11 @@ class Account(db.Model):
         account = Account()
         if user:
             account.user = user
-        account.nickname = user.nickname()
-        account.address_list.append(user.email())
+        if account.user.nickname:
+            account.nickname = account.user.nickname()
+        else:
+            account.nickname = account.user.email()
+        account.address_list.append(account.user.email())
         account.expiration_date = datetime.utcnow() + timedelta(days=7)
         account.put()
         return account
@@ -402,6 +405,16 @@ class Invitation(db.Model):
 
         taskqueue.Queue('mail').add(
             taskqueue.Task(url='/invitation', params={'email': invite.to_address, 'key': invite.unique_key}))
+
+    @classmethod
+    def get_all_invites(cls):
+
+        invitations = cls.all()
+        return invitations.fetch(50)
+
+    def resend(self):
+        taskqueue.Queue('mail').add(
+            taskqueue.Task(url='/invitation', params={'email': self.to_address, 'key': self.unique_key}))
 
 
 class Cart(db.Model):

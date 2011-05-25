@@ -1,13 +1,14 @@
-{% extends "base.html" %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Foojal | Invitation Admin</title>
+</head>
 
-{% block title %}Entry{% endblock %}
-
-{% block content %}
+<body >
 <h1>Invitation Admin</h1>
-<br>
-
-<div class="col-full" style="margin-bottom:100px">
-    <table>
+ {% if invites %}
+    <table style="width:100%">
         <thead>
         <tr>
             <td>Address</td>
@@ -17,17 +18,19 @@
         </thead>
         {% for invite in invites %}
         <tr>
-            <td>{{ to_address }}</td>
-            <td>{{ created }}</td>
+            <td>{{ invite.to_address }}</td>
+            <td>{{ invite.created }}</td>
             <td>
-                <form action='' method='post'><input name='key' type='hidden' value='{( unique_key }}'/>
+                <form action='' method='post'><input name='key' type='hidden' value="{{ invite.unique_key }}"/>
                     <button type="submit">Resend</button>
                 </form>
             </td>
         </tr>
     </table>
     {% endfor %}
-</div>
+{% else %}
+    <h2>No Invitations to resend</h2>
+{% endif %}
 
-{% endblock %}
-
+</body>
+</html>

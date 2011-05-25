@@ -10,3 +10,5 @@ class SendInvite(webapp.RequestHandler):
 
         message = emails.get_invitation_email(address, key)
         message.send()
+
+        emails.send_admin_notification("Invitation email sent", "Email: %s Key: %s" % (address, key))

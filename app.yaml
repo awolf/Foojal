@@ -9,6 +9,11 @@ builtins:
 inbound_services:
 - mail
 
+admin_console:
+  pages:
+  - name: Invitation Admin
+    url: /admin/invitations
+
 handlers:
 
 - url: /fantasm/.*
@@ -18,7 +23,11 @@ handlers:
 - url: /test.*
   script: gaeunit.py
   login: admin
-  
+
+- url: /admin.*
+  script: main.py
+  login: admin
+
 - url: /favicon.ico
   static_files: public/images/favicon.ico
   upload: public/images/favicon.ico

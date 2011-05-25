@@ -334,3 +334,20 @@ class Invite(TemplatedPage):
         models.Entry.transfer_to_account(invitation.to_address, account.user)
         models.Invitation.remove_all_invites_by_email(invitation.to_address)
         self.redirect('/')
+
+
+class AdminInvitations(TemplatedPage):
+    """ Admin page to resend invitations """
+
+    @login_required
+    def get(self):
+
+        values = { 'invites': models.Invitation.get_all_invites()}
+        self.write_template(values)
+
+    def post(self):
+        invitation_key = self.request.get('key')
+        models.Invitation.get_invitation_by_unique_key(invitation_key).resend()
+
+        values = { 'invites': models.Invitation.get_all_invites()}
+        self.write_template(values)
