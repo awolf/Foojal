@@ -64,9 +64,12 @@ skip_files:
 - ^(.*/)?.*\.py[co]
 - ^(.*/)?.*/RCS/.*
 - ^(.*/)?\..*
-- ^(.*/)?Clippings.txt
-- ^(.*/)?Photo.JPG
 - ^(.*/)?bigPhoto.JPG
 - ^(.*/)?.*/test/.*
+- ^(.*/)?gaeunit.py
+- ^test/
+- ^webtest/
+- ^gaetestbed/
+
 
 

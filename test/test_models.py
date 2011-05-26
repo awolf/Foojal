@@ -1,12 +1,9 @@
-from datetime import date
+
 import unittest
 from google.appengine.ext.db import BadValueError
 from google.appengine.api.users import User
 from google.appengine.ext import testbed
-
 from gaetestbed import MailTestCase
-
-
 from foo.models import *
 from google.appengine.ext import db
 import pytz
