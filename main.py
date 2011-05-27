@@ -30,6 +30,7 @@ ROUTES = [
         ('/purchase', PurchasePage),
         ('/invites/(.*)', Invite),
         ('/_ah/mail/invites.+', InvitesMailHandler),
+        ('/_ah/mail/support.+', SupportMailHandler),
         ('/_ah/mail/.+', DefaultMailHandler),
         ('/admin/invitations', AdminInvitations),
         ]

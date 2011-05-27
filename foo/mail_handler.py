@@ -125,3 +125,10 @@ class InvitesMailHandler(InboundMailHandler):
     def receive(self, mail_message):
         logging.info("Invites mail handler received a message from: %s" % mail_message.sender)
         return
+
+class SupportMailHandler(InboundMailHandler):
+    """Handle incoming mail for invite mail account. """
+
+    def receive(self, mail_message):
+        logging.info("Support mail handler received a message from: %s" % mail_message.sender)
+        return

@@ -7,7 +7,7 @@ except:
 
 ENABLE_DEBUG = True
 SITE_DOWN_MESSAGE = "The website is currently undergoing maintenance  and will be back online shortly."
-SITE_EMAIL = 'support@foojal.com'
+SITE_EMAIL = 'support@foojals.appspotmail.com'
 ADMIN_EMAIL = 'awolf@foojal.com'
 SITE_NAME = "Foojal"
 SITE_URL = 'http://app.foojal.com'

@@ -61,6 +61,14 @@ class TestFirstTrialEmail(unittest.TestCase):
         assert self.message
         assert self.message.body.find(self.account.nickname)
 
+    def test_message_body_when_nickname_is_none(self):
+        """ test that the users nickname is
+        added to email message"""
+        
+        self.account.nickname = None
+        assert self.message
+        assert self.message.body.find('Hello')
+
     def test_message_is_addressed_correctly(self):
         """ test that the message is address to the user """
         

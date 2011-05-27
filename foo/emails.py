@@ -32,7 +32,7 @@ def get_first_trial_communication_email(account):
 
 Hello %s
 
-Just checking it to see how you are liking your first few days of Foojal.com.
+Just checking it to see how you are liking your first few days of Foojal.com .
 If you have any questions during your trial period please email us, we would
 love to talk with you.
 
@@ -43,7 +43,7 @@ Your Team:
     message.sender = settings.SITE_EMAIL
     message.to = account.user.email()
     message.subject = SUBJECT
-    message.body = EMAIL_CONTENT % (account.user.nickname, settings.SITE_EMAIL)
+    message.body = EMAIL_CONTENT % (account.nickname, settings.SITE_EMAIL)
     return message
 
 

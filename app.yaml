@@ -24,7 +24,7 @@ handlers:
   script: gaeunit.py
   login: admin
 
-- url: /admin.*
+- url: /admin/.*
   script: main.py
   login: admin
 
@@ -47,6 +47,10 @@ handlers:
   login: admin
 
 - url: /_ah/mail/invites.+
+  script: mail_handler.py
+  login: admin
+
+- url: /_ah/mail/support.+
   script: mail_handler.py
   login: admin
 
