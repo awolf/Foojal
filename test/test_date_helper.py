@@ -5,6 +5,7 @@ from foo.date_helper import week_begin_end_dates, get_day_data, get_week_data, g
 from datetime import date, datetime, timedelta
 from foo.models import Account
 from google.appengine.ext import testbed
+import pytz
 
 class TestWeekDatesHelper(unittest.TestCase):
     """ Testing the week begin and end
@@ -123,8 +124,8 @@ class TestDayDateHelpers(unittest.TestCase):
         return the correct dates including a
         none for the next day """
 
-        today = datetime.utcnow()
-        day = datetime(hour=12, minute=0, day=today.day, year=today.year, month=today.month)
+        today = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(self.account.tz)
+        day = datetime(hour=18, minute=0, day=today.day, year=today.year, month=today.month).replace(tzinfo=self.account.tz)
         yesterday = day - timedelta(days=1)
         
         from_date = datetime(hour=0, minute=0, day=day.day, year=day.year, month=day.month).replace(

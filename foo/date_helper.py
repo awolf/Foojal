@@ -1,6 +1,7 @@
 from calendar import monthrange
 from time import strftime
 from datetime import datetime, timedelta, date
+import pytz
 
 def week_begin_end_dates(week, year):
     d = date(year, 1, 1)
@@ -18,7 +19,7 @@ def week_begin_end_dates(week, year):
 
 
 def get_day_data(account, date):
-    today = datetime.utcnow().replace(tzinfo=account.tz)
+    today = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(account.tz).replace(tzinfo=account.tz)
     from_date = datetime(hour=0, minute=0, day=date.day, year=date.year, month=date.month).replace(
         tzinfo=account.tz)
 
