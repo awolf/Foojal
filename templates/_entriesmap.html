@@ -1,8 +1,8 @@
 <img src="http://maps.google.com/maps/api/staticmap?size=400x512&maptype=roadmap
 &markers=color:blue
 {% for entry in entries %}
-    {% ifnotequal None %}
-        |{{entry.location}}
-    {% endifnotequal %}
+    {% if entry.location %}
+|{{entry.location}}
+    {% endif %}
 {% endfor %}
 &sensor=false"/>

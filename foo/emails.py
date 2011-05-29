@@ -55,7 +55,7 @@ def get_second_trial_communication_email(account):
 
 Hello %s
 
-Just checking it to see how you are liking your Foojal.com trail subscription.
+Just checking it to see how you are liking your Foojal.com trial subscription.
 
 Sign up today for a full year of Foojal.com for only $24.00 a year before we increase the price.
 That's only $2.00 a month
@@ -82,7 +82,7 @@ def get_last_trial_communication_email(account):
 
 Hello %s
 
-We hope you liked your Foojal.com trail and that you will join us for a full year for only $24.00.
+We hope you liked your Foojal.com trial and that you will join us for a full year for only $24.00.
 
 To get a full year subscription to the best online photo food journal go to your account page at http://app.foojal.com/account .
 
