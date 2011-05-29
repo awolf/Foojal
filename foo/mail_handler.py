@@ -1,5 +1,6 @@
 from __future__ import with_statement
 from google.appengine.api import files
+from google.appengine.api.capabilities import CapabilitySet
 
 from google.appengine.dist import use_library
 
@@ -9,6 +10,7 @@ use_library('django', '1.2')
 import logging
 
 # AppEngine imports
+from django.http import HttpResponse
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
 from google.appengine.api import images
 
@@ -53,12 +55,12 @@ class DefaultMailHandler(InboundMailHandler):
 
     def receive(self, mail_message):
         """ process incoming messages from email accounts """
-        logging.info("Received a message from: " + mail_message.sender)
-        blacklisted = models.BlackList.get_blacklist_by_email(mail_message.sender)
 
-        if blacklisted:
-            blacklisted.counter += 1
-            blacklisted.put()
+        if not CapabilitySet(['images', 'blobstore', 'taskqueue']).is_enabled():
+            logging.info("Capability not enabled" )
+            return HttpResponse('Capability not enabled', status=503)
+
+        logging.info("Received a message from: " + mail_message.sender)
 
         self.saveMessage(mail_message)
 
@@ -74,11 +76,6 @@ class DefaultMailHandler(InboundMailHandler):
             message.subject = mail_message.subject.lower()
 
         message.body = getMailBody(mail_message)
-
-        # if we are developing lets attach a local file.
-#        if settings.DEBUG:
-#            image = open('bigphoto.JPG', 'r')
-#            mail_message.attachments = [(image.name, image.read())]
 
         if hasPhotoAttached(mail_message):
             # Get the image data from the first attachment
@@ -113,6 +110,9 @@ class DefaultMailHandler(InboundMailHandler):
 
             except Exception, err:
                 logging.info("Error saving blob " + str(err))
+                return HttpResponse('Foojal: App Engine is undergoing maintenance. '
+                                'Please try again in a while. ' + str(err),
+                                status=503)
 
         message.put()
 
