@@ -56,9 +56,26 @@ class DefaultMailHandler(InboundMailHandler):
     def receive(self, mail_message):
         """ process incoming messages from email accounts """
 
-        if not CapabilitySet(['images', 'blobstore', 'taskqueue']).is_enabled():
-            logging.info("Capability not enabled" )
-            return HttpResponse('Capability not enabled', status=503)
+        images_enabled = CapabilitySet('images').is_enabled()
+        if not images_enabled:
+            logging.info("Image capability not enabled" )
+            return HttpResponse('Image capability not enabled', status=503)
+
+        datastore_write_enabled = CapabilitySet('datastore_v3', capabilities=['write']).is_enabled()
+        if not datastore_write_enabled:
+            logging.info("Data store write capability not enabled" )
+            return HttpResponse('Data store write capability not enabled', status=503)
+
+        taskqueue_enabled = CapabilitySet('taskqueue').is_enabled()
+        if not taskqueue_enabled:
+            logging.info("task queue capability not enabled" )
+            return HttpResponse('task queue capability not enabled', status=503)
+
+
+        #    CapabilitySet('images').is_enabled()
+        #if not CapabilitySet(['images', 'blobstore', 'taskqueue']).is_enabled():
+        #    logging.info("Capability not enabled" )
+        #    return HttpResponse('Capability not enabled', status=503)
 
         logging.info("Received a message from: " + mail_message.sender)
 
