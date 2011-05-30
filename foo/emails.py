@@ -32,8 +32,8 @@ def get_first_trial_communication_email(account):
 
 Hello %s
 
-Just checking it to see how you are liking your first few days of Foojal.com .
-If you have any questions during your trial period please email us, we would
+Just checking to see how you are liking your first few days of Foojal.com.
+If you have any questions during your trial period, please email us; we would
 love to talk with you.
 
 Your Team:
@@ -55,12 +55,12 @@ def get_second_trial_communication_email(account):
 
 Hello %s
 
-Just checking it to see how you are liking your Foojal.com trial subscription.
+Just checking to see how you are liking your Foojal.com trial subscription.
 
 Sign up today for a full year of Foojal.com for only $24.00 a year before we increase the price.
-That's only $2.00 a month
+That's only $2.00 a month.
 
-If you have any questions during your trial period please email us, we would
+If you have any questions during your trial period, please email us; we would
 love to talk with you.
 
 Thank you, Kathy and Adam
@@ -84,9 +84,9 @@ Hello %s
 
 We hope you liked your Foojal.com trial and that you will join us for a full year for only $24.00.
 
-To get a full year subscription to the best online photo food journal go to your account page at http://app.foojal.com/account .
+To get a full year subscription to the best online photo food journal, go to your account page at http://app.foojal.com/account.
 
-If you have any questions please email us, we would love to talk with you.
+If you have any questions, please email us; we would love to talk with you.
 
 Thank you, Kathy and Adam
 
