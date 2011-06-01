@@ -136,8 +136,6 @@ class CreatePhoto(FSMAction):
 
         rotated_image = img.execute_transforms(output_encoding=images.JPEG)
 
-        blobstore.delete(message.picture_key)
-
         file_name = files.blobstore.create(mime_type='image/jpeg')
 
         with files.open(file_name, 'a') as f:
@@ -145,12 +143,14 @@ class CreatePhoto(FSMAction):
 
         files.finalize(file_name)
         blob_key = files.blobstore.get_blob_key(file_name)
-
+        
         entry = models.Entry.get_by_id(context['entrykey'].id())
         entry.picture_url = images.get_serving_url(blob_key=str(blob_key))
         entry.picture_key = str(blob_key)
         entry.put()
 
+        blobstore.delete(message.picture_key)
+        
         return 'success'
 
 
