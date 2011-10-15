@@ -7,8 +7,8 @@ except:
 
 ENABLE_DEBUG = True
 SITE_DOWN_MESSAGE = "The website is currently undergoing maintenance  and will be back online shortly."
-SITE_EMAIL = 'support@foojals.appspotmail.com'
-ADMIN_EMAIL = 'awolf@foojal.com'
+SITE_EMAIL = 'e@mail.appspotmail.com'
+ADMIN_EMAIL = 'e@mail.com'
 SITE_NAME = "Foojal"
 SITE_URL = 'http://app.foojal.com'
 PURCHASE_ID_START = 999 #purchase id start number
@@ -20,31 +20,15 @@ SAFE_FETCH_NUMBER = 300 #number of entities to fetch during large tasks
 
 SESSION_LENGTH = 5 #session length in days
 
-# Error messages
-# ERROR_EMAIL = 'There are no purchases with that email address.'
-# ERROR_EMAIL_LIMIT = 'Only one reminder email can be sent every 24 hours.'
-# ERROR_GOOGLE_POST = 'An error occurred during checkout. Please try again.'
-# ERROR_PRODUCT_PURCHASED = "This product has been purchased, so it can't be deleted."
-# ERROR_QUANTITY = 'You may only add ' + str(MAX_QUANTITY_PER_ITEM) + ' of each item.'
-# ERROR_KEY = 'Incorrect key. Make sure there are no spaces before or after your key.'
-# ERROR_DICT = { 'email': ERROR_EMAIL, 'email_limit': ERROR_EMAIL_LIMIT, 'key': ERROR_KEY, 'google_post' : ERROR_GOOGLE_POST, 'quantity' : ERROR_QUANTITY, 'product_purchased' : ERROR_PRODUCT_PURCHASED }
-
-# Notice messages
-# NOTICE_EMAIL = 'Your purchase key has been emailed.'
-# NOTICE_ITEM_USED = 'Unable to delete, because this product has been purchased.'
-# NOTICE_PURCHASE_ADDED = 'Purchase added.'
-# NOTICE_DICT = { 'email': NOTICE_EMAIL, 'item_used' : NOTICE_ITEM_USED, 'purchase': NOTICE_PURCHASE_ADDED }
-
 #Google Checkout
-
 # Test Accounts
-# SandboxMerchant@foojal.com  bluecog.
-# SandboxBuyer@foojal.com bluecog.
+# e@mail.com
+# e@mail.com
 
 #MERCHANT_ID = ''
 #MERCHANT_KEY = ''
-MERCHANT_KEY = '4WgWqbfXUfXdqfAcIsDqWg' #sandbox
-MERCHANT_ID = '620790402144452' #sandbox
+MERCHANT_KEY = '12345' #sandbox
+MERCHANT_ID = '12345' #sandbox
 GOOGLE_ANALYTICS_ACCOUNT = ''
 
 #GOOGLE_URL = 'https://checkout.google.com/api/checkout/v2/merchantCheckout/Merchant/' + MERCHANT_ID
@@ -53,8 +37,6 @@ GOOGLE_URL = 'https://sandbox.google.com/checkout/api/checkout/v2/merchantChecko
 #Images
 NO_IMAGE_URL = '/public/images/noimage.gif'
 ALLOWED_IMAGE_EXTENSIONS = ('.jpg', '.JPG', '.jpeg', '.JPEG')
-
-
 
 #Google checkout text after successful transaction
 DOWNLOAD_INSTRUCTIONS = 'Your subscription to Foojal.com has been setup. Please check ' + SITE_URL + '/account to access your purchase.'
@@ -162,7 +144,3 @@ COUNTRY_TIMEZONES = [
             {'zone': 'Pacific', 'key': 'Pacific/Norfolk', 'value': 'Norfolk'},
             {'zone': 'Pacific', 'key': 'Pacific/Tahiti', 'value': 'Tahiti'}
 ]
-
-
-
-
